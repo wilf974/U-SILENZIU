@@ -1,0 +1,10 @@
+User-agent: *
+Allow: /
+
+# Sitemap
+Sitemap: https://usilenziu.com/sitemap.xml
+
+# Politique de confidentialité et mentions légales
+Allow: /politique-confidentialite
+Allow: /mentions-legales
+Allow: /cgv

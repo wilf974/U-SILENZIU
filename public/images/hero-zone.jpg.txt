@@ -1,0 +1,9 @@
+# Image Zone de Défoulement Hero
+# Format: JPG
+# Dimensions: 400x400 (1:1)
+# Description: Salle de défoulement U Silenziu avec équipement
+# Contenu: Zone équipée avec matériel de sécurité, ambiance sombre et professionnelle
+# Optimisation: Compressée pour un chargement rapide (< 100KB)
+
+# Cette image est utilisée comme arrière-plan dans l'élément visuel du Hero
+# avec une opacité réduite pour maintenir la lisibilité du texte

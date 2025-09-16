@@ -1,0 +1,12 @@
+Ce fichier simule une vidéo MP4 pour U Silenziu.
+
+Contenu suggéré pour la vidéo hero-video.mp4 :
+- Durée : 30-60 secondes
+- Format : MP4, H.264, 1920x1080
+- Contenu : Présentation de l'ambiance des salles de défoulement
+- Style : Dynamique, montrant l'équipement et l'ambiance
+
+Pour remplacer ce fichier par une vraie vidéo :
+1. Supprimez ce fichier .txt
+2. Ajoutez votre fichier vidéo MP4 nommé "hero-video.mp4"
+3. Assurez-vous que le fichier est optimisé pour le web (< 10MB recommandé)

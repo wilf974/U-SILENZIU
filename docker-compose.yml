@@ -1,0 +1,69 @@
+version: '3.8'
+
+services:
+  # Base de données PostgreSQL
+  postgres:
+    image: postgres:15-alpine
+    container_name: u-silenziu-postgres
+    environment:
+      POSTGRES_DB: usilenzio
+      POSTGRES_USER: usilenzio_user
+      POSTGRES_PASSWORD: usilenzio_password_2024
+      POSTGRES_INITDB_ARGS: "--encoding=UTF-8 --lc-collate=C --lc-ctype=C"
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./init-db.sql:/docker-entrypoint-initdb.d/init-db.sql
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U usilenzio_user -d usilenzio"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    networks:
+      - u-silenziu-network
+
+  # Application Next.js
+  u-silenziu:
+    build: 
+      context: .
+      dockerfile: Dockerfile
+    container_name: u-silenziu-app
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - NEXT_TELEMETRY_DISABLED=1
+      # Configuration PostgreSQL
+      - DATABASE_URL=postgresql://usilenzio_user:usilenzio_password_2024@postgres:5432/usilenzio
+      - POSTGRES_HOST=postgres
+      - POSTGRES_PORT=5432
+      - POSTGRES_DB=usilenzio
+      - POSTGRES_USER=usilenzio_user
+      - POSTGRES_PASSWORD=usilenzio_password_2024
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:3000/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    volumes:
+      # Volume pour les uploads et logs
+      - ./public/uploads:/app/public/uploads
+      - ./logs:/app/logs
+    networks:
+      - u-silenziu-network
+
+networks:
+  u-silenziu-network:
+    driver: bridge
+
+volumes:
+  postgres_data:
+    driver: local

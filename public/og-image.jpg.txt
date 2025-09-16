@@ -1,0 +1,18 @@
+Ce fichier est un placeholder pour l'image Open Graph optimisée pour les réseaux sociaux.
+
+Dimensions recommandées : 1200x630 pixels
+Format : JPG ou PNG
+Taille : < 1MB
+
+L'image devrait contenir :
+- Logo U Silenziu
+- Texte "Zone de Défoulement à Buros"
+- Couleurs du thème (vert kaki sur fond sombre)
+- Design moderne et attrayant
+
+Cette image sera utilisée pour :
+- Facebook, Twitter, LinkedIn
+- WhatsApp, Telegram
+- Autres réseaux sociaux
+
+Remplacer ce fichier .txt par une vraie image .jpg ou .png

@@ -1,0 +1,10 @@
+# Image Salle Douce - "Pas Content!"
+# Format: JPG
+# Dimensions: 600x400 (3:2)
+# Description: Salle de défoulement douce avec équipement de base
+# Contenu: Zone équipée avec bouteilles en verre, vaisselle, équipement de sécurité
+# Ambiance: Éclairage doux, matériel de défoulement accessible
+# Optimisation: Compressée pour un chargement rapide (< 150KB)
+
+# Cette image représente la formule "Pas Content!" - défoulement soft
+# pour évacuer les petites tensions du quotidien

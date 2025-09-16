@@ -1,0 +1,291 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: 'Inter', sans-serif;
+  background-color: #0a0a0a;
+  color: #ffffff;
+}
+
+@layer components {
+  .btn-kaki {
+    @apply bg-kaki-600 hover:bg-kaki-700 text-white font-semibold py-3 px-6 rounded-lg transition-colors duration-200 border border-kaki-500 hover:border-kaki-600;
+  }
+  
+  .btn-kaki-outline {
+    @apply border-2 border-kaki-600 text-kaki-400 hover:bg-kaki-600 hover:text-white font-semibold py-3 px-6 rounded-lg transition-all duration-200;
+  }
+  
+  .section-container {
+    @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
+  }
+  
+  .card-dark {
+    @apply bg-dark-surface border border-kaki-800/30 rounded-xl p-6 shadow-lg;
+  }
+  
+  .text-gradient-kaki {
+    @apply bg-gradient-to-r from-kaki-400 to-kaki-600 bg-clip-text text-transparent;
+  }
+  
+  /* Video player slider styles */
+  .slider {
+    -webkit-appearance: none;
+    appearance: none;
+    background: transparent;
+    cursor: pointer;
+  }
+  
+  .slider::-webkit-slider-track {
+    background: #374151;
+    height: 4px;
+    border-radius: 2px;
+  }
+  
+  .slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    background: #84cc16;
+    height: 12px;
+    width: 12px;
+    border-radius: 50%;
+    cursor: pointer;
+  }
+  
+  .slider::-moz-range-track {
+    background: #374151;
+    height: 4px;
+    border-radius: 2px;
+  }
+  
+  .slider::-moz-range-thumb {
+    background: #84cc16;
+    height: 12px;
+    width: 12px;
+    border-radius: 50%;
+    cursor: pointer;
+    border: none;
+  }
+
+  /* Styles pour le calendrier de réservation */
+  .calendar-container .rbc-calendar {
+    background-color: transparent;
+    color: #ffffff;
+    font-family: inherit;
+  }
+
+  .calendar-container .rbc-header {
+    background-color: #2d3748;
+    color: #8fbc8f;
+    border-bottom: 1px solid #4a5568;
+    padding: 10px;
+    font-weight: 600;
+  }
+
+  .calendar-container .rbc-month-view {
+    background-color: transparent;
+    border: 1px solid #4a5568;
+    border-radius: 8px;
+  }
+
+  .calendar-container .rbc-date-cell {
+    color: #e2e8f0;
+    border-right: 1px solid #4a5568;
+  }
+
+  .calendar-container .rbc-date-cell:hover {
+    background-color: #4a5568;
+  }
+
+  .calendar-container .rbc-date-cell.rbc-selected {
+    background-color: #8fbc8f;
+    color: #1a202c;
+  }
+
+  .calendar-container .rbc-off-range {
+    color: #718096;
+  }
+
+  .calendar-container .rbc-off-range-bg {
+    background-color: #2d3748;
+  }
+
+  .calendar-container .rbc-today {
+    background-color: #8fbc8f;
+    color: #1a202c;
+  }
+
+  .calendar-container .rbc-event {
+    border-radius: 4px;
+    font-size: 11px;
+    padding: 2px 4px;
+    border: none;
+  }
+
+  .calendar-container .rbc-slot-selection {
+    background-color: rgba(143, 188, 143, 0.3);
+  }
+
+  .calendar-container .rbc-toolbar {
+    background-color: #2d3748;
+    border-radius: 8px;
+    padding: 10px;
+    margin-bottom: 10px;
+  }
+
+  .calendar-container .rbc-toolbar button {
+    background-color: #4a5568;
+    color: #e2e8f0;
+    border: 1px solid #718096;
+    border-radius: 4px;
+    padding: 6px 12px;
+    margin: 0 2px;
+    transition: all 0.2s;
+  }
+
+  .calendar-container .rbc-toolbar button:hover {
+    background-color: #8fbc8f;
+    color: #1a202c;
+  }
+
+  .calendar-container .rbc-toolbar button.rbc-active {
+    background-color: #8fbc8f;
+    color: #1a202c;
+  }
+
+  .calendar-container .rbc-toolbar-label {
+    color: #8fbc8f;
+    font-weight: bold;
+    font-size: 18px;
+  }
+
+  /* Styles pour le contenu des pages dynamiques */
+  .page-content {
+    line-height: 1.8;
+    color: #e5e7eb;
+  }
+
+  .page-content h1 {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: #ffffff;
+    margin-bottom: 1.5rem;
+    margin-top: 2rem;
+  }
+
+  .page-content h2 {
+    font-size: 2rem;
+    font-weight: 600;
+    color: #ffffff;
+    margin-bottom: 1.25rem;
+    margin-top: 1.75rem;
+  }
+
+  .page-content h3 {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: #f3f4f6;
+    margin-bottom: 1rem;
+    margin-top: 1.5rem;
+  }
+
+  .page-content h4 {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: #f3f4f6;
+    margin-bottom: 0.75rem;
+    margin-top: 1.25rem;
+  }
+
+  .page-content p {
+    margin-bottom: 1.25rem;
+    color: #d1d5db;
+  }
+
+  .page-content ul, .page-content ol {
+    margin-bottom: 1.25rem;
+    padding-left: 1.5rem;
+  }
+
+  .page-content li {
+    margin-bottom: 0.5rem;
+    color: #d1d5db;
+  }
+
+  .page-content a {
+    color: #6b7280;
+    text-decoration: underline;
+    transition: color 0.2s;
+  }
+
+  .page-content a:hover {
+    color: #4b5563;
+  }
+
+  .page-content blockquote {
+    border-left: 4px solid #6b7280;
+    padding-left: 1rem;
+    margin: 1.5rem 0;
+    font-style: italic;
+    color: #9ca3af;
+  }
+
+  .page-content code {
+    background: #374151;
+    padding: 0.25rem 0.5rem;
+    border-radius: 0.25rem;
+    font-family: 'Courier New', monospace;
+    color: #fbbf24;
+  }
+
+  .page-content pre {
+    background: #1f2937;
+    padding: 1rem;
+    border-radius: 0.5rem;
+    overflow-x: auto;
+    margin: 1.5rem 0;
+  }
+
+  .page-content pre code {
+    background: none;
+    padding: 0;
+    color: #e5e7eb;
+  }
+
+  .page-content img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 0.5rem;
+    margin: 1.5rem 0;
+  }
+
+  .page-content table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 1.5rem 0;
+  }
+
+  .page-content th,
+  .page-content td {
+    border: 1px solid #374151;
+    padding: 0.75rem;
+    text-align: left;
+  }
+
+  .page-content th {
+    background: #374151;
+    color: #ffffff;
+    font-weight: 600;
+  }
+
+  .page-content td {
+    color: #d1d5db;
+  }
+}

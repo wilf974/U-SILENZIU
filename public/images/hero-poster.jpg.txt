@@ -1,0 +1,9 @@
+# Image Poster pour la vidéo Hero
+# Format: JPG
+# Dimensions: 1920x1080 (16:9)
+# Description: Image de fallback pour la vidéo d'introduction U Silenziu
+# Contenu: Zone de défoulement avec équipement de sécurité et ambiance sombre
+# Optimisation: Compressée pour un chargement rapide (< 200KB)
+
+# Cette image sera affichée pendant le chargement de la vidéo
+# et comme fallback si la vidéo ne peut pas être lue

@@ -1,0 +1,10 @@
+# Image Salle Carnage - "Vraiment pas Content!"
+# Format: JPG
+# Dimensions: 600x400 (3:2)
+# Description: Salle de défoulement intense avec équipement varié
+# Contenu: Zone équipée avec matériel multimédia, petit électroménager, équipement de sécurité renforcé
+# Ambiance: Éclairage dynamique, matériel de défoulement étendu
+# Optimisation: Compressée pour un chargement rapide (< 150KB)
+
+# Cette image représente la formule "Vraiment pas Content!" - défoulement carnage
+# pour ceux qui ont besoin d'évacuer plus de stress
