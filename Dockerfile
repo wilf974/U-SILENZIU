@@ -41,10 +41,20 @@ RUN adduser --system --uid 1001 nextjs
 # Créer le dossier data avec les bonnes permissions
 RUN mkdir -p /app/data && chown -R nextjs:nodejs /app/data
 
+# Vérifier que le build standalone existe
+RUN ls -la /app/.next/standalone || echo "Build standalone non trouvé"
+
 # Configuration Next.js standalone
 COPY --from=builder --chown=nextjs:nodejs /app/public ./public
+
+# Copier le build standalone s'il existe, sinon copier le build normal
 COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
 COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
+
+# Si le build standalone n'existe pas, copier le build normal
+COPY --from=builder --chown=nextjs:nodejs /app/.next ./.next
+COPY --from=builder --chown=nextjs:nodejs /app/node_modules ./node_modules
+COPY --from=builder --chown=nextjs:nodejs /app/package.json ./package.json
 
 # Changer vers l'utilisateur non-root
 USER nextjs
@@ -55,5 +65,5 @@ EXPOSE 3000
 ENV PORT 3000
 ENV HOSTNAME "0.0.0.0"
 
-# Commande pour démarrer l'application
-CMD ["node", "server.js"]
+# Commande pour démarrer l'application (fallback si standalone ne fonctionne pas)
+CMD ["sh", "-c", "if [ -f server.js ]; then node server.js; else npm start; fi"]
