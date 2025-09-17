@@ -1,22 +1,23 @@
 # Configuration Docker Compose pour PRODUCTION
 # Usage: docker-compose -f docker-compose.prod.yml up -d
+# Version alignée avec DEV pour tests VPS
 
 services:
-  # Base de données PostgreSQL - Configuration PROD
+  # Base de données PostgreSQL - Configuration PROD (alignée DEV)
   postgres:
     image: postgres:15-alpine
     container_name: u-silenziu-postgres
     environment:
       POSTGRES_DB: usilenzio
       POSTGRES_USER: usilenzio_user
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-usilenzio_production_password_2024}
+      POSTGRES_PASSWORD: usilenzio_password_2024
       POSTGRES_INITDB_ARGS: "--encoding=UTF-8 --lc-collate=C --lc-ctype=C"
     ports:
       - "5432:5432"
     volumes:
       - postgres_prod_data:/var/lib/postgresql/data
       - ./init-db.sql:/docker-entrypoint-initdb.d/init-db.sql
-    restart: always
+    restart: unless-stopped
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U usilenzio_user -d usilenzio"]
       interval: 30s
@@ -25,126 +26,45 @@ services:
       start_period: 40s
     networks:
       - u-silenziu-prod-network
-    # Configurations de sécurité production
-    security_opt:
-      - no-new-privileges:true
-    read_only: false
-    tmpfs:
-      - /tmp
-      - /var/run/postgresql
 
-  # Application Next.js - Configuration PROD
+  # Application Next.js - Configuration PROD (alignée DEV)
   u-silenziu:
     build: 
       context: .
       dockerfile: Dockerfile
-      target: production
     container_name: u-silenziu-app
     ports:
       - "3000:3000"
     environment:
       - NODE_ENV=production
       - NEXT_TELEMETRY_DISABLED=1
-      # Secrets production (À configurer via variables d'environnement)
-      - SESSION_SECRET=${SESSION_SECRET}
-      - JWT_SECRET=${JWT_SECRET}
+      # Secrets prod (changez ces valeurs pour le VPS !)
+      - SESSION_SECRET=prod_session_secret_change_me
+      - JWT_SECRET=prod_jwt_secret_change_me
       - JWT_EXPIRES_IN=1h
-      # Configuration PostgreSQL PROD
-      - DATABASE_URL=postgresql://usilenzio_user:${POSTGRES_PASSWORD:-usilenzio_production_password_2024}@postgres:5432/usilenzio
+      # Configuration PostgreSQL PROD (même base que dev pour compatibilité)
+      - DATABASE_URL=postgresql://usilenzio_user:usilenzio_password_2024@postgres:5432/usilenzio
       - POSTGRES_HOST=postgres
       - POSTGRES_PORT=5432
       - POSTGRES_DB=usilenzio
       - POSTGRES_USER=usilenzio_user
-      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-usilenzio_production_password_2024}
-      # Configuration SMTP production
-      - SMTP_HOST=${SMTP_HOST}
-      - SMTP_PORT=${SMTP_PORT:-587}
-      - SMTP_USER=${SMTP_USER}
-      - SMTP_PASSWORD=${SMTP_PASSWORD}
-      - SMTP_FROM=${SMTP_FROM}
-      # Configuration domaine
-      - NEXT_PUBLIC_URL=${NEXT_PUBLIC_URL:-https://usilenziu.com}
-      - DOMAIN=${DOMAIN:-usilenziu.com}
-    restart: always
+      - POSTGRES_PASSWORD=usilenzio_password_2024
+    restart: unless-stopped
     depends_on:
       postgres:
         condition: service_healthy
-    volumes:
-      # Volumes minimaux en production
-      - ./public/uploads:/app/public/uploads:rw
-      - ./logs:/app/logs:rw
-      - ./data:/app/data:rw
-    networks:
-      - u-silenziu-prod-network
-    # Configurations de sécurité production
-    security_opt:
-      - no-new-privileges:true
-    read_only: false
-    tmpfs:
-      - /tmp
     healthcheck:
-      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:3000/api/health"]
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:3000/"]
       interval: 30s
       timeout: 10s
       retries: 3
-      start_period: 60s
-
-  # Nginx Reverse Proxy (Production)
-  nginx:
-    image: nginx:alpine
-    container_name: u-silenziu-nginx-prod
-    ports:
-      - "80:80"
-      - "443:443"
+      start_period: 40s
     volumes:
-      - ./nginx/nginx.prod.conf:/etc/nginx/nginx.conf:ro
-      - ./nginx/ssl:/etc/nginx/ssl:ro
-      - ./public:/usr/share/nginx/html/public:ro
-    restart: always
-    depends_on:
-      - u-silenziu
+      # Volume pour les uploads et logs
+      - ./public/uploads:/app/public/uploads
+      - ./logs:/app/logs
     networks:
       - u-silenziu-prod-network
-    # Configurations de sécurité
-    security_opt:
-      - no-new-privileges:true
-
-  # Redis pour les sessions (Production)
-  redis:
-    image: redis:7-alpine
-    container_name: u-silenziu-redis
-    ports:
-      - "127.0.0.1:6379:6379"  # Bind uniquement sur localhost
-    volumes:
-      - redis_prod_data:/data
-      - ./redis/redis.prod.conf:/etc/redis/redis.conf:ro
-    restart: always
-    networks:
-      - u-silenziu-prod-network
-    # Configurations de sécurité
-    security_opt:
-      - no-new-privileges:true
-    command: redis-server /etc/redis/redis.conf
-
-  # Service de sauvegarde automatique
-  backup:
-    image: postgres:15-alpine
-    container_name: u-silenziu-backup
-    environment:
-      - POSTGRES_HOST=postgres
-      - POSTGRES_DB=usilenzio
-      - POSTGRES_USER=usilenzio_user
-      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-usilenzio_production_password_2024}
-    volumes:
-      - ./backups:/backups
-      - ./scripts/backup.sh:/backup.sh:ro
-    networks:
-      - u-silenziu-prod-network
-    restart: unless-stopped
-    # Sauvegarde quotidienne à 2h du matin
-    command: sh -c "while true; do sleep 24h; /backup.sh; done"
-    depends_on:
-      - postgres
 
 networks:
   u-silenziu-prod-network:
@@ -155,6 +75,3 @@ volumes:
   postgres_prod_data:
     driver: local
     name: u-silenziu-postgres-prod-data
-  redis_prod_data:
-    driver: local
-    name: u-silenziu-redis-prod-data
