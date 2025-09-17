@@ -13,6 +13,7 @@ import DynamicSection from './DynamicSection'
 interface HomepageSection {
   id: string
   section_key: string
+  section_type?: string
   title?: string
   subtitle?: string
   content?: string
@@ -67,7 +68,7 @@ export default function HomepageSections() {
       // Filtrer les sections actives et les trier par ordre
       const activeSections = result.data
         .filter((section: HomepageSection) => section.is_active)
-        .sort((a: HomepageSection, b: HomepageSection) => a.order_index - b.order_index)
+        .sort((a: HomepageSection, b: HomepageSection) => (a.order_index || 0) - (b.order_index || 0))
 
       setSections(activeSections)
     } catch (err) {
@@ -82,7 +83,9 @@ export default function HomepageSections() {
    * Rendu d'une section selon sa clé
    */
   const renderSection = (section: HomepageSection) => {
-    switch (section.section_key) {
+    const sectionType = section.section_key || section.section_type
+    
+    switch (sectionType) {
       case 'hero':
         return <Hero key={section.id} />
       case 'concept':

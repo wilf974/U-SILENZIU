@@ -3,8 +3,8 @@
 import { useState, useEffect } from 'react'
 
 export interface HomepageSection {
-  id: string
-  section_key: string
+  id: number
+  section_type: string
   title?: string
   subtitle?: string
   content?: string
@@ -12,7 +12,7 @@ export interface HomepageSection {
   video_url?: string
   background_color?: string
   text_color?: string
-  order_index: number
+  display_order: number
   is_active: boolean
   created_at: string
   updated_at: string
@@ -49,7 +49,10 @@ export function useHomepageSections() {
   }
 
   const getSectionByKey = (sectionKey: string): HomepageSection | null => {
-    return sections.find(section => section.section_key === sectionKey) || null
+    return sections.find(section => 
+      section.section_type === sectionKey || 
+      (section as any).section_key === sectionKey
+    ) || null
   }
 
   const getSectionContent = (sectionKey: string): any => {

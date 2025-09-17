@@ -15,8 +15,9 @@ const FAQ = () => {
   const section = getSectionByKey('faq')
   const content = getSectionContent('faq')
 
-  if (loading) return null
-  if (!section) return null
+  // if (loading) return null
+  // Toujours afficher la section FAQ même si pas trouvée dans la base
+  // if (!section) return null
 
   const toggleItem = (index: number) => {
     setOpenItems(prev => 
@@ -90,7 +91,7 @@ const FAQ = () => {
       <div className="section-container">
         <div className="text-center mb-16">
           <h2 className="text-4xl lg:text-5xl font-bold text-white mb-6">
-            {section.title ? (
+            {section?.title ? (
               section.title.includes('Questions') ? (
                 <span dangerouslySetInnerHTML={{
                   __html: section.title.replace('Questions', '<span class="text-gradient-kaki">Questions</span>')
@@ -101,7 +102,7 @@ const FAQ = () => {
             )}
           </h2>
           <p className="text-xl text-gray-300 max-w-3xl mx-auto">
-            {section.subtitle || 'Retrouvez les réponses aux questions les plus fréquemment posées sur nos services et nos activités.'}
+            {section?.subtitle || 'Retrouvez les réponses aux questions les plus fréquemment posées sur nos services et nos activités.'}
           </p>
         </div>
 

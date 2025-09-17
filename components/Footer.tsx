@@ -162,10 +162,15 @@ const Footer = () => {
                 const IconComponent = activity.icon
                 return (
                   <li key={index}>
-                    <Link href="/rooms" className="flex items-center space-x-3 text-gray-300 hover:text-kaki-400 transition-colors">
+                    <button 
+                      onClick={() => {
+                        window.location.href = '/#salles'
+                      }}
+                      className="flex items-center space-x-3 text-gray-300 hover:text-kaki-400 transition-colors bg-transparent border-none cursor-pointer"
+                    >
                       <IconComponent size={16} />
                       <span>{activity.name}</span>
-                    </Link>
+                    </button>
                   </li>
                 )
               })}
@@ -177,7 +182,7 @@ const Footer = () => {
             <h3 className="text-xl font-bold text-white mb-6">Contact</h3>
             <div className="space-y-4">
               {footerConfig.contact_phone && (
-                <a href={`tel:${footerConfig.contact_phone.replace(/\s/g, '')}`} className="flex items-center space-x-3 text-gray-300 hover:text-kaki-400 transition-colors">
+                <a href={`tel:${footerConfig.contact_phone?.replace(/\s/g, '') || '+33783836453'}`} className="flex items-center space-x-3 text-gray-300 hover:text-kaki-400 transition-colors">
                   <Phone size={16} />
                   <span>{footerConfig.contact_phone}</span>
                 </a>

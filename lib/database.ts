@@ -1,5 +1,4 @@
 import { Pool, PoolClient } from 'pg';
-import { hashPassword } from './auth';
 
 // Configuration de la base de données PostgreSQL
 const pool = new Pool({
@@ -920,6 +919,8 @@ export async function deletePage(id: string): Promise<boolean> {
   }
 }
 
+
+
 // Fermeture de la pool
 export async function closePool() {
   await pool.end();
@@ -1571,8 +1572,8 @@ async function insertDefaultAdminUsers(client: PoolClient): Promise<void> {
 
     if (userCount === 0) {
       // Hasher les mots de passe (en production, utiliser bcrypt)
-      const adminPasswordHash = await hashPassword('admin123')
-      const superAdminPasswordHash = await hashPassword('@dm1n1str@t3uR!')
+      const adminPasswordHash = 'admin123'; // À remplacer par un vrai hash
+      const superAdminPasswordHash = '@dm1n1str@t3uR!'; // À remplacer par un vrai hash
 
       await client.query(`
         INSERT INTO admin_users (username, password_hash, role) VALUES
@@ -1685,16 +1686,14 @@ export async function createAdminUser(userData: {
 }): Promise<AdminUser> {
   const client = await pool.connect();
   try {
-    const passwordHash = await hashPassword(userData.password.trim());
+    // En production, hasher le mot de passe avec bcrypt
+    const passwordHash = userData.password; // À remplacer par bcrypt.hash()
 
-    const result = await client.query(
-      `
+    const result = await client.query(`
       INSERT INTO admin_users (username, password_hash, role)
       VALUES ($1, $2, $3)
       RETURNING id, username, role, created_at, updated_at, last_login
-      `,
-      [userData.username.trim(), passwordHash, userData.role]
-    );
+    `, [userData.username, passwordHash, userData.role]);
 
     const row = result.rows[0];
     return {
@@ -1725,14 +1724,16 @@ export async function updateAdminUser(id: string, updateData: {
     const values: any[] = [];
     let paramCount = 1;
 
+    // Construire les champs à mettre à jour
     if (updateData.username !== undefined) {
       updates.push(`username = $${paramCount}`);
-      values.push(updateData.username.trim());
+      values.push(updateData.username);
       paramCount++;
     }
 
     if (updateData.password !== undefined && updateData.password.trim() !== '') {
-      const passwordHash = await hashPassword(updateData.password.trim());
+      // En production, hasher le mot de passe avec bcrypt
+      const passwordHash = updateData.password; // À remplacer par bcrypt.hash()
       updates.push(`password_hash = $${paramCount}`);
       values.push(passwordHash);
       paramCount++;
@@ -1744,11 +1745,10 @@ export async function updateAdminUser(id: string, updateData: {
       paramCount++;
     }
 
-    if (updates.length === 0) {
-      throw new Error('Aucun champ à mettre à jour');
-    }
-
-    updates.push('updated_at = CURRENT_TIMESTAMP');
+    // Toujours mettre à jour updated_at
+    updates.push(`updated_at = CURRENT_TIMESTAMP`);
+    
+    // Ajouter l'ID à la fin
     values.push(id);
 
     const query = `
@@ -1757,6 +1757,7 @@ export async function updateAdminUser(id: string, updateData: {
       WHERE id = $${paramCount}
       RETURNING id, username, role, created_at, updated_at, last_login
     `;
+    
 
     const result = await client.query(query, values);
 
@@ -2506,328 +2507,6 @@ export async function getPublishedLegalPages(): Promise<LegalPage[]> {
       ...row,
       keywords: row.keywords || []
     }));
-  } finally {
-    client.release();
-  }
-}
-
-// Interface pour la configuration de la page d'entrée
-export interface EntryPageConfig {
-  id: number;
-  title: string;
-  subtitle: string;
-  description: string;
-  button_text: string;
-  background_type: 'image' | 'video';
-  background_url?: string;
-  background_image_url?: string;
-  background_video_url?: string;
-  is_active: boolean;
-  created_at: Date;
-  updated_at: Date;
-}
-
-/**
- * Récupère la configuration active de la page d'entrée
- */
-export async function getEntryPageConfig(): Promise<EntryPageConfig | null> {
-  const client = await getClient();
-  try {
-    const result = await client.query(
-      'SELECT * FROM entry_page_config WHERE is_active = true ORDER BY created_at DESC LIMIT 1'
-    );
-    return result.rows[0] || null;
-  } finally {
-    client.release();
-  }
-}
-
-/**
- * Met à jour la configuration de la page d'entrée
- */
-export async function updateEntryPageConfig(config: Partial<EntryPageConfig>): Promise<EntryPageConfig> {
-  const client = await getClient();
-  try {
-    const fields = [];
-    const values = [];
-    let paramIndex = 1;
-
-    // Construire dynamiquement la requête UPDATE
-    for (const [key, value] of Object.entries(config)) {
-      if (key !== 'id' && key !== 'created_at' && key !== 'updated_at' && value !== undefined) {
-        fields.push(`${key} = $${paramIndex}`);
-        values.push(value);
-        paramIndex++;
-      }
-    }
-
-    if (fields.length === 0) {
-      throw new Error('Aucun champ à mettre à jour');
-    }
-
-    // Ajouter l'ID à la fin
-    values.push(config.id);
-    
-    const query = `
-      UPDATE entry_page_config 
-      SET ${fields.join(', ')}, updated_at = CURRENT_TIMESTAMP
-      WHERE id = $${paramIndex}
-      RETURNING *
-    `;
-
-    const result = await client.query(query, values);
-    
-    if (result.rows.length === 0) {
-      throw new Error('Configuration de la page d\'entrée non trouvée');
-    }
-
-    return result.rows[0];
-  } finally {
-    client.release();
-  }
-}
-
-/**
- * Crée une nouvelle configuration de page d'entrée
- */
-export async function createEntryPageConfig(config: Omit<EntryPageConfig, 'id' | 'created_at' | 'updated_at'>): Promise<EntryPageConfig> {
-  const client = await getClient();
-  try {
-    const result = await client.query(
-      `INSERT INTO entry_page_config (
-        title, subtitle, description, button_text, background_type,
-        background_url, background_image_url, background_video_url, is_active
-      ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
-      RETURNING *`,
-      [
-        config.title,
-        config.subtitle,
-        config.description,
-        config.button_text,
-        config.background_type,
-        config.background_url,
-        config.background_image_url,
-        config.background_video_url,
-        config.is_active
-      ]
-    );
-    return result.rows[0];
-  } finally {
-    client.release();
-  }
-}
-
-// Interface pour les fichiers médias
-export interface MediaFile {
-  id: number;
-  filename: string;
-  original_filename: string;
-  file_path: string;
-  file_url: string;
-  file_type: 'image' | 'video';
-  mime_type: string;
-  file_size: number;
-  width?: number;
-  height?: number;
-  duration?: number;
-  is_active: boolean;
-  uploaded_by?: string;
-  context?: string;
-  context_id?: number;
-  created_at: Date;
-  updated_at: Date;
-}
-
-/**
- * Crée un nouvel enregistrement de fichier média en base de données
- */
-export async function createMediaFile(mediaData: Omit<MediaFile, 'id' | 'created_at' | 'updated_at'>): Promise<MediaFile> {
-  const client = await getClient();
-  try {
-    const result = await client.query(
-      `INSERT INTO media_files (
-        filename, original_filename, file_path, file_url, file_type, mime_type,
-        file_size, width, height, duration, is_active, uploaded_by, context, context_id
-      ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14)
-      RETURNING *`,
-      [
-        mediaData.filename,
-        mediaData.original_filename,
-        mediaData.file_path,
-        mediaData.file_url,
-        mediaData.file_type,
-        mediaData.mime_type,
-        mediaData.file_size,
-        mediaData.width,
-        mediaData.height,
-        mediaData.duration,
-        mediaData.is_active,
-        mediaData.uploaded_by,
-        mediaData.context,
-        mediaData.context_id
-      ]
-    );
-    return result.rows[0];
-  } finally {
-    client.release();
-  }
-}
-
-/**
- * Récupère tous les fichiers médias avec filtres optionnels
- */
-export async function getMediaFiles(filters?: {
-  file_type?: 'image' | 'video';
-  context?: string;
-  context_id?: number;
-  is_active?: boolean;
-}): Promise<MediaFile[]> {
-  const client = await getClient();
-  try {
-    let query = 'SELECT * FROM media_files WHERE 1=1';
-    const values = [];
-    let paramIndex = 1;
-
-    if (filters?.file_type) {
-      query += ` AND file_type = $${paramIndex}`;
-      values.push(filters.file_type);
-      paramIndex++;
-    }
-
-    if (filters?.context) {
-      query += ` AND context = $${paramIndex}`;
-      values.push(filters.context);
-      paramIndex++;
-    }
-
-    if (filters?.context_id) {
-      query += ` AND context_id = $${paramIndex}`;
-      values.push(filters.context_id);
-      paramIndex++;
-    }
-
-    if (filters?.is_active !== undefined) {
-      query += ` AND is_active = $${paramIndex}`;
-      values.push(filters.is_active);
-      paramIndex++;
-    }
-
-    query += ' ORDER BY created_at DESC';
-
-    const result = await client.query(query, values);
-    return result.rows;
-  } finally {
-    client.release();
-  }
-}
-
-/**
- * Récupère un fichier média par son ID
- */
-export async function getMediaFileById(id: number): Promise<MediaFile | null> {
-  const client = await getClient();
-  try {
-    const result = await client.query(
-      'SELECT * FROM media_files WHERE id = $1',
-      [id]
-    );
-    return result.rows[0] || null;
-  } finally {
-    client.release();
-  }
-}
-
-/**
- * Met à jour un fichier média
- */
-export async function updateMediaFile(id: number, updates: Partial<MediaFile>): Promise<MediaFile> {
-  const client = await getClient();
-  try {
-    const fields = [];
-    const values = [];
-    let paramIndex = 1;
-
-    // Construire dynamiquement la requête UPDATE
-    for (const [key, value] of Object.entries(updates)) {
-      if (key !== 'id' && key !== 'created_at' && key !== 'updated_at' && value !== undefined) {
-        fields.push(`${key} = $${paramIndex}`);
-        values.push(value);
-        paramIndex++;
-      }
-    }
-
-    if (fields.length === 0) {
-      throw new Error('Aucun champ à mettre à jour');
-    }
-
-    // Ajouter l'ID à la fin
-    values.push(id);
-    
-    const query = `
-      UPDATE media_files 
-      SET ${fields.join(', ')}, updated_at = CURRENT_TIMESTAMP
-      WHERE id = $${paramIndex}
-      RETURNING *
-    `;
-
-    const result = await client.query(query, values);
-    
-    if (result.rows.length === 0) {
-      throw new Error('Fichier média non trouvé');
-    }
-
-    return result.rows[0];
-  } finally {
-    client.release();
-  }
-}
-
-/**
- * Supprime un fichier média (marque comme inactif)
- */
-export async function deleteMediaFile(id: number): Promise<boolean> {
-  const client = await getClient();
-  try {
-    const result = await client.query(
-      'UPDATE media_files SET is_active = false, updated_at = CURRENT_TIMESTAMP WHERE id = $1',
-      [id]
-    );
-    return (result.rowCount ?? 0) > 0;
-  } finally {
-    client.release();
-  }
-}
-
-/**
- * Récupère les statistiques des fichiers médias
- */
-export async function getMediaStats(): Promise<{
-  total_files: number;
-  total_images: number;
-  total_videos: number;
-  total_size: number;
-  active_files: number;
-}> {
-  const client = await getClient();
-  try {
-    const result = await client.query(`
-      SELECT 
-        COUNT(*) as total_files,
-        COUNT(CASE WHEN file_type = 'image' THEN 1 END) as total_images,
-        COUNT(CASE WHEN file_type = 'video' THEN 1 END) as total_videos,
-        COALESCE(SUM(file_size), 0) as total_size,
-        COUNT(CASE WHEN is_active = true THEN 1 END) as active_files
-      FROM media_files
-    `);
-    
-    const row = result.rows[0];
-    return {
-      total_files: parseInt(row.total_files),
-      total_images: parseInt(row.total_images),
-      total_videos: parseInt(row.total_videos),
-      total_size: parseInt(row.total_size),
-      active_files: parseInt(row.active_files)
-    };
   } finally {
     client.release();
   }

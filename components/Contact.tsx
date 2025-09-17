@@ -15,24 +15,31 @@ const Contact = () => {
   if (!section) return null
 
   // Récupérer les informations de contact depuis la base de données ou utiliser les données par défaut
-  const contactInfo = content?.contact_info || [
+  const contactInfoData = content?.contact_info || {
+    phone: '+33 7 83 83 64 53',
+    email: 'info@usilenziu.com',
+    address: '18 Rue du Pont Long\n64160 Buros\nZone Berlanne'
+  }
+
+  // Convertir l'objet en tableau pour le rendu
+  const contactInfo = [
     {
       icon: 'Phone',
       title: 'Téléphone',
-      details: '+33 7 83 83 64 53',
-      link: 'tel:+33783836453'
+      details: contactInfoData.phone,
+      link: `tel:${contactInfoData.phone?.replace(/\s/g, '') || '+33783836453'}`
     },
     {
       icon: 'Mail',
       title: 'Email',
-      details: 'info@usilenziu.com',
-      link: 'mailto:info@usilenziu.com'
+      details: contactInfoData.email,
+      link: `mailto:${contactInfoData.email}`
     },
     {
       icon: 'MapPin',
       title: 'Adresse',
-      details: '18 Rue du Pont Long\n64160 Buros\nZone Berlanne',
-      link: 'https://maps.google.com/?q=18+Rue+du+Pont+Long+64160+Buros'
+      details: contactInfoData.address,
+      link: `https://maps.google.com/?q=${encodeURIComponent(contactInfoData.address)}`
     }
   ]
 
@@ -70,7 +77,7 @@ const Contact = () => {
       <div className="section-container">
         <div className="text-center mb-16">
           <h2 className="text-4xl lg:text-5xl font-bold text-white mb-6">
-            {section.title ? (
+            {section?.title ? (
               section.title.includes('Contacter') ? (
                 <span dangerouslySetInnerHTML={{
                   __html: section.title.replace('Contacter', '<span class="text-gradient-kaki">Contacter</span>')
@@ -81,7 +88,7 @@ const Contact = () => {
             )}
           </h2>
           <p className="text-xl text-gray-300 max-w-3xl mx-auto">
-            {section.subtitle || 'Prêt à réserver votre session de défoulement ? Notre équipe est là pour vous accompagner.'}
+            {section?.subtitle || 'Prêt à réserver votre session de défoulement ? Notre équipe est là pour vous accompagner.'}
           </p>
         </div>
 

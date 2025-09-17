@@ -1,55 +1,53 @@
+# Configuration Docker Compose pour DÉVELOPPEMENT
+# Usage: docker-compose -f docker-compose.dev.yml up -d
+
 services:
-  # Base de données PostgreSQL pour le développement
+  # Base de données PostgreSQL - Configuration DEV
   postgres:
     image: postgres:15-alpine
     container_name: u-silenziu-postgres-dev
     environment:
-      POSTGRES_DB: usilenzio_dev
+      POSTGRES_DB: usilenzio
       POSTGRES_USER: usilenzio_user
-      POSTGRES_PASSWORD: usilenzio_password_dev
+      POSTGRES_PASSWORD: usilenzio_password_2024
       POSTGRES_INITDB_ARGS: "--encoding=UTF-8 --lc-collate=C --lc-ctype=C"
     ports:
       - "5432:5432"
     volumes:
       - postgres_dev_data:/var/lib/postgresql/data
       - ./init-db.sql:/docker-entrypoint-initdb.d/init-db.sql
-      # Volume pour les scripts de développement
-      - ./scripts:/docker-entrypoint-initdb.d/scripts
     restart: unless-stopped
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U usilenzio_user -d usilenzio_dev"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-      start_period: 30s
+      test: ["CMD-SHELL", "pg_isready -U usilenzio_user -d usilenzio"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
     networks:
       - u-silenziu-dev-network
 
-  # Application Next.js pour le développement
+  # Application Next.js - Configuration DEV
   u-silenziu:
     build: 
       context: .
-      dockerfile: Dockerfile.dev
+      dockerfile: Dockerfile
     container_name: u-silenziu-app-dev
     ports:
       - "3000:3000"
     environment:
       - NODE_ENV=development
       - NEXT_TELEMETRY_DISABLED=1
-      # Secrets applicatifs pour le développement
+      # Secrets dev (changez ces valeurs !)
       - SESSION_SECRET=dev_session_secret_change_me
       - JWT_SECRET=dev_jwt_secret_change_me
-      - JWT_EXPIRES_IN=24h
-      # Configuration PostgreSQL pour le développement
-      - DATABASE_URL=postgresql://usilenzio_user:usilenzio_password_dev@postgres:5432/usilenzio_dev
+      - JWT_EXPIRES_IN=1h
+      # Configuration PostgreSQL DEV (même base que prod pour compatibilité)
+      - DATABASE_URL=postgresql://usilenzio_user:usilenzio_password_2024@postgres:5432/usilenzio
       - POSTGRES_HOST=postgres
       - POSTGRES_PORT=5432
-      - POSTGRES_DB=usilenzio_dev
+      - POSTGRES_DB=usilenzio
       - POSTGRES_USER=usilenzio_user
-      - POSTGRES_PASSWORD=usilenzio_password_dev
-      # Variables de développement
-      - DEBUG=true
-      - LOG_LEVEL=debug
+      - POSTGRES_PASSWORD=usilenzio_password_2024
     restart: unless-stopped
     depends_on:
       postgres:
@@ -59,38 +57,20 @@ services:
       interval: 30s
       timeout: 10s
       retries: 3
-      start_period: 60s
+      start_period: 40s
     volumes:
-      # Volume pour le code source (hot reload)
-      - .:/app
-      - /app/node_modules
-      - /app/.next
       # Volume pour les uploads et logs
       - ./public/uploads:/app/public/uploads
       - ./logs:/app/logs
-      # Volume pour les données de développement
-      - ./data:/app/data
-    networks:
-      - u-silenziu-dev-network
-
-  # Redis pour le cache en développement (optionnel)
-  redis:
-    image: redis:7-alpine
-    container_name: u-silenziu-redis-dev
-    ports:
-      - "6379:6379"
-    volumes:
-      - redis_dev_data:/data
-    restart: unless-stopped
     networks:
       - u-silenziu-dev-network
 
 networks:
   u-silenziu-dev-network:
     driver: bridge
+    name: u-silenziu-dev-network
 
 volumes:
   postgres_dev_data:
     driver: local
-  redis_dev_data:
-    driver: local
+    name: u-silenziu-postgres-dev-data

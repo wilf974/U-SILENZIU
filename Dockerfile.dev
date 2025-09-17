@@ -1,28 +1,34 @@
-# Dockerfile pour l'environnement de développement
-# U Silenziu - Janvier 2025
+# Dockerfile pour DÉVELOPPEMENT
+# Multi-stage build optimisé pour le développement avec hot reload
 
-FROM node:18-alpine
-
-# Installer les dépendances nécessaires
+# Stage de base
+FROM node:18-alpine AS base
 RUN apk add --no-cache libc6-compat
-
 WORKDIR /app
 
-# Copier les fichiers de dépendances
-COPY package.json package-lock.json* ./
-
-# Installer les dépendances (incluant les dev dependencies)
+# Installer les dépendances
+COPY package.json package-lock.json ./
 RUN npm ci
+
+# Stage de développement
+FROM base AS development
+WORKDIR /app
+
+# Installer nodemon pour le hot reload
+RUN npm install -g nodemon
 
 # Copier le code source
 COPY . .
 
-# Variables d'environnement pour le développement
-ENV NODE_ENV=development
-ENV NEXT_TELEMETRY_DISABLED=1
+# Créer les répertoires nécessaires
+RUN mkdir -p public/uploads logs data && \
+    chown -R node:node /app
 
-# Exposer le port
-EXPOSE 3000
+# Exposer les ports
+EXPOSE 3000 9229
 
-# Commande pour démarrer l'application en mode développement
+# Utilisateur non-root pour la sécurité
+USER node
+
+# Commande par défaut (peut être surchargée)
 CMD ["npm", "run", "dev"]

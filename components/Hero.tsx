@@ -11,12 +11,13 @@ const Hero = () => {
   const heroContent = getSectionContent('hero')
 
   // Ne pas afficher si chargement ou si la section est inactive/absente
-  if (loading) return null
-  if (!heroSection) return null
+  // if (loading) return null
+  // Toujours afficher la section Hero même si pas trouvée dans la base
+  // if (!heroSection) return null
 
   // Données par défaut si certains sous-champs manquent
-  const title = heroSection.title || 'Libérez votre STRESS'
-  const subtitle = heroSection.subtitle || "Venez vous défouler en toute sécurité chez U Silenziu. Cassez, détruisez et libérez vos tensions dans nos salles spécialement conçues pour évacuer le stress."
+  const title = heroSection?.title || 'Libérez votre STRESS'
+  const subtitle = heroSection?.subtitle || "Venez vous défouler en toute sécurité chez U Silenziu. Cassez, détruisez et libérez vos tensions dans nos salles spécialement conçues pour évacuer le stress."
   const features = (heroContent?.features) || [
     { icon: 'Shield', title: '100% Sécurisé', description: 'Équipement complet fourni' },
     { icon: 'Zap', title: 'Décompression', description: 'Évacuez votre stress' },
@@ -102,7 +103,7 @@ const Hero = () => {
                 <ArrowRight size={20} />
               </Link>
               <Link 
-                href="/rooms"
+                href="/#salles"
                 className="btn-kaki-outline"
               >
                 {ctaSecondary}

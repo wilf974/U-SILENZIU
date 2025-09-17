@@ -1,12 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { writeFile, mkdir } from 'fs/promises'
 import { join } from 'path'
-import { updateEntryPageConfig, createMediaFile } from '@/lib/database'
-import { existsSync } from 'fs'
 
 /**
- * API route pour l'upload de médias (images/vidéos) pour la page d'entrée
  * POST /api/media/upload
+ * Upload d'images et vidéos pour la page d'entrée
  */
 export async function POST(request: NextRequest) {
   try {
@@ -23,127 +21,95 @@ export async function POST(request: NextRequest) {
 
     if (!type || !['image', 'video'].includes(type)) {
       return NextResponse.json(
-        { error: 'Type de fichier invalide' },
+        { error: 'Type de média invalide (image ou video requis)' },
         { status: 400 }
       )
     }
 
-    // Vérifier le type de fichier
-    const isValidType = type === 'image' 
-      ? file.type.startsWith('image/')
-      : file.type.startsWith('video/')
-
-    if (!isValidType) {
+    // Validation du type de fichier
+    if (type === 'image' && !file.type.startsWith('image/')) {
       return NextResponse.json(
-        { error: `Type de fichier invalide. Attendu: ${type}` },
+        { error: 'Le fichier doit être une image' },
         { status: 400 }
       )
     }
 
-    // Vérifier la taille (max 10MB)
-    if (file.size > 10 * 1024 * 1024) {
+    if (type === 'video' && !file.type.startsWith('video/')) {
       return NextResponse.json(
-        { error: 'Le fichier ne doit pas dépasser 10MB' },
+        { error: 'Le fichier doit être une vidéo' },
+        { status: 400 }
+      )
+    }
+
+    // Validation de la taille (max 50MB pour les vidéos, 10MB pour les images)
+    const maxSize = type === 'video' ? 50 * 1024 * 1024 : 10 * 1024 * 1024
+    if (file.size > maxSize) {
+      const maxSizeMB = type === 'video' ? '50MB' : '10MB'
+      return NextResponse.json(
+        { error: `Le fichier ne doit pas dépasser ${maxSizeMB}` },
         { status: 400 }
       )
     }
 
     // Créer le nom de fichier unique
-    const timestamp = Date.now()
-    const fileExtension = file.name.split('.').pop()
-    const fileName = `${timestamp}-${file.name.replace(/[^a-zA-Z0-9.-]/g, '_')}`
-    const fullFileName = `${fileName}.${fileExtension}`
+    const timestamp = new Date().toISOString().replace(/[:.]/g, '-')
+    const extension = file.name.split('.').pop()
+    const fileName = `entry-${type}-${timestamp}.${extension}`
 
-    // Chemin de destination (dossier statique comme le Hero)
-    const staticDir = join(process.cwd(), 'public', type === 'image' ? 'images' : 'videos', 'entry')
-    const staticFileName = type === 'image' ? 'entry-bg.jpg' : 'entry-bg.mp4'
-    const staticFilePath = join(staticDir, staticFileName)
-    
-    // Chemin de sauvegarde (dossier media pour historique)
+    // Définir le chemin de destination
     const uploadDir = join(process.cwd(), 'public', 'media', 'entry', type)
-    const filePath = join(uploadDir, fullFileName)
+    const filePath = join(uploadDir, fileName)
 
-    // Créer les dossiers s'ils n'existent pas
-    if (!existsSync(uploadDir)) {
+    // Créer le répertoire s'il n'existe pas
+    try {
       await mkdir(uploadDir, { recursive: true })
-    }
-    if (!existsSync(staticDir)) {
-      await mkdir(staticDir, { recursive: true })
+    } catch (error) {
+      console.error('Erreur lors de la création du répertoire:', error)
     }
 
     // Convertir le fichier en buffer et l'écrire
     const bytes = await file.arrayBuffer()
     const buffer = Buffer.from(bytes)
     
-    // Écrire dans le dossier de sauvegarde (historique)
     await writeFile(filePath, buffer)
-    
-    // Écrire dans le dossier statique (comme le Hero)
-    await writeFile(staticFilePath, buffer)
 
-    // URL publique du fichier (chemin statique comme le Hero)
-    const staticUrl = type === 'image' ? '/images/entry/entry-bg.jpg' : '/videos/entry/entry-bg.mp4'
-    const publicUrl = `/media/entry/${type}/${fullFileName}`
-
-    // Sauvegarder les métadonnées du fichier en base de données
-    let mediaFileId: number | null = null
-    try {
-      const mediaData = {
-        filename: fullFileName,
-        original_filename: file.name,
-        file_path: filePath,
-        file_url: publicUrl,
-        file_type: type as 'image' | 'video',
-        mime_type: file.type,
-        file_size: file.size,
-        is_active: true,
-        uploaded_by: 'admin', // TODO: Récupérer l'utilisateur connecté
-        context: 'entry_page',
-        context_id: 1
-      }
-
-      const savedMediaFile = await createMediaFile(mediaData)
-      mediaFileId = savedMediaFile.id
-      console.log(`Fichier média sauvegardé en base de données avec l'ID: ${mediaFileId}`)
-    } catch (dbError) {
-      console.error('Erreur lors de la sauvegarde des métadonnées:', dbError)
-      // On continue même si la sauvegarde des métadonnées échoue
-    }
-
-    // Mettre à jour automatiquement la configuration dans la base de données
-    try {
-      const updateData: any = { id: 1 } // ID de la configuration active
-      
-      if (type === 'image') {
-        updateData.background_image_url = staticUrl
-        updateData.background_type = 'image'
-      } else if (type === 'video') {
-        updateData.background_video_url = staticUrl
-        updateData.background_type = 'video'
-      }
-      
-      await updateEntryPageConfig(updateData)
-      console.log(`Configuration mise à jour avec ${type}: ${staticUrl}`)
-    } catch (dbError) {
-      console.error('Erreur lors de la mise à jour de la configuration:', dbError)
-      // On continue même si la mise à jour de la BDD échoue
-    }
+    // Construire l'URL publique
+    const publicUrl = `/media/entry/${type}/${fileName}`
 
     return NextResponse.json({
-      name: fullFileName,
-      url: staticUrl,
-      type: type as 'image' | 'video',
+      success: true,
+      url: publicUrl,
+      filename: fileName,
       size: file.size,
-      lastModified: new Date().toISOString(),
-      mediaFileId: mediaFileId,
-      savedInDatabase: mediaFileId !== null
+      type: file.type
     })
 
   } catch (error) {
     console.error('Erreur lors de l\'upload:', error)
     return NextResponse.json(
-      { error: 'Erreur interne du serveur' },
+      { error: 'Erreur interne du serveur lors de l\'upload' },
       { status: 500 }
     )
   }
+}
+
+/**
+ * GET /api/media/upload
+ * Informations sur l'API d'upload
+ */
+export async function GET() {
+  return NextResponse.json({
+    endpoints: {
+      upload: 'POST /api/media/upload',
+      supported_types: ['image', 'video'],
+      max_sizes: {
+        image: '10MB',
+        video: '50MB'
+      },
+      supported_formats: {
+        image: ['jpg', 'jpeg', 'png', 'gif', 'webp'],
+        video: ['mp4', 'webm', 'mov', 'avi']
+      }
+    }
+  })
 }

@@ -13,8 +13,9 @@ const Process = () => {
   const section = getSectionByKey('process')
   const content = getSectionContent('process')
 
-  if (loading) return null
-  if (!section) return null
+  // if (loading) return null
+  // Toujours afficher la section Process même si pas trouvée dans la base
+  // if (!section) return null
 
   const handleReservation = () => {
     router.push('/reservation')
@@ -93,7 +94,7 @@ const Process = () => {
       <div className="section-container">
         <div className="text-center mb-16">
           <h2 className="text-4xl lg:text-5xl font-bold text-white mb-6">
-            {section.title ? (
+            {section?.title ? (
               section.title.includes('séance') || section.title.includes('seance') ? (
                 <span dangerouslySetInnerHTML={{
                   __html: section.title
@@ -106,7 +107,7 @@ const Process = () => {
             )}
           </h2>
           <p className="text-xl text-gray-300 max-w-3xl mx-auto">
-            {section.subtitle || 'Découvrez le déroulement type d\'une session chez U Silenziu. Chaque étape est pensée pour votre sécurité et votre plaisir.'}
+            {section?.subtitle || 'Découvrez le déroulement type d\'une session chez U Silenziu. Chaque étape est pensée pour votre sécurité et votre plaisir.'}
           </p>
         </div>
 

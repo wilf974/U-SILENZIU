@@ -1,11 +1,28 @@
-import { redirect } from 'next/navigation'
+import type { Metadata } from 'next'
+import Header from '@/components/Header'
+import Footer from '@/components/Footer'
+import HomepageSections from '@/components/HomepageSections'
+import JsonLd from '@/components/JsonLd'
+import { generatePageMetadata } from '@/lib/metadata'
 
-/**
- * Page d'accueil qui redirige vers la page d'entrée
- * La page d'entrée permet aux clients d'entrer dans le site
- */
+export const metadata: Metadata = generatePageMetadata(
+  'Accueil',
+  'Découvrez U Silenziu, votre zone de défoulement à Buros. Cassez, détruisez et libérez votre stress dans nos salles sécurisées. Lancer de haches, shurikens, fléchettes et activités de défoulement.',
+  '/',
+  ['zone de défoulement', 'Buros', 'défoulement', 'stress', 'lancer de haches', 'shurikens', 'fléchettes', 'color zone', 'bras de fer']
+)
+
 export default function Home() {
-  // Redirection vers la page d'entrée
-  redirect('/entry')
+  return (
+    <>
+      <JsonLd />
+      <main className="min-h-screen bg-dark-bg">
+        <Header />
+        {/* Toutes les sections dans l'ordre configuré dans le back-office */}
+        <HomepageSections />
+        <Footer />
+      </main>
+    </>
+  )
 }
 
