@@ -56,12 +56,18 @@ export function useAuth() {
   /**
    * Fonction de déconnexion
    */
-  const logout = () => {
-    sessionStorage.removeItem('adminToken')
-    sessionStorage.removeItem('adminUser')
-    setIsAuthenticated(false)
-    setUser(null)
-    router.push('/admin/login')
+  const logout = async () => {
+    try {
+      await fetch('/api/admin/auth/logout', { method: 'POST' })
+    } catch (error) {
+      console.error('Erreur lors de la déconnexion admin:', error)
+    } finally {
+      sessionStorage.removeItem('adminToken')
+      sessionStorage.removeItem('adminUser')
+      setIsAuthenticated(false)
+      setUser(null)
+      router.push('/admin/login')
+    }
   }
 
   /**

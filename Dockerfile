@@ -7,10 +7,13 @@ RUN apk add --no-cache libc6-compat
 WORKDIR /app
 
 # Copier les fichiers de dépendances
-COPY package.json ./
+COPY package.json package-lock.json* ./
 
 # Installer les dépendances
-RUN npm install
+RUN npm ci --ignore-scripts && npm cache clean --force
+
+# Étape de build
+FROM base AS builder
 
 # Copier le code source
 COPY . .
@@ -23,7 +26,7 @@ ENV NODE_ENV production
 RUN npm run build
 
 # Image de production
-FROM node:18-alpine AS production
+FROM node:18-alpine AS runner
 
 WORKDIR /app
 
@@ -38,10 +41,10 @@ RUN adduser --system --uid 1001 nextjs
 # Créer le dossier data avec les bonnes permissions
 RUN mkdir -p /app/data && chown -R nextjs:nodejs /app/data
 
-# Copier les fichiers construits depuis l'étape de build
-COPY --from=base --chown=nextjs:nodejs /app/public ./public
-COPY --from=base --chown=nextjs:nodejs /app/.next/standalone ./
-COPY --from=base --chown=nextjs:nodejs /app/.next/static ./.next/static
+# Configuration Next.js standalone
+COPY --from=builder --chown=nextjs:nodejs /app/public ./public
+COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
+COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
 
 # Changer vers l'utilisateur non-root
 USER nextjs

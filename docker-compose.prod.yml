@@ -1,15 +1,15 @@
+version: '3.8'
+
 services:
   # Base de données PostgreSQL
   postgres:
     image: postgres:15-alpine
-    container_name: u-silenziu-postgres
+    container_name: usilenziu-postgres
     environment:
       POSTGRES_DB: usilenzio
       POSTGRES_USER: usilenzio_user
       POSTGRES_PASSWORD: usilenzio_password_2024
       POSTGRES_INITDB_ARGS: "--encoding=UTF-8 --lc-collate=C --lc-ctype=C"
-    ports:
-      - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
       - ./init-db.sql:/docker-entrypoint-initdb.d/init-db.sql
@@ -21,24 +21,17 @@ services:
       retries: 3
       start_period: 40s
     networks:
-      - u-silenziu-network
+      - usilenziu-network
 
   # Application Next.js
-  u-silenziu:
+  app:
     build: 
       context: .
       dockerfile: Dockerfile
-    container_name: u-silenziu-app
-    ports:
-      - "3000:3000"
+    container_name: usilenziu-app
     environment:
       - NODE_ENV=production
       - NEXT_TELEMETRY_DISABLED=1
-      # Secrets applicatifs
-      - SESSION_SECRET=change_me_session_secret
-      - JWT_SECRET=change_me_jwt_secret
-      - JWT_EXPIRES_IN=1h
-      # Configuration PostgreSQL
       - DATABASE_URL=postgresql://usilenzio_user:usilenzio_password_2024@postgres:5432/usilenzio
       - POSTGRES_HOST=postgres
       - POSTGRES_PORT=5432
@@ -49,21 +42,31 @@ services:
     depends_on:
       postgres:
         condition: service_healthy
-    healthcheck:
-      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:3000/"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-      start_period: 40s
     volumes:
-      # Volume pour les uploads et logs
       - ./public/uploads:/app/public/uploads
       - ./logs:/app/logs
     networks:
-      - u-silenziu-network
+      - usilenziu-network
+
+  # Nginx reverse proxy
+  nginx:
+    image: nginx:alpine
+    container_name: usilenziu-nginx
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./ssl:/etc/nginx/ssl:ro
+      - ./public/uploads:/var/www/uploads:ro
+    depends_on:
+      - app
+    restart: unless-stopped
+    networks:
+      - usilenziu-network
 
 networks:
-  u-silenziu-network:
+  usilenziu-network:
     driver: bridge
 
 volumes:

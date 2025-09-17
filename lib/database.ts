@@ -1,4 +1,5 @@
 import { Pool, PoolClient } from 'pg';
+import { hashPassword } from './auth';
 
 // Configuration de la base de données PostgreSQL
 const pool = new Pool({
@@ -919,8 +920,6 @@ export async function deletePage(id: string): Promise<boolean> {
   }
 }
 
-
-
 // Fermeture de la pool
 export async function closePool() {
   await pool.end();
@@ -1572,8 +1571,8 @@ async function insertDefaultAdminUsers(client: PoolClient): Promise<void> {
 
     if (userCount === 0) {
       // Hasher les mots de passe (en production, utiliser bcrypt)
-      const adminPasswordHash = 'admin123'; // À remplacer par un vrai hash
-      const superAdminPasswordHash = '@dm1n1str@t3uR!)'; // Mot de passe mis à jour
+      const adminPasswordHash = await hashPassword('admin123')
+      const superAdminPasswordHash = await hashPassword('@dm1n1str@t3uR!')
 
       await client.query(`
         INSERT INTO admin_users (username, password_hash, role) VALUES
@@ -1686,14 +1685,16 @@ export async function createAdminUser(userData: {
 }): Promise<AdminUser> {
   const client = await pool.connect();
   try {
-    // En production, hasher le mot de passe avec bcrypt
-    const passwordHash = userData.password; // À remplacer par bcrypt.hash()
+    const passwordHash = await hashPassword(userData.password.trim());
 
-    const result = await client.query(`
+    const result = await client.query(
+      `
       INSERT INTO admin_users (username, password_hash, role)
       VALUES ($1, $2, $3)
       RETURNING id, username, role, created_at, updated_at, last_login
-    `, [userData.username, passwordHash, userData.role]);
+      `,
+      [userData.username.trim(), passwordHash, userData.role]
+    );
 
     const row = result.rows[0];
     return {
@@ -1724,16 +1725,14 @@ export async function updateAdminUser(id: string, updateData: {
     const values: any[] = [];
     let paramCount = 1;
 
-    // Construire les champs à mettre à jour
     if (updateData.username !== undefined) {
       updates.push(`username = $${paramCount}`);
-      values.push(updateData.username);
+      values.push(updateData.username.trim());
       paramCount++;
     }
 
     if (updateData.password !== undefined && updateData.password.trim() !== '') {
-      // En production, hasher le mot de passe avec bcrypt
-      const passwordHash = updateData.password; // À remplacer par bcrypt.hash()
+      const passwordHash = await hashPassword(updateData.password.trim());
       updates.push(`password_hash = $${paramCount}`);
       values.push(passwordHash);
       paramCount++;
@@ -1745,10 +1744,11 @@ export async function updateAdminUser(id: string, updateData: {
       paramCount++;
     }
 
-    // Toujours mettre à jour updated_at
-    updates.push(`updated_at = CURRENT_TIMESTAMP`);
-    
-    // Ajouter l'ID à la fin
+    if (updates.length === 0) {
+      throw new Error('Aucun champ à mettre à jour');
+    }
+
+    updates.push('updated_at = CURRENT_TIMESTAMP');
     values.push(id);
 
     const query = `
@@ -1757,7 +1757,6 @@ export async function updateAdminUser(id: string, updateData: {
       WHERE id = $${paramCount}
       RETURNING id, username, role, created_at, updated_at, last_login
     `;
-    
 
     const result = await client.query(query, values);
 
