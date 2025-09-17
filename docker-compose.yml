@@ -1,5 +1,8 @@
+# Configuration par défaut - Utilise docker-compose.dev.yml pour le développement
+# et docker-compose.prod.yml pour la production
+
 services:
-  # Base de données PostgreSQL
+  # Base de données PostgreSQL (configuration par défaut)
   postgres:
     image: postgres:15-alpine
     container_name: u-silenziu-postgres
@@ -23,7 +26,7 @@ services:
     networks:
       - u-silenziu-network
 
-  # Application Next.js
+  # Application Next.js (configuration par défaut)
   u-silenziu:
     build: 
       context: .

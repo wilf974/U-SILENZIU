@@ -1,18 +1,20 @@
-version: '3.8'
-
 services:
-  # Base de données PostgreSQL
+  # Base de données PostgreSQL pour la production
   postgres:
     image: postgres:15-alpine
-    container_name: usilenziu-postgres
+    container_name: u-silenziu-postgres-prod
     environment:
       POSTGRES_DB: usilenzio
       POSTGRES_USER: usilenzio_user
       POSTGRES_PASSWORD: usilenzio_password_2024
       POSTGRES_INITDB_ARGS: "--encoding=UTF-8 --lc-collate=C --lc-ctype=C"
+    ports:
+      - "5432:5432"
     volumes:
-      - postgres_data:/var/lib/postgresql/data
+      - postgres_prod_data:/var/lib/postgresql/data
       - ./init-db.sql:/docker-entrypoint-initdb.d/init-db.sql
+      # Sauvegarde automatique
+      - ./backups:/backups
     restart: unless-stopped
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U usilenzio_user -d usilenzio"]
@@ -21,37 +23,80 @@ services:
       retries: 3
       start_period: 40s
     networks:
-      - usilenziu-network
+      - u-silenziu-prod-network
+    # Configuration de sécurité pour la production
+    command: >
+      postgres
+      -c max_connections=200
+      -c shared_buffers=256MB
+      -c effective_cache_size=1GB
+      -c maintenance_work_mem=64MB
+      -c checkpoint_completion_target=0.9
+      -c wal_buffers=16MB
+      -c default_statistics_target=100
+      -c random_page_cost=1.1
+      -c effective_io_concurrency=200
+      -c work_mem=4MB
+      -c min_wal_size=1GB
+      -c max_wal_size=4GB
 
-  # Application Next.js
-  app:
+  # Application Next.js pour la production
+  u-silenziu:
     build: 
       context: .
       dockerfile: Dockerfile
-    container_name: usilenziu-app
+    container_name: u-silenziu-app-prod
+    ports:
+      - "3000:3000"
     environment:
       - NODE_ENV=production
       - NEXT_TELEMETRY_DISABLED=1
+      # Secrets applicatifs pour la production (à changer en production)
+      - SESSION_SECRET=${SESSION_SECRET:-change_me_session_secret_prod}
+      - JWT_SECRET=${JWT_SECRET:-change_me_jwt_secret_prod}
+      - JWT_EXPIRES_IN=1h
+      # Configuration PostgreSQL pour la production
       - DATABASE_URL=postgresql://usilenzio_user:usilenzio_password_2024@postgres:5432/usilenzio
       - POSTGRES_HOST=postgres
       - POSTGRES_PORT=5432
       - POSTGRES_DB=usilenzio
       - POSTGRES_USER=usilenzio_user
       - POSTGRES_PASSWORD=usilenzio_password_2024
+      # Variables de production
+      - DEBUG=false
+      - LOG_LEVEL=info
     restart: unless-stopped
     depends_on:
       postgres:
         condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:3000/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
     volumes:
+      # Volume pour les uploads et logs
       - ./public/uploads:/app/public/uploads
       - ./logs:/app/logs
+      # Volume pour les sauvegardes
+      - ./backups:/app/backups
     networks:
-      - usilenziu-network
+      - u-silenziu-prod-network
+    # Limites de ressources pour la production
+    deploy:
+      resources:
+        limits:
+          memory: 1G
+          cpus: '1.0'
+        reservations:
+          memory: 512M
+          cpus: '0.5'
 
-  # Nginx reverse proxy
+  # Nginx reverse proxy pour la production
   nginx:
     image: nginx:alpine
-    container_name: usilenziu-nginx
+    container_name: u-silenziu-nginx-prod
     ports:
       - "80:80"
       - "443:443"
@@ -60,15 +105,61 @@ services:
       - ./ssl:/etc/nginx/ssl:ro
       - ./public/uploads:/var/www/uploads:ro
     depends_on:
-      - app
+      - u-silenziu
     restart: unless-stopped
     networks:
-      - usilenziu-network
+      - u-silenziu-prod-network
+
+  # Redis pour le cache en production
+  redis:
+    image: redis:7-alpine
+    container_name: u-silenziu-redis-prod
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_prod_data:/data
+    restart: unless-stopped
+    networks:
+      - u-silenziu-prod-network
+    # Configuration Redis pour la production
+    command: >
+      redis-server
+      --maxmemory 256mb
+      --maxmemory-policy allkeys-lru
+      --save 900 1
+      --save 300 10
+      --save 60 10000
+
+  # Service de sauvegarde automatique
+  backup:
+    image: postgres:15-alpine
+    container_name: u-silenziu-backup
+    environment:
+      POSTGRES_DB: usilenzio
+      POSTGRES_USER: usilenzio_user
+      POSTGRES_PASSWORD: usilenzio_password_2024
+      POSTGRES_HOST: postgres
+    volumes:
+      - ./backups:/backups
+      - ./scripts/backup.sh:/backup.sh:ro
+    depends_on:
+      - postgres
+    restart: "no"
+    networks:
+      - u-silenziu-prod-network
+    # Exécution quotidienne à 2h du matin
+    command: >
+      sh -c "
+        echo '0 2 * * * /backup.sh' | crontab - &&
+        crond -f
+      "
 
 networks:
-  usilenziu-network:
+  u-silenziu-prod-network:
     driver: bridge
 
 volumes:
-  postgres_data:
+  postgres_prod_data:
+    driver: local
+  redis_prod_data:
     driver: local

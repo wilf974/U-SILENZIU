@@ -1,0 +1,28 @@
+# Dockerfile pour l'environnement de développement
+# U Silenziu - Janvier 2025
+
+FROM node:18-alpine
+
+# Installer les dépendances nécessaires
+RUN apk add --no-cache libc6-compat
+
+WORKDIR /app
+
+# Copier les fichiers de dépendances
+COPY package.json package-lock.json* ./
+
+# Installer les dépendances (incluant les dev dependencies)
+RUN npm ci
+
+# Copier le code source
+COPY . .
+
+# Variables d'environnement pour le développement
+ENV NODE_ENV=development
+ENV NEXT_TELEMETRY_DISABLED=1
+
+# Exposer le port
+EXPOSE 3000
+
+# Commande pour démarrer l'application en mode développement
+CMD ["npm", "run", "dev"]
