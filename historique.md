@@ -3,6 +3,32 @@
 ## Vue d'ensemble du projet
 Site web pour U Silenziu, zone de défoulement située à Buros. Le site présente les services de défoulement et les activités proposées (lancer de haches, shurikens, fléchettes, défoulement, color zone, bras de fer).
 
+## ✅ Résolution des erreurs HTTP 500 - Tables de base de données manquantes - Janvier 2025
+
+### Problème identifié
+- Erreur HTTP 500 sur l'application déployée sur le VPS
+- Toutes les tables de la base de données PostgreSQL étaient manquantes
+- Erreurs PostgreSQL : "relation does not exist" pour toutes les tables
+
+### Tables manquantes identifiées
+- `admin_users` (authentification admin)
+- `homepage_sections` (sections page d'accueil)
+- `footer_config` (configuration pied de page)
+- `header_config` (configuration en-tête)
+- `entry_page_config` (configuration page d'entrée)
+- `legal_pages` (pages légales)
+- `rooms` (salles)
+- `reservations` (réservations)
+
+### Solution implémentée
+- Création du script `fix-database.sh` pour initialiser automatiquement toutes les tables
+- Script inclut la création de l'utilisateur administrateur avec le bon hash bcrypt
+- Commande de réparation en une seule étape pour le VPS
+
+### Fichiers modifiés
+- ✅ `fix-database.sh` : Script de réparation de la base de données
+- ✅ `historique.md` : Mise à jour de l'historique
+
 ## ✅ Suppression du Système de Templates - Janvier 2025
 
 ### Objectif
