@@ -52,24 +52,39 @@ export async function PUT(
       );
     }
 
-    const body = await request.json();
+    const raw = await request.json();
+    // Normalisation des champs provenant du formulaire (string -> number/array)
+    const duration = raw.duration !== undefined ? Number(raw.duration) : undefined;
+    const price = raw.price !== undefined ? Number(raw.price) : undefined;
+    const maxPeople = raw.maxPeople !== undefined ? Number(raw.maxPeople) : undefined;
+    const objectsToDestroy = Array.isArray(raw.objectsToDestroy)
+      ? raw.objectsToDestroy
+      : (typeof raw.objectsToDestroy === 'string'
+          ? raw.objectsToDestroy.split(',').map((s: string) => s.trim()).filter(Boolean)
+          : undefined);
+    const included = Array.isArray(raw.included)
+      ? raw.included
+      : (typeof raw.included === 'string'
+          ? raw.included.split(',').map((s: string) => s.trim()).filter(Boolean)
+          : undefined);
+    const body = { ...raw, duration, price, maxPeople, objectsToDestroy, included };
     
     // Validation des types pour les champs optionnels
-    if (body.duration !== undefined && (typeof body.duration !== 'number' || body.duration <= 0)) {
+    if (body.duration !== undefined && (typeof body.duration !== 'number' || Number.isNaN(body.duration) || body.duration <= 0)) {
       return NextResponse.json(
         { success: false, error: 'La durée doit être un nombre positif' },
         { status: 400 }
       );
     }
 
-    if (body.price !== undefined && (typeof body.price !== 'number' || body.price < 0)) {
+    if (body.price !== undefined && (typeof body.price !== 'number' || Number.isNaN(body.price) || body.price < 0)) {
       return NextResponse.json(
         { success: false, error: 'Le prix doit être un nombre positif' },
         { status: 400 }
       );
     }
 
-    if (body.maxPeople !== undefined && (typeof body.maxPeople !== 'number' || body.maxPeople <= 0)) {
+    if (body.maxPeople !== undefined && (typeof body.maxPeople !== 'number' || Number.isNaN(body.maxPeople) || body.maxPeople <= 0)) {
       return NextResponse.json(
         { success: false, error: 'Le nombre maximum de personnes doit être un nombre positif' },
         { status: 400 }
@@ -90,7 +105,18 @@ export async function PUT(
       );
     }
 
-    const updatedRoom = await updateRoom(id, body);
+    const updates = {
+      name: body.name,
+      description: body.description ?? body.subtitle,
+      duration: body.duration,
+      price: body.price,
+      max_people: body.maxPeople,
+      objects_to_destroy: body.objectsToDestroy,
+      included: body.included,
+      image_url: body.image_url,
+      is_active: body.isActive,
+    };
+    const updatedRoom = await updateRoom(id, updates);
     
     if (!updatedRoom) {
       return NextResponse.json(
