@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { Lock, Eye, EyeOff, Shield, Crown } from 'lucide-react'
-import { useAuth, AdminUser } from '@/hooks/useAuth'
+import { useAuth } from '@/hooks/useAuth'
 
 export default function AdminLogin() {
   const [username, setUsername] = useState('')
@@ -18,36 +18,13 @@ export default function AdminLogin() {
     e.preventDefault()
     setLoading(true)
     setError('')
-
-    try {
-      // Vérification des identifiants via l'API
-      const response = await fetch('/api/admin/auth/login', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ username, password }),
-      })
-
-      const data = await response.json()
-
-      if (data.success && data.user) {
-        const userData: AdminUser = {
-          username: data.user.username,
-          role: data.user.role,
-          token: data.token
-        }
-        login(userData)
-        router.push('/admin')
-      } else {
-        setError(data.error || 'Identifiants incorrects')
-      }
-    } catch (error) {
-      console.error('Erreur lors de la connexion:', error)
-      setError('Erreur de connexion au serveur')
+    const result = await login({ username, password })
+    if (result.success) {
+      router.push('/admin')
+    } else {
+      setError(result.error || 'Identifiants incorrects')
+      setLoading(false)
     }
-
-    setLoading(false)
   }
 
   return (
