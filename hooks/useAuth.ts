@@ -1,15 +1,13 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 
-// Types pour les rôles d'administration
 export type AdminRole = 'admin' | 'super-admin'
 
 export interface AdminUser {
   username: string
   role: AdminRole
-  token: string
 }
 
 export function useAuth() {
@@ -18,111 +16,80 @@ export function useAuth() {
   const [loading, setLoading] = useState(true)
   const router = useRouter()
 
-  useEffect(() => {
-    // Vérifier le token d'authentification et récupérer les infos utilisateur
-    const token = sessionStorage.getItem('adminToken')
-    const userData = sessionStorage.getItem('adminUser')
-    
-    if (token && userData) {
-      try {
-        const parsedUser = JSON.parse(userData)
-        setUser(parsedUser)
-        setIsAuthenticated(true)
-      } catch (error) {
-        // Données corrompues, nettoyer
-        sessionStorage.removeItem('adminToken')
-        sessionStorage.removeItem('adminUser')
+  const checkAuthStatus = useCallback(async () => {
+    setLoading(true)
+    try {
+      const response = await fetch('/api/admin/auth/status')
+      if (response.ok) {
+        const data = await response.json()
+        if (data.isAuthenticated) {
+          setUser(data.user)
+          setIsAuthenticated(true)
+        } else {
+          setIsAuthenticated(false)
+          setUser(null)
+        }
+      } else {
         setIsAuthenticated(false)
         setUser(null)
       }
-    } else {
+    } catch (error) {
+      console.error('Erreur lors de la vérification du statut d\'authentification:', error)
       setIsAuthenticated(false)
       setUser(null)
+    } finally {
+      setLoading(false)
     }
-    setLoading(false)
   }, [])
 
-  /**
-   * Fonction de connexion avec gestion des rôles
-   * @param userData - Données de l'utilisateur connecté
-   */
-  const login = (userData: AdminUser) => {
-    sessionStorage.setItem('adminToken', userData.token)
-    sessionStorage.setItem('adminUser', JSON.stringify(userData))
-    setUser(userData)
-    setIsAuthenticated(true)
+  useEffect(() => {
+    checkAuthStatus()
+  }, [checkAuthStatus])
+
+  const login = async (credentials: {username: string, password: string}): Promise<{success: boolean, error?: string}> => {
+    try {
+      const response = await fetch('/api/admin/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(credentials),
+      });
+
+      const data = await response.json()
+      if (data.success) {
+        await checkAuthStatus()
+        return { success: true }
+      }
+      return { success: false, error: data.error }
+    } catch (error) {
+      return { success: false, error: 'Erreur de connexion au serveur' }
+    }
   }
 
-  /**
-   * Fonction de déconnexion
-   */
   const logout = async () => {
     try {
       await fetch('/api/admin/auth/logout', { method: 'POST' })
-    } catch (error) {
-      console.error('Erreur lors de la déconnexion admin:', error)
     } finally {
-      sessionStorage.removeItem('adminToken')
-      sessionStorage.removeItem('adminUser')
       setIsAuthenticated(false)
       setUser(null)
       router.push('/admin/login')
     }
   }
 
-  /**
-   * Vérification de l'authentification requise
-   * @returns true si authentifié, false sinon
-   */
-  const requireAuth = () => {
+  const requireAuth = useCallback(() => {
     if (!loading && !isAuthenticated) {
       router.push('/admin/login')
-      return false
     }
-    return true
-  }
+  }, [loading, isAuthenticated, router])
 
-  /**
-   * Vérification des droits super admin
-   * @returns true si l'utilisateur est super admin
-   */
-  const isSuperAdmin = () => {
-    return user?.role === 'super-admin'
-  }
+  const isSuperAdmin = () => user?.role === 'super-admin'
 
-  /**
-   * Vérification des droits admin
-   * @returns true si l'utilisateur est admin ou super admin
-   */
-  const isAdmin = () => {
-    return user?.role === 'admin' || user?.role === 'super-admin'
-  }
-
-  /**
-   * Vérification d'accès à une fonctionnalité
-   * @param requiredRole - Rôle minimum requis
-   * @returns true si l'utilisateur a les droits
-   */
+  const isAdmin = () => user?.role === 'admin' || user?.role === 'super-admin'
+  
   const hasRole = (requiredRole: AdminRole) => {
     if (!user) return false
-    
-    const roleHierarchy = {
-      'admin': 1,
-      'super-admin': 2
-    }
-    
+    const roleHierarchy = { 'admin': 1, 'super-admin': 2 }
     return roleHierarchy[user.role] >= roleHierarchy[requiredRole]
   }
 
-  return {
-    isAuthenticated,
-    user,
-    loading,
-    login,
-    logout,
-    requireAuth,
-    isSuperAdmin,
-    isAdmin,
-    hasRole
-  }
+  return { isAuthenticated, user, loading, login, logout, requireAuth, isSuperAdmin, isAdmin, hasRole }
 }

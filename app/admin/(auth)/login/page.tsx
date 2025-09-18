@@ -51,83 +51,77 @@ export default function AdminLogin() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-900 flex items-center justify-center p-4">
-      <div className="max-w-md w-full">
-        {/* Logo/Header */}
-        <div className="text-center mb-8">
-          <div className="mx-auto w-16 h-16 bg-kaki-600 rounded-full flex items-center justify-center mb-4">
-            <Lock className="w-8 h-8 text-white" />
+    <div className="flex items-center justify-center min-h-screen bg-gray-900">
+      <div className="w-full max-w-md p-8 space-y-8 bg-gray-800 rounded-lg shadow-lg border border-gray-700">
+        <div className="text-center">
+          <div className="flex justify-center mb-4">
+            <div className="p-3 bg-kaki-600 rounded-full">
+              <Lock className="w-8 h-8 text-white" />
+            </div>
           </div>
-          <h1 className="text-2xl font-bold text-white">Administration</h1>
-          <p className="text-gray-400 mt-2">Connexion au back-office</p>
+          <h1 className="text-3xl font-bold text-white">Administration</h1>
+          <p className="text-gray-400">Connexion au back-office</p>
         </div>
 
-        {/* Formulaire de connexion */}
-        <div className="bg-gray-800 rounded-lg p-6 border border-gray-700">
-          <form onSubmit={handleLogin} className="space-y-4">
-            {/* Nom d'utilisateur */}
-            <div>
-              <label htmlFor="username" className="block text-sm font-medium text-gray-300 mb-2">
-                Nom d'utilisateur
-              </label>
-              <input
-                type="text"
-                id="username"
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
-                className="w-full bg-gray-700 border border-gray-600 rounded-lg px-3 py-2 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-kaki-500 focus:border-transparent"
-                placeholder="admin"
-                required
-              />
-            </div>
+        <form onSubmit={handleLogin} className="space-y-6">
+          <div className="relative">
+            <input
+              type="text"
+              placeholder="Nom d'utilisateur"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              required
+              className="w-full px-4 py-3 text-lg text-white bg-gray-700 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-kaki-500"
+            />
+          </div>
 
-            {/* Mot de passe */}
-            <div>
-              <label htmlFor="password" className="block text-sm font-medium text-gray-300 mb-2">
-                Mot de passe
-              </label>
-              <div className="relative">
-                <input
-                  type={showPassword ? 'text' : 'password'}
-                  id="password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  className="w-full bg-gray-700 border border-gray-600 rounded-lg px-3 py-2 pr-10 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-kaki-500 focus:border-transparent"
-                  placeholder="••••••••"
-                  required
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-white"
-                >
-                  {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-                </button>
-              </div>
-            </div>
-
-            {/* Message d'erreur */}
-            {error && (
-              <div className="bg-red-900 border border-red-700 text-red-200 px-3 py-2 rounded-lg text-sm">
-                {error}
-              </div>
-            )}
-
-            {/* Bouton de connexion */}
+          <div className="relative">
+            <input
+              type={showPassword ? 'text' : 'password'}
+              placeholder="Mot de passe"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+              className="w-full px-4 py-3 text-lg text-white bg-gray-700 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-kaki-500"
+            />
             <button
-              type="submit"
-              disabled={loading}
-              className="w-full bg-kaki-600 hover:bg-kaki-700 disabled:bg-gray-600 text-white font-medium py-2 px-4 rounded-lg transition-colors duration-200 flex items-center justify-center"
+              type="button"
+              onClick={() => setShowPassword(!showPassword)}
+              className="absolute inset-y-0 right-0 px-4 text-gray-400 hover:text-white"
             >
-              {loading ? (
-                <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2"></div>
-              ) : (
-                <Lock className="w-4 h-4 mr-2" />
-              )}
-              {loading ? 'Connexion...' : 'Se connecter'}
+              {showPassword ? <EyeOff /> : <Eye />}
             </button>
-          </form>
+          </div>
 
+          {error && (
+            <div className="p-3 text-center text-white bg-red-500 rounded-lg">
+              {error}
+            </div>
+          )}
+
+          <button
+            type="submit"
+            disabled={loading}
+            className="w-full px-4 py-3 text-lg font-semibold text-white bg-kaki-600 rounded-lg hover:bg-kaki-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-kaki-500 disabled:opacity-50"
+          >
+            {loading ? 'Connexion en cours...' : 'Se connecter'}
+          </button>
+        </form>
+
+        <div className="text-center text-gray-500 text-sm">
+          <p>
+            Accès réservé aux utilisateurs autorisés.
+          </p>
+          <div className="flex items-center justify-center space-x-4 mt-2">
+            <div className="flex items-center space-x-1">
+              <Shield size={14} />
+              <span>Admin</span>
+            </div>
+            <div className="flex items-center space-x-1">
+              <Crown size={14} />
+              <span>Super Admin</span>
+            </div>
+          </div>
         </div>
       </div>
     </div>
