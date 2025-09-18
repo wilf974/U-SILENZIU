@@ -2,43 +2,68 @@ import { NextRequest, NextResponse } from 'next/server'
 import { getRoomByName } from '@/lib/database'
 
 /**
- * API route pour récupérer le prix d'une salle par son nom
- * GET /api/rooms/price?name=nom_de_la_salle
+ * API pour récupérer le prix d'une salle
+ * GET /api/rooms/price?name=NomDeLaSalle
  */
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url)
     const roomName = searchParams.get('name')
 
+    console.log('Récupération prix pour:', roomName)
+
     if (!roomName) {
       return NextResponse.json(
-        { error: 'Le nom de la salle est requis' },
+        { 
+          success: false,
+          error: 'Le paramètre name est requis' 
+        },
         { status: 400 }
       )
     }
 
-    // Récupérer la salle par son nom
+    // Récupérer les informations de la salle
     const room = await getRoomByName(roomName)
-
+    
     if (!room) {
       return NextResponse.json(
-        { error: 'Salle non trouvée' },
+        { 
+          success: false,
+          error: 'Salle non trouvée' 
+        },
         { status: 404 }
       )
     }
 
-    // Retourner le prix de la salle
+    if (!room.is_active) {
+      return NextResponse.json(
+        { 
+          success: false,
+          error: 'Salle non disponible' 
+        },
+        { status: 404 }
+      )
+    }
+
     return NextResponse.json({
-      name: room.name,
-      price: room.price,
-      duration: room.duration,
-      max_people: room.max_people
+      success: true,
+      data: {
+        roomName: room.name,
+        price: room.price,
+        duration: room.duration,
+        maxPeople: room.max_people,
+        description: room.description
+      }
     })
 
   } catch (error) {
-    console.error('Erreur lors de la récupération du prix de la salle:', error)
+    console.error('Erreur lors de la récupération du prix:', error)
     return NextResponse.json(
-      { error: 'Erreur interne du serveur' },
+      { 
+        success: false,
+        error: 'Erreur lors de la récupération du prix',
+        details: error instanceof Error ? error.message : 'Erreur inconnue'
+      },
       { status: 500 }
     )
   }
