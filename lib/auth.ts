@@ -5,10 +5,10 @@ const DEFAULT_JWT_EXPIRATION = '1h'
 export const ADMIN_TOKEN_COOKIE = 'admin_token'
 
 function getJwtSecret(): string {
-  const secret = process.env.JWT_SECRET || process.env.SESSION_SECRET
+  const secret = process.env.ADMIN_JWT_SECRET || process.env.JWT_SECRET || process.env.SESSION_SECRET
 
   if (!secret) {
-    throw new Error('JWT_SECRET (or SESSION_SECRET) is not defined')
+    throw new Error('ADMIN_JWT_SECRET (or JWT_SECRET or SESSION_SECRET) is not defined')
   }
 
   return secret
