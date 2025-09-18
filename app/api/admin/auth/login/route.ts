@@ -108,7 +108,7 @@ export async function POST(request: NextRequest) {
       name: ADMIN_TOKEN_COOKIE,
       value: token,
       httpOnly: true,
-      secure: false, // Désactivé pour permettre HTTP en production sur VPS
+      secure: process.env.NODE_ENV === 'production', // Sécurisé en production (HTTPS)
       sameSite: 'lax',
       maxAge: COOKIE_MAX_AGE_SECONDS,
       path: '/',
