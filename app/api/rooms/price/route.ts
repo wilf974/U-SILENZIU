@@ -47,13 +47,11 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json({
       success: true,
-      data: {
-        roomName: room.name,
-        price: room.price,
-        duration: room.duration,
-        maxPeople: room.max_people,
-        description: room.description
-      }
+      roomName: room.name,
+      price: room.price,
+      duration: room.duration,
+      maxPeople: room.max_people,
+      description: room.description
     })
 
   } catch (error) {

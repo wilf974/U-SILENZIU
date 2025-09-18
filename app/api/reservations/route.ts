@@ -58,8 +58,12 @@ export async function POST(request: NextRequest) {
     const reservationNumber = await generateReservationNumber()
     
     // Récupérer les informations de la salle et calculer le prix
+    console.log('Recherche de la salle:', body.roomName)
     const room = await getRoomByName(body.roomName)
+    console.log('Salle trouvée:', room)
+    
     if (!room) {
+      console.log('Salle non trouvée:', body.roomName)
       return NextResponse.json(
         { 
           success: false,
