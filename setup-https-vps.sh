@@ -2,8 +2,8 @@
 # Script pour configurer HTTPS avec Let's Encrypt sur le VPS
 
 # Variables à modifier selon ton domaine
-DOMAIN="ton-domaine.com"  # Remplace par ton domaine
-EMAIL="admin@ton-domaine.com"  # Remplace par ton email
+DOMAIN="rageroom.usilenziu.com"  # Le sous-domaine pour U SILENZIU
+EMAIL="admin@usilenziu.com"  # Ton email
 
 echo "🔒 Configuration HTTPS pour U SILENZIU"
 echo "========================================="
@@ -52,7 +52,7 @@ cat > nginx/conf.d/default.conf << EOF
 # Configuration pour $DOMAIN
 server {
     listen 80;
-    server_name $DOMAIN www.$DOMAIN;
+    server_name $DOMAIN;
     
     # Redirection HTTPS
     return 301 https://\$server_name\$request_uri;
@@ -60,7 +60,7 @@ server {
 
 server {
     listen 443 ssl http2;
-    server_name $DOMAIN www.$DOMAIN;
+    server_name $DOMAIN;
     
     # Certificats SSL
     ssl_certificate /etc/nginx/ssl/live/$DOMAIN/fullchain.pem;
@@ -118,8 +118,7 @@ certbot certonly --standalone \
     --email $EMAIL \
     --agree-tos \
     --no-eff-email \
-    -d $DOMAIN \
-    -d www.$DOMAIN
+    -d $DOMAIN
 
 # 4. Copier les certificats pour Docker
 echo "📋 Copie des certificats..."
@@ -218,10 +217,9 @@ EOF
 echo "✅ Configuration HTTPS terminée !"
 echo ""
 echo "📝 Instructions finales :"
-echo "1. Modifie DOMAIN et EMAIL dans ce script"
-echo "2. Assure-toi que ton domaine pointe vers cette IP"
-echo "3. Exécute : chmod +x setup-https-vps.sh"
-echo "4. Exécute : ./setup-https-vps.sh"
-echo "5. Redémarre : docker compose -f docker-compose.prod.yml up -d"
+echo "1. Assure-toi que rageroom.usilenziu.com pointe vers cette IP"
+echo "2. Exécute : chmod +x setup-https-vps.sh"
+echo "3. Exécute : ./setup-https-vps.sh"
+echo "4. Redémarre : docker compose -f docker-compose.prod.yml up -d"
 echo ""
-echo "🌐 Ton site sera accessible en HTTPS sur : https://$DOMAIN"
+echo "🌐 Ton site sera accessible en HTTPS sur : https://rageroom.usilenziu.com"
