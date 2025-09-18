@@ -413,7 +413,7 @@ export async function createRoom(roomData: Omit<Room, 'id' | 'created_at' | 'upd
     
     const result = await client.query(
       `INSERT INTO rooms (name, description, price, duration, max_people, objects_to_destroy, included, image_url, is_active)
-       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
+       VALUES ($1, $2, $3, $4, $5, $6::text[], $7::text[], $8, $9)
        RETURNING *`,
       [
         roomData.name,
@@ -421,8 +421,8 @@ export async function createRoom(roomData: Omit<Room, 'id' | 'created_at' | 'upd
         price,
         roomData.duration,
         roomData.max_people,
-        JSON.stringify(roomData.objects_to_destroy),
-        JSON.stringify(roomData.included),
+        (roomData.objects_to_destroy ?? []) as unknown as string[],
+        (roomData.included ?? []) as unknown as string[],
         roomData.image_url || null,
         roomData.is_active
       ]
@@ -504,12 +504,12 @@ export async function updateRoom(id: string, roomData: Partial<Room>): Promise<R
       values.push(roomData.max_people);
     }
     if (roomData.objects_to_destroy !== undefined) {
-      fields.push(`objects_to_destroy = $${paramCount++}`);
-      values.push(JSON.stringify(roomData.objects_to_destroy));
+      fields.push(`objects_to_destroy = $${paramCount++}::text[]`);
+      values.push((roomData.objects_to_destroy ?? []) as unknown as string[]);
     }
     if (roomData.included !== undefined) {
-      fields.push(`included = $${paramCount++}`);
-      values.push(JSON.stringify(roomData.included));
+      fields.push(`included = $${paramCount++}::text[]`);
+      values.push((roomData.included ?? []) as unknown as string[]);
     }
     if (roomData.image_url !== undefined) {
       fields.push(`image_url = $${paramCount++}`);
