@@ -86,7 +86,7 @@ export async function POST(request: NextRequest) {
       duration: body.duration,
       number_of_people: body.numberOfPeople, // Mapping numberOfPeople -> number_of_people
       room_name: body.roomName, // Mapping roomName -> room_name
-      status: 'pending',
+      status: 'pending' as const, // Forcer le type littéral
       amount: totalAmount,
       notes: body.specialRequests || ''
     }
