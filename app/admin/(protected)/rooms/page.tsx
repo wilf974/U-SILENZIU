@@ -50,10 +50,11 @@ export default function AdminRoomsPage() {
   };
 
   useEffect(() => {
-    if (requireAuth()) {
+    requireAuth();
+    if (isAuthenticated) {
       loadRooms();
     }
-  }, [isAuthenticated]);
+  }, [isAuthenticated, requireAuth]);
 
   // Réinitialiser le formulaire
   const resetForm = () => {

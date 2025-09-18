@@ -74,10 +74,11 @@ export default function AdminDashboard() {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    if (requireAuth()) {
+    requireAuth()
+    if (isAuthenticated) {
       fetchDashboardData()
     }
-  }, [isAuthenticated])
+  }, [isAuthenticated, requireAuth])
 
   const fetchDashboardData = async () => {
     try {
