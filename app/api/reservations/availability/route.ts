@@ -73,7 +73,7 @@ export async function GET(request: NextRequest) {
     // Marquer les créneaux occupés
     reservationsInPeriod.forEach(reservation => {
       const dateStr = reservation.date
-      const timeSlot = reservation.time || reservation.time_slot
+      const timeSlot = reservation.time
       
       if (availability[dateStr] && timeSlot) {
         availability[dateStr][timeSlot] = false
