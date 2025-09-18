@@ -16,7 +16,14 @@ services:
       - "5432:5432"
     volumes:
       - postgres_prod_data:/var/lib/postgresql/data
-      - ./init-db.sql:/docker-entrypoint-initdb.d/init-db.sql
+      # Scripts d'init pour une base neuve (alignés sur DEV)
+      - ./init-db.sql:/docker-entrypoint-initdb.d/00-init-db.sql
+      - ./create-header-config-table.sql:/docker-entrypoint-initdb.d/10-create-header-config.sql
+      - ./create-footer-config-table.sql:/docker-entrypoint-initdb.d/11-create-footer-config.sql
+      - ./create-homepage-sections-table.sql:/docker-entrypoint-initdb.d/12-create-homepage-sections.sql
+      - ./create-global-sections-table.sql:/docker-entrypoint-initdb.d/13-create-global-sections.sql
+      - ./create-homepage-config-table.sql:/docker-entrypoint-initdb.d/14-create-homepage-config.sql
+      - ./create-admin-users-table.sql:/docker-entrypoint-initdb.d/20-create-admin-users.sql
     restart: unless-stopped
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U usilenzio_user -d usilenzio"]
