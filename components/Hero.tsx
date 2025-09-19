@@ -16,8 +16,14 @@ const Hero = () => {
   // if (!heroSection) return null
 
   // Données par défaut si certains sous-champs manquent
-  const title = heroSection?.title || 'Libérez votre STRESS'
-  const subtitle = heroSection?.subtitle || "Venez vous défouler en toute sécurité chez U Silenziu. Cassez, détruisez et libérez vos tensions dans nos salles spécialement conçues pour évacuer le stress."
+  const rawTitle = (heroSection as any)?.title
+  const rawSubtitle = (heroSection as any)?.subtitle
+  const title = typeof rawTitle === 'string' && rawTitle.trim().length > 0
+    ? rawTitle
+    : 'Libérez votre STRESS'
+  const subtitle = typeof rawSubtitle === 'string' && rawSubtitle.trim().length > 0
+    ? rawSubtitle
+    : "Venez vous défouler en toute sécurité chez U Silenziu. Cassez, détruisez et libérez vos tensions dans nos salles spécialement conçues pour évacuer le stress."
   const features = (heroContent?.features) || [
     { icon: 'Shield', title: '100% Sécurisé', description: 'Équipement complet fourni' },
     { icon: 'Zap', title: 'Décompression', description: 'Évacuez votre stress' },

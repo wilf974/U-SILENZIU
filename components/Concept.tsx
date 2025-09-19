@@ -13,8 +13,14 @@ const Concept = () => {
   if (!conceptSection) return null
 
   // Données par défaut si certains sous-champs manquent
-  const title = conceptSection.title || 'Le Concept'
-  const subtitle = conceptSection.subtitle || "U Silenziu vous offre une expérience unique pour libérer votre stress et vos émotions négatives. Nous mettons à votre disposition un environnement sûr et contrôlé pour évacuer vos tensions."
+  const rawTitle = (conceptSection as any)?.title
+  const rawSubtitle = (conceptSection as any)?.subtitle
+  const title = typeof rawTitle === 'string' && rawTitle.trim().length > 0
+    ? rawTitle
+    : 'Le Concept'
+  const subtitle = typeof rawSubtitle === 'string' && rawSubtitle.trim().length > 0
+    ? rawSubtitle
+    : "U Silenziu vous offre une expérience unique pour libérer votre stress et vos émotions négatives. Nous mettons à votre disposition un environnement sûr et contrôlé pour évacuer vos tensions."
   const features = conceptContent?.features || [
     { icon: 'Target', title: 'Environnement Sécurisé', description: "Un espace contrôlé où vous pouvez casser et briser des objets en toute sécurité, sans avoir à nettoyer après." },
     { icon: 'Users', title: 'Pour Tous', description: "Que vous ayez passé une mauvaise journée ou envie de vous défouler entre amis, notre espace est fait pour vous." },
