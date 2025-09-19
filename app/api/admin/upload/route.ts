@@ -50,7 +50,7 @@ export async function POST(request: NextRequest) {
     const buffer = Buffer.from(bytes);
     await fs.writeFile(targetPath, buffer);
 
-    // Construire l'URL publique (servie par Next statiquement)
+    // Construire l'URL publique (servie par Next statiquement depuis /public)
     const publicUrl = `/uploads/rooms/${safeName}`;
 
     return NextResponse.json({

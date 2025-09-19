@@ -53,3 +53,5 @@ Write-Host "- Redémarrer un service: docker compose -f docker-compose.dev.yml r
 Write-Host "- Arrêter: docker compose -f docker-compose.dev.yml down" -ForegroundColor White
 
 Write-Host "`n✨ Les erreurs 500 devraient être résolues !" -ForegroundColor Green
+
+

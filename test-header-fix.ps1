@@ -78,3 +78,5 @@ Write-Host "✅ L'application a été redémarrée" -ForegroundColor Green
 
 Write-Host "`n📝 Note:" -ForegroundColor Cyan
 Write-Host "Si vous voyez encore du JSON brut sur le site, videz le cache du navigateur (Ctrl+F5)" -ForegroundColor White
+
+

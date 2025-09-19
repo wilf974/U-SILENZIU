@@ -26,14 +26,29 @@ services:
     networks:
       - u-silenziu-dev-network
 
+  # Nginx pour DEV (HTTP seulement)
+  nginx-dev:
+    image: nginx:alpine
+    container_name: u-silenziu-nginx-dev
+    ports:
+      - "8080:80" # Port 8080 pour éviter conflit avec autres services locaux
+    volumes:
+      - ./nginx/dev/default.conf:/etc/nginx/conf.d/default.conf:ro
+      - ./public:/app/public:ro # Servir les fichiers statiques directement
+    networks:
+      - u-silenziu-dev-network
+    depends_on:
+      - u-silenziu
+
   # Application Next.js - Configuration DEV
   u-silenziu:
     build: 
       context: .
       dockerfile: Dockerfile
     container_name: u-silenziu-app-dev
-    ports:
-      - "3000:3000"
+    # Plus d'exposition directe du port 3000, on passe par Nginx
+    expose:
+      - "3000"
     environment:
       - NODE_ENV=development
       - NEXT_TELEMETRY_DISABLED=1

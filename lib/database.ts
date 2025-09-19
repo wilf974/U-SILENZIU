@@ -602,7 +602,7 @@ export async function createReservation(reservationData: Omit<Reservation, 'id' 
   const client = await getClient();
   try {
     const result = await client.query(
-      `INSERT INTO reservations (reservation_number, first_name, last_name, email, phone, room_name, date, time_slot, duration, number_of_people, status, total_price, notes)
+      `INSERT INTO reservations (reservation_number, first_name, last_name, email, phone, room_name, date, time, duration, number_of_people, status, amount, notes)
        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)
        RETURNING *`,
       [
@@ -613,11 +613,11 @@ export async function createReservation(reservationData: Omit<Reservation, 'id' 
         reservationData.phone,
         reservationData.room_name,
         reservationData.date,
-        reservationData.time, // Sera inséré dans time_slot
+        reservationData.time, // Sera inséré dans time
         reservationData.duration,
         reservationData.number_of_people,
         reservationData.status,
-        reservationData.amount, // Sera inséré dans total_price
+        reservationData.amount, // Sera inséré dans amount
         reservationData.notes
       ]
     );
