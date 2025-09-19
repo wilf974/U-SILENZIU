@@ -5,6 +5,7 @@ import RoomsDisplayWebSocket from './RoomsDisplayWebSocket'
 import RoomsSimple from './RoomsSimple'
 import RoomsForce from './RoomsForce'
 import RoomsDebug from './RoomsDebug'
+import TestSalles from './TestSalles'
 import { useHomepageSections } from '@/lib/hooks/useHomepageSections'
 
 /**
@@ -32,7 +33,8 @@ export default function Salles() {
           </p>
         </div>
 
-              {/* Liste des salles - Version DEBUG ultra-simple */}
+              {/* TEST ULTRA-SIMPLE */}
+              <TestSalles />
               <RoomsDebug />
       </div>
     </section>
