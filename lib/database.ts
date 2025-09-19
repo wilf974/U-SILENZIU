@@ -2,7 +2,7 @@ import { Pool, PoolClient } from 'pg';
 
 // Configuration de la base de données PostgreSQL
 const pool = new Pool({
-  connectionString: process.env.DATABASE_URL || 'postgresql://usilenzio_user:usilenzio_password_2024@localhost:5432/usilenzio',
+  connectionString: process.env.DATABASE_URL || 'postgresql://usilenzio_user:usilenzio_password_2024@postgres:5432/usilenzio',
   max: 20,
   idleTimeoutMillis: 30000,
   connectionTimeoutMillis: 2000,

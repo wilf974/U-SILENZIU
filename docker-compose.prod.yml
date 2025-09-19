@@ -45,9 +45,13 @@ services:
     environment:
       - NODE_ENV=production
       - NEXT_TELEMETRY_DISABLED=1
+      # Configuration URL publique (IMPORTANT pour HTTPS)
+      - NEXT_PUBLIC_APP_URL=https://rageroom.usilenziu.com
+      - NEXT_PUBLIC_API_URL=https://rageroom.usilenziu.com/api
       # Secrets prod (changez ces valeurs pour le VPS !)
-      - SESSION_SECRET=prod_session_secret_change_me
-      - JWT_SECRET=prod_jwt_secret_change_me
+      - SESSION_SECRET=prod_session_secret_change_me_secure_2025
+      - JWT_SECRET=prod_jwt_secret_change_me_secure_2025
+      - ADMIN_JWT_SECRET=super_secret_admin_jwt_key_2024_usilenzio_very_long_and_secure
       - JWT_EXPIRES_IN=1h
       # Configuration PostgreSQL PROD (même base que dev pour compatibilité)
       - DATABASE_URL=postgresql://usilenzio_user:usilenzio_password_2024@postgres:5432/usilenzio
@@ -56,6 +60,17 @@ services:
       - POSTGRES_DB=usilenzio
       - POSTGRES_USER=usilenzio_user
       - POSTGRES_PASSWORD=usilenzio_password_2024
+      # Configuration SMTP
+      - SMTP_HOST=smtp.gmail.com
+      - SMTP_PORT=587
+      - SMTP_SECURE=false
+      - SMTP_USER=
+      - SMTP_PASS=
+      - SMTP_FROM=noreply@rageroom.usilenziu.com
+      # Configuration uploads
+      - UPLOAD_DIR=/app/public/uploads
+      - UPLOAD_MAX_SIZE=10485760
+      - UPLOAD_ALLOWED_TYPES=image/jpeg,image/png,image/gif,image/webp
     restart: unless-stopped
     depends_on:
       postgres:

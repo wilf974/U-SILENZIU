@@ -1,6 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getFooterConfig } from '@/lib/database'
 
+// Force le rendu dynamique pour éviter les erreurs de prérendu
+export const dynamic = 'force-dynamic'
+
 /**
  * GET /api/footer-config
  * Récupère la configuration du pied de page (API publique)

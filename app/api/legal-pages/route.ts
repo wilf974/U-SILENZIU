@@ -1,6 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getPublishedLegalPages } from '@/lib/database'
 
+// Force le rendu dynamique pour éviter les erreurs de prérendu
+export const dynamic = 'force-dynamic'
+
 /**
  * Route publique pour récupérer toutes les pages légales publiées
  * Utilisée par le footer pour afficher les liens légaux

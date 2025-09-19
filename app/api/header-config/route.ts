@@ -1,6 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getHeaderConfig } from '@/lib/database'
 
+// Force le rendu dynamique pour éviter les erreurs de prérendu
+export const dynamic = 'force-dynamic'
+
 /**
  * API Route pour récupérer la configuration de l'en-tête (publique)
  * GET /api/header-config
