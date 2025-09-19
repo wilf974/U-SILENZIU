@@ -57,14 +57,24 @@ export function useHomepageSections() {
 
   const getSectionContent = (sectionKey: string): any => {
     const section = getSectionByKey(sectionKey)
-    if (!section || !section.content) return null
-    
-    try {
-      return JSON.parse(section.content)
-    } catch (err) {
-      console.error(`Erreur de parsing JSON pour la section ${sectionKey}:`, err)
-      return null
+    if (!section || section.content === undefined || section.content === null) return null
+
+    // Si l'API retourne déjà un objet (content en JSONB côté DB), ne pas reparser
+    if (typeof (section as any).content === 'object') {
+      return (section as any).content
     }
+
+    // Sinon tenter de parser si c'est une chaîne JSON
+    if (typeof (section as any).content === 'string') {
+      try {
+        return JSON.parse((section as any).content as unknown as string)
+      } catch (err) {
+        console.error(`Erreur de parsing JSON pour la section ${sectionKey}:`, err)
+        return null
+      }
+    }
+
+    return null
   }
 
   return {
