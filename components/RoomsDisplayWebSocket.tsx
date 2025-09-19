@@ -36,6 +36,8 @@ export default function RoomsDisplayWebSocket() {
   const fetchRooms = async () => {
     try {
       setLoading(true)
+      console.log('🔄 Chargement des salles...')
+      
       const response = await fetch('/api/rooms', {
         cache: 'no-store',
         headers: {
@@ -45,14 +47,24 @@ export default function RoomsDisplayWebSocket() {
         }
       })
       
+      console.log('📡 Réponse API rooms:', response.status, response.statusText)
+      
       if (response.ok) {
         const result = await response.json()
+        console.log('📦 Données reçues:', result)
+        
         const roomsData = result.data || result
+        console.log('🏠 Salles extraites:', roomsData)
+        
         setRooms(roomsData)
         setLastUpdate(new Date().toLocaleTimeString('fr-FR'))
+      } else {
+        console.error('❌ Erreur API rooms:', response.status, response.statusText)
+        const errorText = await response.text()
+        console.error('❌ Détails erreur:', errorText)
       }
     } catch (error) {
-      console.error('Erreur lors du chargement des salles:', error)
+      console.error('❌ Erreur lors du chargement des salles:', error)
     } finally {
       setLoading(false)
     }

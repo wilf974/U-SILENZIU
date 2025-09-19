@@ -11,8 +11,9 @@ export default function Salles() {
   const { getSectionByKey, loading } = useHomepageSections()
   const section = getSectionByKey('rooms')
 
-  if (loading) return null
-  if (!section) return null
+  // Afficher toujours les salles, même si la section n'est pas configurée
+  // if (loading) return null
+  // if (!section) return null
 
   return (
     <section id="salles" className="section-container bg-black py-20">
