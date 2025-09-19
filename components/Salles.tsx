@@ -4,6 +4,7 @@ import React from 'react'
 import RoomsDisplayWebSocket from './RoomsDisplayWebSocket'
 import RoomsSimple from './RoomsSimple'
 import RoomsForce from './RoomsForce'
+import RoomsDebug from './RoomsDebug'
 import { useHomepageSections } from '@/lib/hooks/useHomepageSections'
 
 /**
@@ -31,8 +32,8 @@ export default function Salles() {
           </p>
         </div>
 
-              {/* Liste des salles - Version FORCÉE avec debug */}
-              <RoomsForce />
+              {/* Liste des salles - Version DEBUG ultra-simple */}
+              <RoomsDebug />
       </div>
     </section>
   )
