@@ -1,11 +1,11 @@
 'use client'
 
 import React from 'react'
-import RoomsList from './RoomsList'
+import RoomsDisplay from './RoomsDisplay'
 import { useHomepageSections } from '@/lib/hooks/useHomepageSections'
 
 /**
- * Affiche la section "Salles" uniquement si la section homepage 'salles' est active.
+ * Affiche la section "Salles" uniquement si la section homepage 'rooms' est active.
  */
 export default function Salles() {
   const { getSectionByKey, loading } = useHomepageSections()
@@ -28,8 +28,8 @@ export default function Salles() {
           </p>
         </div>
 
-        {/* Liste des salles avec synchronisation dynamique */}
-        <RoomsList />
+        {/* Liste des salles avec composant simplifié */}
+        <RoomsDisplay />
       </div>
     </section>
   )
