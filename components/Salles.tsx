@@ -9,7 +9,7 @@ import { useHomepageSections } from '@/lib/hooks/useHomepageSections'
  */
 export default function Salles() {
   const { getSectionByKey, loading } = useHomepageSections()
-  const section = getSectionByKey('salles')
+  const section = getSectionByKey('rooms')
 
   if (loading) return null
   if (!section) return null
