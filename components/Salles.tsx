@@ -2,6 +2,7 @@
 
 import React from 'react'
 import RoomsDisplayWebSocket from './RoomsDisplayWebSocket'
+import RoomsSimple from './RoomsSimple'
 import { useHomepageSections } from '@/lib/hooks/useHomepageSections'
 
 /**
@@ -29,8 +30,8 @@ export default function Salles() {
           </p>
         </div>
 
-              {/* Liste des salles avec WebSocket temps réel */}
-              <RoomsDisplayWebSocket />
+              {/* Liste des salles - Version simple et fiable */}
+              <RoomsSimple />
       </div>
     </section>
   )
