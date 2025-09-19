@@ -9,6 +9,7 @@ import FAQ from './FAQ'
 import Contact from './Contact'
 import VideoSection from './VideoSection'
 import DynamicSection from './DynamicSection'
+import CommentCaMarche from './CommentCaMarche'
 
 interface HomepageSection {
   id: string
@@ -96,6 +97,8 @@ export default function HomepageSections() {
         return <Process key={section.id} />
       case 'faq':
         return <FAQ key={section.id} />
+      case 'comment-ca-marche':
+        return <CommentCaMarche key={section.id} />
       case 'contact':
         return <Contact key={section.id} />
       case 'video':
