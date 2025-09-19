@@ -18,6 +18,11 @@ export interface HomepageSection {
   updated_at: string
 }
 
+const isLikelyJsonString = (value: string) => {
+  const trimmed = value.trim()
+  return trimmed.startsWith('{') || trimmed.startsWith('[')
+}
+
 export function useHomepageSections() {
   const [sections, setSections] = useState<HomepageSection[]>([])
   const [loading, setLoading] = useState(true)
@@ -59,17 +64,23 @@ export function useHomepageSections() {
     const section = getSectionByKey(sectionKey)
     if (!section || section.content === undefined || section.content === null) return null
 
+    const rawContent = (section as any).content
+
     // Si l'API retourne déjà un objet (content en JSONB côté DB), ne pas reparser
-    if (typeof (section as any).content === 'object') {
-      return (section as any).content
+    if (typeof rawContent === 'object' && rawContent !== null) {
+      return rawContent
     }
 
-    // Sinon tenter de parser si c'est une chaîne JSON
-    if (typeof (section as any).content === 'string') {
+    if (typeof rawContent === 'string') {
+      const trimmed = rawContent.trim()
+      if (!isLikelyJsonString(trimmed)) {
+        return null
+      }
+
       try {
-        return JSON.parse((section as any).content as unknown as string)
+        return JSON.parse(trimmed)
       } catch (err) {
-        console.error(`Erreur de parsing JSON pour la section ${sectionKey}:`, err)
+        console.warn(`Contenu JSON invalide pour la section ${sectionKey}:`, err)
         return null
       }
     }
@@ -86,3 +97,4 @@ export function useHomepageSections() {
     refetch: fetchSections
   }
 }
+
