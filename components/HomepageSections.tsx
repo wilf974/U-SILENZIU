@@ -92,6 +92,7 @@ export default function HomepageSections() {
       case 'concept':
         return <Concept key={section.id} />
       case 'salles':
+      case 'rooms':
         return <Salles key={section.id} />
       case 'process':
         return <Process key={section.id} />
