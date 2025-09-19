@@ -3,7 +3,7 @@ import { getAllReservations, getAllRooms } from '@/lib/database'
 import { Pool } from 'pg'
 
 const pool = new Pool({
-  connectionString: process.env.DATABASE_URL || 'postgresql://usilenzio_user:usilenzio_password_2024@localhost:5432/usilenzio',
+  connectionString: process.env.DATABASE_URL || 'postgresql://usilenzio_user:usilenzio_password_2024@postgres:5432/usilenzio',
 })
 
 // Fonction pour vérifier la configuration SMTP
