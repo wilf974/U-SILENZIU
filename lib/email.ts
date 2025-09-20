@@ -44,13 +44,17 @@ interface ReservationEmailData {
  */
 export async function sendReservationConfirmationEmail(data: ReservationEmailData): Promise<boolean> {
   try {
-    const transporter = await createTransporter()
+    // Vérifier la config SMTP en base de données d'abord
+    const smtpConfig = await getSmtpConfigDecrypted()
     
-    // Vérifier que les variables d'environnement sont configurées
-    if (!process.env.SMTP_USER || !process.env.SMTP_PASS) {
-      console.warn('Configuration SMTP manquante, email non envoyé')
+    if (!smtpConfig || !smtpConfig.is_active) {
+      console.warn('Configuration SMTP manquante ou inactive, email non envoyé')
       return false
     }
+
+    console.log('Configuration SMTP trouvée - initialisation du transporteur')
+    const transporter = await createTransporter()
+    console.log('Configuration SMTP initialisée avec succès')
 
     // Template HTML pour l'email
     const htmlTemplate = `
@@ -211,19 +215,23 @@ Tél: 05 59 12 34 56 | Email: contact@usilenziu.com
     `
 
     const mailOptions = {
-      from: `"U Silenziu" <${process.env.SMTP_USER}>`,
+      from: `"${smtpConfig.from_name || 'U Silenziu'}" <${smtpConfig.from_email}>`,
       to: data.customerEmail,
       subject: `Confirmation de réservation ${data.reservationNumber} - U Silenziu`,
       text: textTemplate,
       html: htmlTemplate,
     }
 
-    await transporter.sendMail(mailOptions)
-    console.log(`Email de confirmation envoyé à ${data.customerEmail} pour la réservation ${data.reservationNumber}`)
+    console.log(`Envoi d'email à: ${data.customerEmail}`)
+
+    const result = await transporter.sendMail(mailOptions)
+    console.log(`Email envoyé avec succès: ${result.messageId}`)
+    console.log(`Email envoyé avec succès à: ${data.customerEmail} Message ID: ${result.messageId}`)
     return true
 
   } catch (error) {
     console.error('Erreur lors de l\'envoi de l\'email de confirmation:', error)
+    console.error('Détails de l\'erreur:', error.message)
     return false
   }
 }
