@@ -185,8 +185,8 @@ export interface HomepageConfigItem {
 }
 
 export interface HomepageConfig {
-  main_title: string;
-  main_description: string;
+  site_title: string;
+  site_description: string;
   site_name: string;
   contact_email: string;
   contact_phone: string;

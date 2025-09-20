@@ -60,8 +60,8 @@ interface HomepageSection {
 }
 
 interface HomepageConfig {
-  main_title: string
-  main_description: string
+  site_title: string
+  site_description: string
   site_name: string
   contact_email: string
   contact_phone: string
@@ -441,8 +441,8 @@ const NewSectionEditor = ({ onSave, onCancel }: { onSave: (section: any) => void
 // Éditeur pour la configuration générale de la page d'accueil
 const HomepageConfigEditor = () => {
   const [config, setConfig] = useState<HomepageConfig>({
-    main_title: '',
-    main_description: '',
+    site_title: '',
+    site_description: '',
     site_name: '',
     contact_email: '',
     contact_phone: '',
@@ -586,12 +586,12 @@ const HomepageConfigEditor = () => {
             {isEditing ? (
               <input
                 type="text"
-                value={config.main_title}
-                onChange={(e) => setConfig({...config, main_title: e.target.value})}
+                value={config.site_title}
+                onChange={(e) => setConfig({...config, site_title: e.target.value})}
                 className="w-full px-3 py-2 bg-gray-800 border border-gray-600 rounded-lg text-white focus:border-kaki-500 focus:outline-none"
               />
             ) : (
-              <p className="text-white">{config.main_title}</p>
+              <p className="text-white">{config.site_title}</p>
             )}
           </div>
 
@@ -601,13 +601,13 @@ const HomepageConfigEditor = () => {
             </label>
             {isEditing ? (
               <textarea
-                value={config.main_description}
-                onChange={(e) => setConfig({...config, main_description: e.target.value})}
+                value={config.site_description}
+                onChange={(e) => setConfig({...config, site_description: e.target.value})}
                 rows={3}
                 className="w-full px-3 py-2 bg-gray-800 border border-gray-600 rounded-lg text-white focus:border-kaki-500 focus:outline-none"
               />
             ) : (
-              <p className="text-gray-300">{config.main_description}</p>
+              <p className="text-gray-300">{config.site_description}</p>
             )}
           </div>
 
