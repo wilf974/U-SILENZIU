@@ -93,8 +93,8 @@ const ReservationForm = () => {
 
       const result = await response.json()
       console.log('Réponse API complète:', result)
-      console.log('Numéro de réservation extrait:', result.reservation_number)
-      return result.reservation_number
+      console.log('Numéro de réservation extrait:', result.data?.reservationNumber)
+      return result.data?.reservationNumber || 'N/A'
     } catch (error) {
       console.error('Erreur:', error)
       throw error

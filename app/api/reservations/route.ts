@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createReservation, generateReservationNumber, getRoomByName } from '@/lib/database'
+import { sendReservationConfirmationEmail } from '@/lib/email'
 
 /**
  * API Route publique pour les réservations clients
@@ -80,6 +81,7 @@ export async function POST(request: NextRequest) {
     
     // Créer la réservation avec les bons noms de champs (correspondant à la structure DB)
     const reservationData = {
+      reservation_number: reservationNumber,
       customer_name: `${body.firstName} ${body.lastName}`,
       customer_email: body.email,
       customer_phone: body.phone,
@@ -99,6 +101,23 @@ export async function POST(request: NextRequest) {
     const reservation = await createReservation(reservationData)
 
     console.log('Réservation créée:', reservation)
+
+    // Envoyer l'email de confirmation (en arrière-plan, ne pas bloquer la réponse)
+    sendReservationConfirmationEmail({
+      reservationNumber: reservation.reservation_number,
+      customerName: `${body.firstName} ${body.lastName}`,
+      customerEmail: body.email,
+      customerPhone: body.phone,
+      roomName: body.roomName,
+      date: body.date,
+      timeSlot: body.timeSlot,
+      duration: body.duration,
+      participants: body.numberOfPeople,
+      amount: totalAmount,
+      specialRequests: body.specialRequests || ''
+    }).catch(error => {
+      console.error('Erreur lors de l\'envoi de l\'email de confirmation:', error)
+    })
 
     return NextResponse.json({
       success: true,
