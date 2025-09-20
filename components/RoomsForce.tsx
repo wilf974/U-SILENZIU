@@ -200,7 +200,7 @@ export default function RoomsForce() {
                     <div className="space-y-2">
                       <h4 className="text-sm font-semibold text-kaki-400">Objets à détruire :</h4>
                       <div className="flex flex-wrap gap-1">
-                        {room.objects_to_destroy.map((object, idx) => (
+                        {room.objects_to_destroy.map((object: string, idx: number) => (
                           <span 
                             key={idx}
                             className="px-2 py-1 bg-kaki-900/30 text-kaki-300 text-xs rounded"
@@ -217,7 +217,7 @@ export default function RoomsForce() {
                     <div className="space-y-2">
                       <h4 className="text-sm font-semibold text-green-400">Inclus :</h4>
                       <div className="space-y-1">
-                        {room.included.map((item, idx) => (
+                        {room.included.map((item: string, idx: number) => (
                           <div key={idx} className="flex items-center gap-2 text-sm text-gray-300">
                             <Check className="w-3 h-3 text-green-500" />
                             <span>{item}</span>
