@@ -78,21 +78,19 @@ export async function POST(request: NextRequest) {
     
     console.log(`Calcul prix: ${room.price} × ${body.numberOfPeople} = ${totalAmount}`)
     
-    // Créer la réservation avec les bons noms de champs
+    // Créer la réservation avec les bons noms de champs (correspondant à la structure DB)
     const reservationData = {
-      reservation_number: reservationNumber,
-      first_name: body.firstName,
-      last_name: body.lastName,
-      email: body.email,
-      phone: body.phone,
+      customer_name: `${body.firstName} ${body.lastName}`,
+      customer_email: body.email,
+      customer_phone: body.phone,
+      room_name: body.roomName,
       date: body.date,
-      time: body.timeSlot, // Mapping timeSlot -> time
+      time_slot: body.timeSlot,
       duration: body.duration,
-      number_of_people: body.numberOfPeople, // Mapping numberOfPeople -> number_of_people
-      room_name: body.roomName, // Mapping roomName -> room_name
-      status: 'pending' as const, // Forcer le type littéral
+      participants: body.numberOfPeople,
       amount: totalAmount,
-      notes: body.specialRequests || ''
+      status: 'pending' as const,
+      special_requests: body.specialRequests || ''
     }
     
     console.log('Données pour createReservation:', reservationData)
@@ -106,7 +104,6 @@ export async function POST(request: NextRequest) {
       success: true,
       data: {
         id: reservation.id,
-        reservationNumber: reservation.reservation_number,
         amount: totalAmount,
         status: 'pending',
         room: room.name,

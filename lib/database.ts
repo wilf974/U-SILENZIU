@@ -604,27 +604,25 @@ export async function getReservationById(id: string): Promise<Reservation | null
   }
 }
 
-export async function createReservation(reservationData: Omit<Reservation, 'id' | 'created_at' | 'updated_at'>): Promise<Reservation> {
+export async function createReservation(reservationData: any): Promise<any> {
   const client = await getClient();
   try {
     const result = await client.query(
-      `INSERT INTO reservations (reservation_number, first_name, last_name, email, phone, room_name, date, time, duration, number_of_people, status, amount, notes)
-       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)
+      `INSERT INTO reservations (customer_name, customer_email, customer_phone, room_name, date, time_slot, duration, participants, status, amount, special_requests)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
        RETURNING *`,
       [
-        reservationData.reservation_number,
-        reservationData.first_name,
-        reservationData.last_name,
-        reservationData.email,
-        reservationData.phone,
+        reservationData.customer_name,
+        reservationData.customer_email,
+        reservationData.customer_phone,
         reservationData.room_name,
         reservationData.date,
-        reservationData.time, // Sera inséré dans time
+        reservationData.time_slot,
         reservationData.duration,
-        reservationData.number_of_people,
+        reservationData.participants,
         reservationData.status,
-        reservationData.amount, // Sera inséré dans amount
-        reservationData.notes
+        reservationData.amount,
+        reservationData.special_requests
       ]
     );
     return result.rows[0];
