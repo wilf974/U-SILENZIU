@@ -2054,6 +2054,9 @@ export async function getHeaderConfig(): Promise<HeaderConfig | null> {
       created_at: row.created_at,
       updated_at: row.updated_at
     };
+  } catch (error) {
+    console.error('Erreur lors de la récupération de la configuration de l\'en-tête:', error);
+    return null;
   } finally {
     client.release();
   }
@@ -2156,6 +2159,9 @@ export async function updateHeaderConfig(configData: Partial<HeaderConfig>): Pro
         updated_at: row.updated_at
       };
     }
+  } catch (error) {
+    console.error('Erreur lors de la mise à jour de la configuration de l\'en-tête:', error);
+    throw error;
   } finally {
     client.release();
   }
