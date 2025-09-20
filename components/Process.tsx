@@ -126,7 +126,7 @@ const Process = () => {
                   <div className="relative z-10 flex lg:flex-col items-center lg:mb-6">
                     {/* Mobile: Icon with centered number overlay */}
                     <div className="lg:hidden relative">
-                      <div className={`w-20 h-20 bg-gradient-to-br ${step.color} rounded-full flex items-center justify-center`}>
+                      <div className="w-20 h-20 bg-gradient-to-br from-kaki-500 to-kaki-700 rounded-full flex items-center justify-center">
                         <IconComponent className="text-white" size={32} />
                       </div>
                       <div className="absolute -top-2 -right-2 w-8 h-8 bg-kaki-600 rounded-full flex items-center justify-center">
@@ -136,7 +136,7 @@ const Process = () => {
                     
                     {/* Desktop: Icon and number in separate containers */}
                     <div className="hidden lg:flex lg:flex-col items-center">
-                      <div className={`w-20 h-20 bg-gradient-to-br ${step.color} rounded-full flex items-center justify-center mb-4`}>
+                      <div className="w-20 h-20 bg-gradient-to-br from-kaki-500 to-kaki-700 rounded-full flex items-center justify-center mb-4">
                         <IconComponent className="text-white" size={32} />
                       </div>
                       <div className="w-10 h-10 bg-kaki-600 rounded-full flex items-center justify-center">
