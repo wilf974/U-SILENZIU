@@ -1,0 +1,18 @@
+Commandes à exécuter sur le VPS pour déployer la correction :
+
+1. Arrêter les conteneurs existants :
+docker compose -f docker-compose.prod.yml down
+
+2. Reconstruire et redémarrer les conteneurs :
+docker compose -f docker-compose.prod.yml up -d --build
+
+3. Redémarrer l'application pour s'assurer que les changements sont pris en compte :
+docker compose -f docker-compose.prod.yml restart u-silenziu
+
+4. Vérifier que tout fonctionne :
+docker compose -f docker-compose.prod.yml ps
+
+5. Tester l'application :
+curl -I https://rageroom.usilenziu.com
+
+Une fois ces commandes exécutées, la correction des objets à détruire sera active !
