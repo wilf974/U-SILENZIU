@@ -52,6 +52,7 @@ export async function POST(request: NextRequest) {
         secure: body.secure ?? false, // Valeur par défaut si non définie
         username: body.username,
         password_encrypted: body.password, // Le mot de passe sera chiffré dans saveSmtpConfig
+        from_name: body.fromName || 'U Silenziu', // Nom d'expéditeur
         from_email: body.fromEmail || body.username, // Utiliser username comme fallback
         tls_reject_unauthorized: body.tlsRejectUnauthorized ?? true,
         tls_min_version: body.tlsMinVersion ?? 'TLSv1.2',
