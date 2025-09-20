@@ -231,7 +231,7 @@ Tél: 05 59 12 34 56 | Email: contact@usilenziu.com
 
   } catch (error) {
     console.error('Erreur lors de l\'envoi de l\'email de confirmation:', error)
-    console.error('Détails de l\'erreur:', error.message)
+    console.error('Détails de l\'erreur:', error instanceof Error ? error.message : 'Erreur inconnue')
     return false
   }
 }
