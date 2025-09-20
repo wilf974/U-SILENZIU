@@ -13,10 +13,18 @@ export default function RoomsSimple() {
   const [rooms, setRooms] = useState<Room[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const [lastUpdate, setLastUpdate] = useState<string>('')
   const router = useRouter()
 
   useEffect(() => {
     fetchRooms()
+    
+    // Actualisation automatique toutes les 30 secondes
+    const interval = setInterval(() => {
+      fetchRooms()
+    }, 30000)
+
+    return () => clearInterval(interval)
   }, [])
 
   const fetchRooms = async () => {
@@ -39,6 +47,7 @@ export default function RoomsSimple() {
         
         if (Array.isArray(roomsData)) {
           setRooms(roomsData)
+          setLastUpdate(new Date().toLocaleTimeString('fr-FR'))
         } else {
           setError('Format de données invalide')
         }
@@ -113,19 +122,14 @@ export default function RoomsSimple() {
 
   return (
     <div className="space-y-6">
-      {/* Indicateur de chargement réussi */}
-      <div className="text-center">
-        <p className="text-sm text-green-400 mb-4">
-          ✅ {rooms.length} salle{rooms.length > 1 ? 's' : ''} chargée{rooms.length > 1 ? 's' : ''} avec succès
-        </p>
-        <button 
-          onClick={fetchRooms}
-          className="btn-kaki-sm flex items-center gap-2 mx-auto"
-        >
-          <RefreshCw size={14} />
-          Actualiser
-        </button>
-      </div>
+      {/* Indicateur discret de mise à jour automatique */}
+      {lastUpdate && (
+        <div className="text-center">
+          <p className="text-xs text-gray-500">
+            Dernière mise à jour: {lastUpdate} • Actualisation automatique
+          </p>
+        </div>
+      )}
 
       {/* Grille des salles */}
       <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
