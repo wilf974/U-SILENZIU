@@ -10,7 +10,7 @@ interface HeaderConfigEditorProps {
 /**
  * Composant pour éditer la configuration de l'en-tête (nom et logo)
  */
-export default function HeaderConfigEditor({ onConfigUpdate }: HeaderConfigEditorProps) {
+export default function HeaderConfigEditor({ onConfigUpdate = () => {} }: HeaderConfigEditorProps) {
   const [config, setConfig] = useState<HeaderConfig | null>(null)
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
@@ -41,16 +41,23 @@ export default function HeaderConfigEditor({ onConfigUpdate }: HeaderConfigEdito
       
       if (response.ok) {
         const data = await response.json()
-        setConfig(data)
-        setEditData({
-          site_name: data.site_name || '',
-          logo_type: data.logo_type || 'text',
-          logo_text: data.logo_text || '',
-          logo_image_url: data.logo_image_url || '',
-          logo_alt_text: data.logo_alt_text || ''
-        })
+        
+        // L'API retourne directement la config ou un objet avec error
+        if (data.error) {
+          setError(data.error)
+        } else {
+          setConfig(data)
+          setEditData({
+            site_name: data.site_name || '',
+            logo_type: data.logo_type || 'text',
+            logo_text: data.logo_text || '',
+            logo_image_url: data.logo_image_url || '',
+            logo_alt_text: data.logo_alt_text || ''
+          })
+        }
       } else {
-        setError('Erreur lors du chargement de la configuration')
+        const errorData = await response.json()
+        setError(errorData.error || 'Erreur lors du chargement de la configuration')
       }
     } catch (error) {
       console.error('Erreur:', error)
