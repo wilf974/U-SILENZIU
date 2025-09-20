@@ -90,6 +90,7 @@ export interface SmtpConfig {
   secure: boolean;
   username: string;
   password_encrypted: string;
+  from_name: string;
   from_email: string;
   tls_reject_unauthorized: boolean;
   tls_min_version: string;
