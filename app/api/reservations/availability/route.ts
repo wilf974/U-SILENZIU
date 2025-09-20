@@ -50,11 +50,12 @@ export async function GET(request: NextRequest) {
     // Créer une structure de disponibilité par date et créneau
     const availability: Record<string, Record<string, boolean>> = {}
     
-    // Créneaux horaires disponibles (exemple: 14h-21h)
+    // Créneaux horaires disponibles (tranches de 20 minutes de 14h à 21h)
     const timeSlots = [
-      '14:00', '14:30', '15:00', '15:30', '16:00', '16:30',
-      '17:00', '17:30', '18:00', '18:30', '19:00', '19:30',
-      '20:00', '20:30'
+      '14:00', '14:20', '14:40', '15:00', '15:20', '15:40',
+      '16:00', '16:20', '16:40', '17:00', '17:20', '17:40',
+      '18:00', '18:20', '18:40', '19:00', '19:20', '19:40',
+      '20:00', '20:20', '20:40'
     ]
     
     // Initialiser tous les créneaux comme disponibles
@@ -73,21 +74,30 @@ export async function GET(request: NextRequest) {
     // Marquer les créneaux occupés
     reservationsInPeriod.forEach(reservation => {
       const dateStr = reservation.date
-      const timeSlot = reservation.time
+      const timeSlot = reservation.time_slot
+      
+      console.log('Réservation trouvée:', { dateStr, timeSlot, duration: reservation.duration, participants: reservation.participants })
       
       if (availability[dateStr] && timeSlot) {
-        availability[dateStr][timeSlot] = false
+        // Extraire l'heure de début du créneau (ex: "14:00 - 14:20" -> "14:00")
+        const startTime = timeSlot.split(' - ')[0]
+        
+        if (availability[dateStr][startTime] !== undefined) {
+          availability[dateStr][startTime] = false
+          console.log(`Créneau marqué comme occupé: ${dateStr} ${startTime}`)
+        }
         
         // Marquer aussi les créneaux suivants si la durée le nécessite
-        const duration = reservation.duration || 30
-        const additionalSlots = Math.ceil(duration / 30) - 1
+        const duration = reservation.duration || 20
+        const additionalSlots = Math.ceil(duration / 20) - 1 // Créneaux de 20 minutes
         
-        const currentSlotIndex = timeSlots.indexOf(timeSlot)
+        const currentSlotIndex = timeSlots.indexOf(startTime)
         if (currentSlotIndex !== -1) {
           for (let i = 1; i <= additionalSlots; i++) {
             const nextSlotIndex = currentSlotIndex + i
             if (nextSlotIndex < timeSlots.length) {
               availability[dateStr][timeSlots[nextSlotIndex]] = false
+              console.log(`Créneau suivant marqué comme occupé: ${dateStr} ${timeSlots[nextSlotIndex]}`)
             }
           }
         }
