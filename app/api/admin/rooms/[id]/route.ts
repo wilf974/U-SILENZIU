@@ -57,10 +57,10 @@ export async function PUT(
     const duration = raw.duration !== undefined ? Number(raw.duration) : undefined;
     const price = raw.price !== undefined ? Number(raw.price) : undefined;
     const maxPeople = raw.maxPeople !== undefined ? Number(raw.maxPeople) : undefined;
-    const objectsToDestroy = Array.isArray(raw.objectsToDestroy)
-      ? raw.objectsToDestroy
-      : (typeof raw.objectsToDestroy === 'string'
-          ? raw.objectsToDestroy.split(',').map((s: string) => s.trim()).filter(Boolean)
+    const objectsToDestroy = Array.isArray(raw.objects_to_destroy || raw.objectsToDestroy)
+      ? (raw.objects_to_destroy || raw.objectsToDestroy)
+      : (typeof (raw.objects_to_destroy || raw.objectsToDestroy) === 'string'
+          ? (raw.objects_to_destroy || raw.objectsToDestroy).split(',').map((s: string) => s.trim()).filter(Boolean)
           : undefined);
     const included = Array.isArray(raw.included)
       ? raw.included
