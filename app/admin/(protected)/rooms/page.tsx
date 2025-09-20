@@ -117,7 +117,8 @@ export default function AdminRoomsPage() {
   // Gérer les tableaux (objects_to_destroy, included)
   const handleArrayChange = (field: 'objects_to_destroy' | 'included', value: string) => {
     const items = value.split(',').map(item => item.trim()).filter(item => item);
-    setFormData(prev => ({ ...prev, [field]: items }));
+    // Si le tableau est vide, on le met à undefined pour que la base de données le traite correctement
+    setFormData(prev => ({ ...prev, [field]: items.length > 0 ? items : undefined }));
   };
 
   // Créer une nouvelle salle

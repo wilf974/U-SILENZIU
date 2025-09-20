@@ -505,11 +505,17 @@ export async function updateRoom(id: string, roomData: Partial<Room>): Promise<R
     }
     if (roomData.objects_to_destroy !== undefined) {
       fields.push(`objects_to_destroy = $${paramCount++}::text[]`);
-      values.push((roomData.objects_to_destroy ?? []) as unknown as string[]);
+      // Si le tableau est vide, on le traite comme un tableau vide en base
+      values.push(Array.isArray(roomData.objects_to_destroy) && roomData.objects_to_destroy.length === 0 
+        ? [] 
+        : (roomData.objects_to_destroy ?? []) as unknown as string[]);
     }
     if (roomData.included !== undefined) {
       fields.push(`included = $${paramCount++}::text[]`);
-      values.push((roomData.included ?? []) as unknown as string[]);
+      // Si le tableau est vide, on le traite comme un tableau vide en base
+      values.push(Array.isArray(roomData.included) && roomData.included.length === 0 
+        ? [] 
+        : (roomData.included ?? []) as unknown as string[]);
     }
     if (roomData.image_url !== undefined) {
       fields.push(`image_url = $${paramCount++}`);
