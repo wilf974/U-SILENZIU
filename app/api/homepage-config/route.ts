@@ -13,8 +13,8 @@ export async function GET() {
     
     // Filtrer les données sensibles pour l'API publique
     const publicConfig = {
-      main_title: config.main_title,
-      main_description: config.main_description,
+      site_title: config.site_title,
+      site_description: config.site_description,
       site_name: config.site_name,
       contact_email: config.contact_email,
       contact_phone: config.contact_phone,
