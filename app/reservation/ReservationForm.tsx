@@ -396,10 +396,16 @@ const ReservationForm = () => {
         
         // Créer la réservation via l'API
         const newReservationNumber = await createReservation(reservationData)
-        setReservationNumber(newReservationNumber)
+        console.log('Réservation créée avec numéro:', newReservationNumber)
         
-        console.log('Réservation créée:', newReservationNumber)
-        setCurrentStep(4)
+        // S'assurer que le numéro est bien défini avant de passer à l'étape 4
+        if (newReservationNumber && newReservationNumber !== 'N/A') {
+          setReservationNumber(newReservationNumber)
+          setCurrentStep(4)
+        } else {
+          console.error('Erreur: Numéro de réservation non généré')
+          alert('Erreur lors de la génération du numéro de réservation. Veuillez réessayer.')
+        }
       } catch (error) {
         console.error('Erreur lors de la création de la réservation:', error)
         alert('Erreur lors de la création de la réservation. Veuillez réessayer.')
@@ -860,7 +866,9 @@ const ReservationForm = () => {
                 {/* Numéro de réservation */}
                 <div className="bg-kaki-500/20 border border-kaki-500/50 rounded-lg p-4 mb-6">
                   <p className="text-kaki-300 text-sm mb-1">Numéro de réservation</p>
-                  <p className="text-2xl font-bold text-kaki-400 font-mono">{reservationNumber}</p>
+                  <p className="text-2xl font-bold text-kaki-400 font-mono">
+                    {reservationNumber || 'Génération en cours...'}
+                  </p>
                 </div>
 
                 {selectedTimeSlot && (
