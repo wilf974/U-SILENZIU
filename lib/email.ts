@@ -9,7 +9,7 @@ const createTransporter = async () => {
     throw new Error('Configuration SMTP non trouvée')
   }
 
-  return nodemailer.createTransporter({
+  return nodemailer.createTransport({
     host: smtpConfig.host,
     port: smtpConfig.port,
     secure: smtpConfig.secure,
