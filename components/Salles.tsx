@@ -2,8 +2,6 @@
 
 import React from 'react'
 import RoomsSimple from './RoomsSimple'
-import RoomsDebug from './RoomsDebug'
-import TestSalles from './TestSalles'
 import { useHomepageSections } from '@/lib/hooks/useHomepageSections'
 
 /**
@@ -31,9 +29,8 @@ export default function Salles() {
           </p>
         </div>
 
-              {/* TEST ULTRA-SIMPLE */}
-              <TestSalles />
-              <RoomsDebug />
+              {/* Liste des salles */}
+              <RoomsSimple />
       </div>
     </section>
   )

@@ -23,7 +23,6 @@ export default function RoomsSimple() {
     try {
       setLoading(true)
       setError(null)
-      console.log('🔄 Chargement des salles (composant simple)...')
       
       const response = await fetch('/api/rooms', {
         cache: 'no-store',
@@ -34,29 +33,19 @@ export default function RoomsSimple() {
         }
       })
       
-      console.log('📡 Réponse API rooms (simple):', response.status, response.statusText)
-      
       if (response.ok) {
         const result = await response.json()
-        console.log('📦 Données reçues (simple):', result)
-        
         const roomsData = result.data || result
-        console.log('🏠 Salles extraites (simple):', roomsData)
         
         if (Array.isArray(roomsData)) {
           setRooms(roomsData)
-          console.log('✅ Salles chargées avec succès:', roomsData.length)
         } else {
-          console.error('❌ Données invalides:', roomsData)
           setError('Format de données invalide')
         }
       } else {
-        const errorText = await response.text()
-        console.error('❌ Erreur API rooms (simple):', response.status, response.statusText, errorText)
         setError(`Erreur ${response.status}: ${response.statusText}`)
       }
     } catch (error) {
-      console.error('❌ Erreur lors du chargement des salles (simple):', error)
       setError('Erreur de connexion')
     } finally {
       setLoading(false)
