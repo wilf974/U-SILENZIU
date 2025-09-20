@@ -44,7 +44,7 @@ interface ReservationEmailData {
  */
 export async function sendReservationConfirmationEmail(data: ReservationEmailData): Promise<boolean> {
   try {
-    const transporter = createTransporter()
+    const transporter = await createTransporter()
     
     // Vérifier que les variables d'environnement sont configurées
     if (!process.env.SMTP_USER || !process.env.SMTP_PASS) {

@@ -248,23 +248,22 @@ export async function getWeeklyReservations(weekDate: Date): Promise<WeeklyReser
       `SELECT 
         id,
         reservation_number,
-        first_name,
-        last_name,
-        email,
-        phone,
+        customer_name,
+        customer_email,
+        customer_phone,
         room_name,
         date,
-        time,
+        time_slot,
         duration,
-        number_of_people,
+        participants,
         status,
         amount,
-        notes,
+        special_requests as notes,
         created_at,
         updated_at
       FROM reservations 
       WHERE DATE(date) >= $1 AND DATE(date) <= $2
-      ORDER BY date ASC, time ASC`,
+      ORDER BY date ASC, time_slot ASC`,
       [startDate, endDate]
     );
 
