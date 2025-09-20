@@ -958,9 +958,9 @@ export async function generateReservationNumber(): Promise<string> {
   try {
     // Compter les réservations du jour actuel
     const result = await client.query(
-      'SELECT COUNT(*)::integer as count FROM reservations WHERE DATE(created_at) = CURRENT_DATE'
+      'SELECT COUNT(*) as count FROM reservations WHERE DATE(created_at) = CURRENT_DATE'
     );
-    const count = result.rows[0].count + 1;
+    const count = parseInt(result.rows[0].count) + 1;
     
     // Format: YYMMDD (ex: 250904 pour le 4 septembre 2025)
     const now = new Date();
