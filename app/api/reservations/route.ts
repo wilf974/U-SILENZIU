@@ -104,6 +104,7 @@ export async function POST(request: NextRequest) {
       success: true,
       data: {
         id: reservation.id,
+        reservationNumber: reservation.reservation_number,
         amount: totalAmount,
         status: 'pending',
         room: room.name,

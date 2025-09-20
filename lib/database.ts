@@ -579,11 +579,11 @@ export async function toggleRoomStatus(id: string): Promise<Room | null> {
 }
 
 // Gestion des réservations
-export async function getAllReservations(): Promise<Reservation[]> {
+export async function getAllReservations(): Promise<any[]> {
   const client = await getClient();
   try {
     const result = await client.query(
-      'SELECT *, time_slot as time FROM reservations ORDER BY created_at DESC'
+      'SELECT * FROM reservations ORDER BY created_at DESC'
     );
     return result.rows;
   } finally {
@@ -607,11 +607,15 @@ export async function getReservationById(id: string): Promise<Reservation | null
 export async function createReservation(reservationData: any): Promise<any> {
   const client = await getClient();
   try {
+    // Générer un numéro de réservation si pas fourni
+    const reservationNumber = reservationData.reservation_number || await generateReservationNumber();
+    
     const result = await client.query(
-      `INSERT INTO reservations (customer_name, customer_email, customer_phone, room_name, date, time_slot, duration, participants, status, amount, special_requests)
-       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
+      `INSERT INTO reservations (reservation_number, customer_name, customer_email, customer_phone, room_name, date, time_slot, duration, participants, status, amount, special_requests)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)
        RETURNING *`,
       [
+        reservationNumber,
         reservationData.customer_name,
         reservationData.customer_email,
         reservationData.customer_phone,

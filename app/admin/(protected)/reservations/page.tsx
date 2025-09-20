@@ -27,18 +27,17 @@ import CalendarWeekly from '@/components/CalendarWeekly'
 interface Reservation {
   id: string
   reservation_number: string
-  first_name: string
-  last_name: string
-  email: string
-  phone: string
+  customer_name: string
+  customer_email: string
+  customer_phone: string
   room_name: string
   date: string
-  time: string
+  time_slot: string
   duration: number
-  number_of_people: number
+  participants: number
   status: 'pending' | 'confirmed' | 'cancelled'
   amount: number
-  notes?: string
+  special_requests?: string
   created_at: string
   updated_at: string
 }
@@ -555,9 +554,9 @@ export default function ReservationsAdminPage() {
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-300">
                           <div>
-                            <div className="font-medium">{reservation.first_name} {reservation.last_name}</div>
-                            <div className="text-gray-400">{reservation.email}</div>
-                            <div className="text-gray-400">{reservation.phone}</div>
+                            <div className="font-medium">{reservation.customer_name}</div>
+                            <div className="text-gray-400">{reservation.customer_email}</div>
+                            <div className="text-gray-400">{reservation.customer_phone}</div>
                           </div>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-300">
@@ -566,7 +565,7 @@ export default function ReservationsAdminPage() {
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-300">
                           <div>
                             <div>{formatDate(reservation.date)}</div>
-                            <div className="text-gray-400">{formatTime(reservation.time)}</div>
+                            <div className="text-gray-400">{formatTime(reservation.time_slot)}</div>
                             <div className="text-gray-400">{reservation.duration}min</div>
                           </div>
                         </td>
@@ -674,7 +673,7 @@ export default function ReservationsAdminPage() {
                   <span className="font-medium text-white">
                     {selectedReservation.reservation_number}
                   </span>{' '}
-                  de {selectedReservation.first_name} {selectedReservation.last_name} ?
+                  de {selectedReservation.customer_name} ?
                 </p>
                 <p className="text-sm text-red-400 mb-6">
                   Cette action est irréversible.

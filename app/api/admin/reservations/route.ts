@@ -34,11 +34,10 @@ export async function GET(request: NextRequest) {
     if (search) {
       const searchLower = search.toLowerCase()
       reservations = reservations.filter(r => 
-        r.first_name.toLowerCase().includes(searchLower) ||
-        r.last_name.toLowerCase().includes(searchLower) ||
-        r.email.toLowerCase().includes(searchLower) ||
+        r.customer_name.toLowerCase().includes(searchLower) ||
+        r.customer_email.toLowerCase().includes(searchLower) ||
         r.reservation_number.includes(search) ||
-        r.phone.includes(search)
+        r.customer_phone.includes(search)
       )
     }
 
