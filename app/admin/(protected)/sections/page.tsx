@@ -403,7 +403,7 @@ export default function GlobalSectionsAdminPage() {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
           <div className="bg-gray-800 rounded-lg p-6 border border-gray-700">
             <div className="flex items-center">
-              <div className="p-2 bg-blue-600 rounded-lg">
+              <div className="p-2 bg-kaki-600 rounded-lg">
                 <Globe className="w-6 h-6 text-white" />
               </div>
               <div className="ml-4">
@@ -555,7 +555,7 @@ export default function GlobalSectionsAdminPage() {
                     </button>
                     <button 
                       onClick={() => openEditor(section)}
-                      className="p-2 text-blue-400 hover:text-blue-300 hover:bg-blue-400/10 rounded-lg transition-colors"
+                      className="p-2 text-kaki-400 hover:text-kaki-300 hover:bg-kaki-400/10 rounded-lg transition-colors"
                       title="Modifier"
                     >
                       <Edit className="w-4 h-4" />

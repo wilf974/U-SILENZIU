@@ -329,7 +329,7 @@ export default function ReservationsAdminPage() {
                   onClick={() => setActiveView('list')}
                   className={`px-3 py-1 rounded-md text-sm transition-colors ${
                     activeView === 'list' 
-                      ? 'bg-blue-600 text-white' 
+                      ? 'bg-kaki-600 text-white' 
                       : 'text-gray-300 hover:text-white'
                   }`}
                 >
@@ -339,7 +339,7 @@ export default function ReservationsAdminPage() {
                   onClick={() => setActiveView('calendar')}
                   className={`px-3 py-1 rounded-md text-sm transition-colors ${
                     activeView === 'calendar' 
-                      ? 'bg-blue-600 text-white' 
+                      ? 'bg-kaki-600 text-white' 
                       : 'text-gray-300 hover:text-white'
                   }`}
                 >
@@ -349,7 +349,7 @@ export default function ReservationsAdminPage() {
               
               <button
                 onClick={fetchReservations}
-                className="flex items-center space-x-2 bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-lg transition-colors"
+                className="flex items-center space-x-2 bg-kaki-600 hover:bg-kaki-700 px-4 py-2 rounded-lg transition-colors"
               >
                 <RefreshCw className="w-4 h-4" />
                 <span>Actualiser</span>
@@ -371,7 +371,7 @@ export default function ReservationsAdminPage() {
         <div className="grid grid-cols-1 md:grid-cols-5 gap-6 mb-8">
           <div className="bg-gray-800 p-6 rounded-lg border border-gray-700">
             <div className="flex items-center">
-              <Calendar className="w-8 h-8 text-blue-400" />
+              <Calendar className="w-8 h-8 text-kaki-400" />
               <div className="ml-4">
                 <p className="text-sm text-gray-400">Total Réservations</p>
                 <p className="text-2xl font-bold">{stats.total}</p>
@@ -441,7 +441,7 @@ export default function ReservationsAdminPage() {
                   placeholder="Nom, email, téléphone..."
                   value={filters.search}
                   onChange={(e) => setFilters(prev => ({ ...prev, search: e.target.value }))}
-                  className="w-full pl-10 pr-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full pl-10 pr-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-kaki-500"
                 />
               </div>
             </div>
@@ -453,7 +453,7 @@ export default function ReservationsAdminPage() {
               <select
                 value={filters.status}
                 onChange={(e) => setFilters(prev => ({ ...prev, status: e.target.value }))}
-                className="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-kaki-500"
               >
                 <option value="">Tous les statuts</option>
                 <option value="pending">En attente</option>
@@ -470,7 +470,7 @@ export default function ReservationsAdminPage() {
                 type="date"
                 value={filters.date}
                 onChange={(e) => setFilters(prev => ({ ...prev, date: e.target.value }))}
-                className="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-kaki-500"
               />
             </div>
             
@@ -481,7 +481,7 @@ export default function ReservationsAdminPage() {
               <select
                 value={filters.room}
                 onChange={(e) => setFilters(prev => ({ ...prev, room: e.target.value }))}
-                className="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-kaki-500"
               >
                 <option value="">Toutes les salles</option>
                 <option value="Salle de Défoulement U Silenziu">Salle de Défoulement U Silenziu</option>
@@ -586,7 +586,7 @@ export default function ReservationsAdminPage() {
                                 setSelectedReservation(reservation)
                                 setShowEditModal(true)
                               }}
-                              className="text-blue-400 hover:text-blue-300 transition-colors"
+                              className="text-kaki-400 hover:text-kaki-300 transition-colors"
                               title="Modifier"
                             >
                               <Edit className="w-4 h-4" />

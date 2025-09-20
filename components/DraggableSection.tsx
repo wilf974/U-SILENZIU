@@ -146,7 +146,7 @@ const DraggableSection = ({
           
           <button 
             onClick={onEdit}
-            className="p-2 text-blue-400 hover:text-blue-300 hover:bg-blue-400/10 rounded-lg transition-colors"
+            className="p-2 text-kaki-400 hover:text-kaki-300 hover:bg-kaki-400/10 rounded-lg transition-colors"
             title="Modifier"
           >
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">

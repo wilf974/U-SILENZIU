@@ -170,7 +170,7 @@ export default function UsersManagementPage() {
     return role === 'super-admin' ? (
       <Crown className="w-4 h-4 text-purple-400" />
     ) : (
-      <Shield className="w-4 h-4 text-blue-400" />
+      <Shield className="w-4 h-4 text-kaki-400" />
     )
   }
 
@@ -180,7 +180,7 @@ export default function UsersManagementPage() {
   const getRoleColor = (role: string) => {
     return role === 'super-admin' 
       ? 'bg-purple-600 text-purple-100' 
-      : 'bg-blue-600 text-blue-100'
+      : 'bg-kaki-600 text-kaki-100'
   }
 
   return (

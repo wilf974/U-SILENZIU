@@ -744,7 +744,7 @@ const HomepageConfigEditor = () => {
           href="/"
           target="_blank"
           rel="noopener noreferrer"
-          className="inline-flex items-center space-x-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors"
+          className="inline-flex items-center space-x-2 px-4 py-2 bg-kaki-600 hover:bg-kaki-700 text-white rounded-lg transition-colors"
         >
           <Eye className="w-4 h-4" />
           <span>Voir le site</span>
@@ -2390,7 +2390,7 @@ const ProcessEditor = ({ section, formData, setFormData }: SectionEditorProps) =
     'from-kaki-500 to-kaki-700',
     'from-kaki-600 to-kaki-800',
     'from-kaki-700 to-kaki-900',
-    'from-blue-400 to-blue-600',
+    'from-kaki-400 to-kaki-600',
     'from-green-400 to-green-600',
     'from-purple-400 to-purple-600',
     'from-red-400 to-red-600'
@@ -3226,7 +3226,7 @@ export default function HomepageAdminPage() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
           <div className="bg-gray-800 rounded-lg p-6 border border-gray-700">
             <div className="flex items-center">
-              <div className="p-2 bg-blue-600 rounded-lg">
+              <div className="p-2 bg-kaki-600 rounded-lg">
                 <Layout className="w-6 h-6 text-white" />
               </div>
               <div className="ml-4">

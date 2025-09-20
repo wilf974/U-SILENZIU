@@ -226,7 +226,7 @@ export default function EntryPageAdmin() {
             {!isEditing ? (
               <button
                 onClick={() => setIsEditing(true)}
-                className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md transition-colors"
+                className="flex items-center gap-2 bg-kaki-600 hover:bg-kaki-700 text-white px-4 py-2 rounded-md transition-colors"
               >
                 Modifier
               </button>

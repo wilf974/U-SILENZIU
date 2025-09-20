@@ -387,7 +387,7 @@ export default function SmtpConfigPage() {
                 type="button"
                 onClick={handleTestConnection}
                 disabled={isLoading}
-                className="flex items-center justify-center px-6 py-3 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-600 rounded-lg font-medium transition-colors"
+                className="flex items-center justify-center px-6 py-3 bg-kaki-600 hover:bg-kaki-700 disabled:bg-gray-600 rounded-lg font-medium transition-colors"
               >
                 <TestTube className="w-4 h-4 mr-2" />
                 {isLoading ? 'Test en cours...' : 'Tester la connexion'}
@@ -470,7 +470,7 @@ export default function SmtpConfigPage() {
                   <p>Sécurisé: <strong>Non</strong> (STARTTLS automatique)</p>
                   <p>TLS: Rejeter certificats non autorisés</p>
                   <p className="text-yellow-400">⚠️ Décochez "Connexion sécurisée"</p>
-                  <p className="text-blue-400">ℹ️ Utilisez votre mot de passe principal ou un mot de passe d'application</p>
+                  <p className="text-kaki-400">ℹ️ Utilisez votre mot de passe principal ou un mot de passe d'application</p>
                 </div>
              </div>
              

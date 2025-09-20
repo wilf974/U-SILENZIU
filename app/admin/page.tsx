@@ -178,7 +178,7 @@ export default function AdminDashboard() {
       description: 'Voir et gérer toutes les réservations',
       icon: Calendar,
       href: '/admin/reservations',
-      color: 'bg-blue-600 hover:bg-blue-700',
+      color: 'bg-kaki-600 hover:bg-kaki-700',
       requiredRole: 'admin' as const
     },
     {
@@ -287,7 +287,7 @@ export default function AdminDashboard() {
                 {isSuperAdmin() ? (
                   <Crown className="w-4 h-4 text-purple-400" />
                 ) : (
-                  <Shield className="w-4 h-4 text-blue-400" />
+                  <Shield className="w-4 h-4 text-kaki-400" />
                 )}
                 <div className="text-sm">
                   <p className="text-white font-medium">{user?.username}</p>
@@ -323,7 +323,7 @@ export default function AdminDashboard() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
           <div className="bg-gray-800 rounded-lg p-6 border border-gray-700">
             <div className="flex items-center">
-              <div className="p-2 bg-blue-600 rounded-lg">
+              <div className="p-2 bg-kaki-600 rounded-lg">
                 <Calendar className="w-6 h-6 text-white" />
               </div>
               <div className="ml-4">
@@ -514,7 +514,7 @@ export default function AdminDashboard() {
                       <div className="flex space-x-2">
                         <button 
                           onClick={() => router.push(`/admin/reservations/${reservation.id}`)}
-                          className="text-blue-400 hover:text-blue-300"
+                          className="text-kaki-400 hover:text-kaki-300"
                         >
                           <Eye className="w-4 h-4" />
                         </button>

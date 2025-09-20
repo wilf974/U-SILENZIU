@@ -647,7 +647,7 @@ export default function TestPage() {
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
               <div className="bg-gray-800 rounded-lg p-4 border border-gray-700">
                 <div className="flex items-center gap-2">
-                  <Users className="w-5 h-5 text-blue-500" />
+                  <Users className="w-5 h-5 text-kaki-500" />
                   <span className="text-white font-semibold">Total</span>
                 </div>
                 <div className="text-2xl font-bold text-white mt-2">{summary.total}</div>

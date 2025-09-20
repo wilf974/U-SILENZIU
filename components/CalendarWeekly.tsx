@@ -210,7 +210,7 @@ export default function CalendarWeekly() {
       <div className="p-6 border-b border-gray-700">
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-4">
-            <Calendar className="h-6 w-6 text-blue-400" />
+            <Calendar className="h-6 w-6 text-kaki-400" />
             <h2 className="text-xl font-semibold text-white">
               Calendrier Hebdomadaire
             </h2>
@@ -229,7 +229,7 @@ export default function CalendarWeekly() {
               onClick={goToCurrentWeek}
               className={`px-3 py-1 text-sm rounded-lg transition-colors ${
                 isCurrentWeek 
-                  ? 'bg-blue-600 text-white' 
+                  ? 'bg-kaki-600 text-white' 
                   : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
               }`}
             >
@@ -269,7 +269,7 @@ export default function CalendarWeekly() {
           <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
             <div className="bg-gray-700 border border-gray-600 rounded-lg p-4">
               <div className="flex items-center">
-                <Calendar className="h-5 w-5 text-blue-400 mr-2" />
+                <Calendar className="h-5 w-5 text-kaki-400 mr-2" />
                 <div>
                   <p className="text-sm text-gray-400">Total</p>
                   <p className="text-lg font-semibold text-white">{weeklyData.statistics.total}</p>
@@ -333,7 +333,7 @@ export default function CalendarWeekly() {
                 {/* En-tête du jour */}
                 <div className={`text-center p-3 rounded-lg mb-3 ${
                   isToday 
-                    ? 'bg-blue-600 text-white' 
+                    ? 'bg-kaki-600 text-white' 
                     : 'bg-gray-700 border border-gray-600 text-gray-300'
                 }`}>
                   <div className="text-sm font-medium">{dayNamesShort[index]}</div>

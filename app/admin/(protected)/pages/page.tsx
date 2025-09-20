@@ -350,7 +350,7 @@ export default function PagesPage() {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
           <div className="bg-gray-800 rounded-lg p-6 border border-gray-700">
             <div className="flex items-center">
-              <div className="p-2 bg-blue-600 rounded-lg">
+              <div className="p-2 bg-kaki-600 rounded-lg">
                 <FileText className="w-6 h-6 text-white" />
               </div>
               <div className="ml-4">
@@ -506,7 +506,7 @@ export default function PagesPage() {
                        <div className="flex space-x-2">
                          <button 
                            onClick={() => openEditor(page)}
-                           className="text-blue-400 hover:text-blue-300"
+                           className="text-kaki-400 hover:text-kaki-300"
                            title="Modifier"
                          >
                            <Edit className="w-4 h-4" />
