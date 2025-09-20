@@ -1,9 +1,7 @@
 'use client'
 
 import React from 'react'
-import RoomsDisplayWebSocket from './RoomsDisplayWebSocket'
 import RoomsSimple from './RoomsSimple'
-import RoomsForce from './RoomsForce'
 import RoomsDebug from './RoomsDebug'
 import TestSalles from './TestSalles'
 import { useHomepageSections } from '@/lib/hooks/useHomepageSections'
