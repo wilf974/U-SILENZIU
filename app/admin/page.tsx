@@ -181,7 +181,8 @@ export default function AdminDashboard() {
       icon: Calendar,
       href: '/admin/reservations',
       color: 'bg-kaki-600 hover:bg-kaki-700',
-      requiredRole: 'admin' as const
+      requiredRole: 'admin' as const,
+      action: undefined
     },
     {
       title: 'Gérer les Salles',
@@ -189,7 +190,8 @@ export default function AdminDashboard() {
       icon: Settings,
       href: '/admin/rooms',
       color: 'bg-purple-600 hover:bg-purple-700',
-      requiredRole: 'admin' as const
+      requiredRole: 'admin' as const,
+      action: undefined
     },
     {
       title: 'Page d\'Accueil',
@@ -197,7 +199,8 @@ export default function AdminDashboard() {
       icon: Home,
       href: '/admin/homepage',
       color: 'bg-kaki-600 hover:bg-kaki-700',
-      requiredRole: 'admin' as const
+      requiredRole: 'admin' as const,
+      action: undefined
     },
     {
       title: 'Pages Légales',
@@ -205,7 +208,8 @@ export default function AdminDashboard() {
       icon: FileText,
       href: '/admin/legal-pages',
       color: 'bg-orange-600 hover:bg-orange-700',
-      requiredRole: 'admin' as const
+      requiredRole: 'admin' as const,
+      action: undefined
     }
   ]
 
@@ -217,7 +221,8 @@ export default function AdminDashboard() {
       icon: CreditCard,
       action: () => setShowPayplugConfig(true),
       color: 'bg-green-600 hover:bg-green-700',
-      requiredRole: 'super-admin' as const
+      requiredRole: 'super-admin' as const,
+      href: undefined
     },
     {
       title: 'Configuration SMTP',
@@ -225,7 +230,8 @@ export default function AdminDashboard() {
       icon: Mail,
       href: '/admin/smtp',
       color: 'bg-orange-600 hover:bg-orange-700',
-      requiredRole: 'super-admin' as const
+      requiredRole: 'super-admin' as const,
+      action: undefined
     },
     {
       title: 'Notifications',
@@ -233,7 +239,8 @@ export default function AdminDashboard() {
       icon: Bell,
       href: '/admin/notifications',
       color: 'bg-cyan-600 hover:bg-cyan-700',
-      requiredRole: 'super-admin' as const
+      requiredRole: 'super-admin' as const,
+      action: undefined
     },
     {
       title: 'Gestion des Utilisateurs',
@@ -241,7 +248,8 @@ export default function AdminDashboard() {
       icon: Users,
       href: '/admin/users',
       color: 'bg-red-600 hover:bg-red-700',
-      requiredRole: 'super-admin' as const
+      requiredRole: 'super-admin' as const,
+      action: undefined
     }
   ]
 
@@ -443,7 +451,7 @@ export default function AdminDashboard() {
                 </div>
                 <p className="text-gray-400 mb-4">{action.description}</p>
                 <button 
-                  onClick={() => action.action ? action.action() : handleQuickAction(action.href)}
+                  onClick={() => action.action ? action.action() : handleQuickAction(action.href!)}
                   className={`w-full ${action.color} text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors`}
                 >
                   {action.requiredRole === 'super-admin' ? 'Accéder (Super Admin)' : 'Accéder'}
