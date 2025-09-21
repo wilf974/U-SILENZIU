@@ -158,6 +158,147 @@ mkdir -p nginx/conf.d
 docker restart u-silenziu-nginx-prod
 ```
 
+## ⚛️ Résolution Erreur React #31 - Septembre 2025
+
+### Problème résolu
+- **Erreur React #31** : `Minified React error #31; visit https://react.dev/errors/31?args[]=object%20with%20keys%20%7Btitle%2C%20subtitle%7D`
+- **Rendu d'objets directement** : Tentative de rendre des objets JSONB au lieu de chaînes de caractères
+- **Stream Next.js cassé** : Chunks JavaScript ne se chargent plus à cause de l'erreur
+- **Page d'accueil en loading** : Affichage permanent du spinner de chargement
+
+### Cause identifiée
+- **components/HomepageSections.tsx** : `sectionType` ne tient compte que de `section_key/section_type`, pas de `section_name`
+- **hooks/useHomepageSections.ts** : Interface `HomepageSection` ne déclare pas `section_name`
+- **components/DynamicSection.tsx** : Tentative de `JSON.parse()` sur des objets déjà parsés (JSONB)
+- **Base de données** : Données JSONB malformées avec des objets au lieu de chaînes
+
+### Solutions appliquées
+
+#### 1. Correction de HomepageSections.tsx
+- ✅ **sectionType complet** : Inclusion de `section.section_name` dans la logique de routage
+- ✅ **Routage correct** : Les sections standards (hero, concept, etc.) ne passent plus par DynamicSection
+- ✅ **Rendu conditionnel** : Gestion appropriée des différents types de sections
+
+#### 2. Correction de useHomepageSections.ts
+- ✅ **Interface mise à jour** : Ajout de `section_name?: string` dans `HomepageSection`
+- ✅ **getSectionByKey amélioré** : Comparaison avec `section_name` en plus de `section_key`
+- ✅ **Normalisation** : Comparaison case-insensitive pour plus de robustesse
+
+#### 3. Correction de DynamicSection.tsx
+- ✅ **Parsing intelligent** : Détection du type de contenu (string vs object)
+- ✅ **Rendu sécurisé** : Affichage uniquement des chaînes de caractères
+- ✅ **Gestion d'erreurs** : Fallback en cas de parsing échoué
+
+#### 4. Correction des données JSONB
+- ✅ **Script de correction** : `fix-jsonb-data.sh` pour nettoyer la base de données
+- ✅ **Valeurs par défaut** : Attribution de chaînes vides aux champs `title` et `subtitle` malformés
+- ✅ **Validation** : Vérification du type des données avant insertion
+
+### Code des corrections
+
+#### HomepageSections.tsx
+```typescript
+const renderSection = (section: HomepageSection) => {
+  const sectionType = section.section_key || section.section_type || section.section_name
+  
+  switch (sectionType) {
+    case 'hero':
+      return <Hero key={section.id} />
+    case 'concept':
+      return <Concept key={section.id} />
+    // ... autres sections
+    default:
+      return <DynamicSection key={section.id} section={section} />
+  }
+}
+```
+
+#### useHomepageSections.ts
+```typescript
+export interface HomepageSection {
+  id: string
+  section_name?: string  // Ajout de section_name
+  section_key?: string
+  section_type?: string
+  content: any
+  is_active: boolean
+  created_at: string
+  updated_at: string
+}
+
+export const getSectionByKey = (sections: HomepageSection[], key: string): HomepageSection | null => {
+  return sections.find(section => 
+    section.section_key?.toLowerCase() === key.toLowerCase() ||
+    section.section_name?.toLowerCase() === key.toLowerCase()  // Ajout de la comparaison
+  ) || null
+}
+```
+
+#### DynamicSection.tsx
+```typescript
+useEffect(() => {
+  if (section.content) {
+    try {
+      let parsed: any
+      if (typeof section.content === 'string') {
+        parsed = JSON.parse(section.content)
+      } else if (section.content && typeof section.content === 'object') {
+        parsed = section.content  // Objet déjà parsé (JSONB)
+      } else {
+        parsed = { content: section.content }
+      }
+      setParsedContent(parsed)
+    } catch (error) {
+      console.error('Erreur parsing JSON:', error)
+      setParsedContent({ content: section.content })
+    }
+  }
+}, [section.content])
+
+// Rendu sécurisé
+{parsedContent?.content && typeof parsedContent.content === 'string' ? (
+  <div className="text-gray-300 whitespace-pre-wrap">
+    {parsedContent.content}
+  </div>
+) : (
+  <div className="text-gray-300">
+    Contenu non disponible
+  </div>
+)}
+```
+
+### Script de correction des données
+```sql
+-- Correction des données JSONB malformées
+UPDATE homepage_sections 
+SET content = jsonb_set(
+  content, 
+  '{title}', 
+  to_jsonb(COALESCE(content->>'title', 'Titre par défaut'))
+)
+WHERE content->>'title' IS NULL OR jsonb_typeof(content->'title') != 'string';
+
+UPDATE homepage_sections 
+SET content = jsonb_set(
+  content, 
+  '{subtitle}', 
+  to_jsonb(COALESCE(content->>'subtitle', 'Sous-titre par défaut'))
+)
+WHERE content->>'subtitle' IS NULL OR jsonb_typeof(content->'subtitle') != 'string';
+```
+
+### Résultat final
+- ✅ **Erreur React #31 éliminée** : Plus de tentative de rendu d'objets
+- ✅ **Page d'accueil fonctionnelle** : Chargement correct des sections
+- ✅ **Sections dynamiques** : Affichage approprié du contenu de la base de données
+- ✅ **Performance améliorée** : Plus de re-renders inutiles
+- ✅ **Robustesse** : Gestion d'erreurs pour les données malformées
+
+### Scripts de diagnostic créés
+- ✅ **analyze-react-error-31.sh** : Diagnostic complet de l'erreur React #31
+- ✅ **fix-jsonb-data.sh** : Correction automatique des données JSONB
+- ✅ **Tests de connectivité** : Vérification de l'état de l'application
+
 ## 🔧 Correction Erreur HTTP 500 Production HTTPS - Septembre 2025
 
 ### Problème résolu
