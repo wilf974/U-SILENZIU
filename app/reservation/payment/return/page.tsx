@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, Suspense } from 'react'
 import { useSearchParams, useRouter } from 'next/navigation'
 import { CheckCircle, XCircle, Clock, AlertCircle } from 'lucide-react'
 import Link from 'next/link'
@@ -9,7 +9,7 @@ import Link from 'next/link'
  * Page de retour après paiement Payplug
  * Gère l'affichage du statut de paiement
  */
-export default function PaymentReturnPage() {
+function PaymentReturnContent() {
   const searchParams = useSearchParams()
   const router = useRouter()
   const [status, setStatus] = useState<'loading' | 'success' | 'error' | 'pending'>('loading')
@@ -189,5 +189,22 @@ export default function PaymentReturnPage() {
         </div>
       </div>
     </div>
+  )
+}
+
+export default function PaymentReturnPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-dark-bg py-20">
+        <div className="section-container">
+          <div className="max-w-2xl mx-auto text-center">
+            <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-kaki-500 mx-auto mb-8"></div>
+            <h1 className="text-2xl text-white">Chargement...</h1>
+          </div>
+        </div>
+      </div>
+    }>
+      <PaymentReturnContent />
+    </Suspense>
   )
 }
