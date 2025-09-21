@@ -67,6 +67,97 @@ Site web pour U Silenziu, zone de défoulement située à Buros. Le site présen
 - **Navigation claire** : Les utilisateurs vont directement dans "Gestion des Réservations" pour créer/modifier
 - **Maintenance réduite** : Moins de code à maintenir pour la même fonctionnalité
 
+## 🌐 Résolution Erreur 502 Bad Gateway - Septembre 2025
+
+### Problème résolu
+- **Erreur 502 Bad Gateway** : Le site https://rageroom.usilenziu.com inaccessible après déploiement
+- **Service Nginx manquant** : Configuration Docker Compose sans service Nginx
+- **Configuration Nginx absente** : Fichier `/etc/nginx/conf.d/default.conf` non trouvé
+- **Application Next.js fonctionnelle** : Accessible via IP directe mais pas via domaine
+
+### Cause identifiée
+- **docker-compose.prod.yml incomplet** : Seuls les services `postgres` et `u-silenziu` définis
+- **Pas de reverse proxy** : Aucun service Nginx pour rediriger le domaine vers l'application
+- **Configuration Nginx manquante** : Dossier `nginx/conf.d/` et fichier `default.conf` non créés
+- **HTTPS non configuré** : Pas de redirection HTTP vers HTTPS
+
+### Solutions appliquées
+
+#### 1. Ajout du service Nginx dans Docker Compose
+- ✅ **docker-compose.prod.yml** : Ajout du service `nginx` avec ports 80/443
+- ✅ **Configuration SSL** : Montage des certificats Let's Encrypt
+- ✅ **Dépendances** : Nginx dépend de l'application Next.js
+- ✅ **Réseau Docker** : Tous les services sur le même réseau
+
+#### 2. Création de la configuration Nginx
+- ✅ **nginx/conf.d/default.conf** : Configuration complète avec upstream
+- ✅ **Redirection HTTP vers HTTPS** : Server block pour port 80
+- ✅ **Configuration HTTPS** : Server block pour port 443 avec SSL
+- ✅ **Proxy vers Next.js** : Headers corrects pour l'application
+
+#### 3. Scripts de diagnostic et correction
+- ✅ **diagnose-502-error.sh** : Script de diagnostic complet
+- ✅ **fix-502-error.sh** : Script de correction automatique
+- ✅ **Tests de connectivité** : Vérification interne et externe
+
+### Configuration Nginx finale
+```nginx
+upstream app {
+    server u-silenziu-app:3000;
+}
+
+# Redirection HTTP vers HTTPS
+server {
+    listen 80;
+    server_name rageroom.usilenziu.com;
+    return 301 https://$server_name$request_uri;
+}
+
+# Configuration HTTPS
+server {
+    listen 443 ssl http2;
+    server_name rageroom.usilenziu.com;
+    
+    location / {
+        proxy_pass http://app;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection 'upgrade';
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_cache_bypass $http_upgrade;
+    }
+}
+```
+
+### Résultat final
+- ✅ **Site accessible** : https://rageroom.usilenziu.com fonctionne
+- ✅ **Redirection HTTPS** : HTTP redirige automatiquement vers HTTPS
+- ✅ **Application Next.js** : Statut healthy et opérationnel
+- ✅ **Base de données** : PostgreSQL healthy et accessible
+- ✅ **Nginx** : Reverse proxy fonctionnel
+
+### Commandes de déploiement
+```bash
+# 1. Récupérer les modifications
+git pull origin main
+
+# 2. Arrêter les conteneurs
+docker stop u-silenziu-app u-silenziu-postgres
+
+# 3. Redémarrer avec Nginx
+docker compose -f docker-compose.prod.yml up -d
+
+# 4. Créer la configuration Nginx
+mkdir -p nginx/conf.d
+# [Configuration nginx/conf.d/default.conf]
+
+# 5. Redémarrer Nginx
+docker restart u-silenziu-nginx-prod
+```
+
 ## 🔧 Correction Erreur HTTP 500 Production HTTPS - Septembre 2025
 
 ### Problème résolu
