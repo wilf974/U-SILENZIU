@@ -6,18 +6,17 @@ import { ChevronLeft, ChevronRight, Calendar, Clock, Users, Euro } from 'lucide-
 interface Reservation {
   id: string;
   reservation_number: string;
-  first_name: string;
-  last_name: string;
-  email: string;
-  phone: string;
+  customer_name: string;
+  customer_email: string;
+  customer_phone: string;
   room_name: string;
   date: string;
-  time: string;
+  time_slot: string;
   duration: number;
-  number_of_people: number;
+  participants: number;
   status: 'pending' | 'confirmed' | 'cancelled';
   amount: number;
-  notes?: string;
+  special_requests?: string;
   created_at: string;
   updated_at: string;
 }
@@ -129,8 +128,14 @@ export default function CalendarWeekly() {
   /**
    * Formate l'heure pour l'affichage
    */
-  const formatTime = (time: string) => {
-    return time.substring(0, 5); // HH:MM
+  const formatTime = (timeSlot: string) => {
+    if (!timeSlot) return '--:--';
+    // Si c'est un créneau "HH:MM - HH:MM", on prend juste la première partie
+    if (timeSlot.includes(' - ')) {
+      return timeSlot.split(' - ')[0];
+    }
+    // Sinon on prend les 5 premiers caractères (HH:MM)
+    return timeSlot.substring(0, 5);
   };
 
   /**
@@ -355,18 +360,18 @@ export default function CalendarWeekly() {
                         }`}
                       >
                         <div className="font-medium mb-1">
-                          {reservation.first_name} {reservation.last_name}
+                          {reservation.customer_name}
                         </div>
                         
                         <div className="space-y-1 text-xs">
                           <div className="flex items-center">
                             <Clock className="h-3 w-3 mr-1" />
-                            {formatTime(reservation.time)}
+                            {formatTime(reservation.time_slot)}
                           </div>
                           
                           <div className="flex items-center">
                             <Users className="h-3 w-3 mr-1" />
-                            {reservation.number_of_people} pers.
+                            {reservation.participants} pers.
                           </div>
                           
                           <div className="font-medium">
