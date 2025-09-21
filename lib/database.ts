@@ -200,7 +200,7 @@ export interface HomepageConfig {
 }
 
 // Fonction utilitaire pour obtenir un client de la pool
-async function getClient(): Promise<PoolClient> {
+export async function getClient(): Promise<PoolClient> {
   const client = await pool.connect();
   return client;
 }

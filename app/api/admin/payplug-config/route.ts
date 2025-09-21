@@ -1,5 +1,4 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { getClient } from '@/lib/database'
 import { writeFileSync, readFileSync, existsSync } from 'fs'
 import { join } from 'path'
 
