@@ -77,6 +77,9 @@ export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
     
+    // DEBUG: Log des données reçues
+    console.log('🔧 API Admin POST - Données reçues:', body)
+    
     // Validation des champs requis
     const requiredFields = [
       'first_name', 'last_name', 'email', 'phone', 
@@ -86,6 +89,7 @@ export async function POST(request: NextRequest) {
     
     for (const field of requiredFields) {
       if (!body[field]) {
+        console.log(`🔧 API Admin POST - Champ manquant: ${field}`)
         return NextResponse.json(
           { 
             success: false,
@@ -118,8 +122,8 @@ export async function POST(request: NextRequest) {
       amount = room ? room.price * body.number_of_people : 0
     }
     
-    // Créer la réservation
-    const reservation = await createReservation({
+    // DEBUG: Log des données avant createReservation
+    const reservationData = {
       reservation_number: reservationNumber,
       customer_name: `${body.first_name} ${body.last_name}`,
       customer_email: body.email,
@@ -132,7 +136,12 @@ export async function POST(request: NextRequest) {
       status: body.status || 'pending',
       amount: amount,
       special_requests: body.notes || ''
-    })
+    }
+    
+    console.log('🔧 API Admin POST - Données pour createReservation:', reservationData)
+    
+    // Créer la réservation
+    const reservation = await createReservation(reservationData)
 
     return NextResponse.json({
       success: true,
