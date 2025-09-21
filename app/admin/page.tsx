@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { useAuth } from '@/hooks/useAuth'
 import { Crown, Shield } from 'lucide-react'
+import PayplugConfig from '@/components/admin/PayplugConfig'
 import { 
   Calendar, 
   Users, 
@@ -22,7 +23,8 @@ import {
   AlertCircle,
   LogOut,
   Home,
-  Bell
+  Bell,
+  CreditCard
 } from 'lucide-react'
 
 interface DashboardStats {
@@ -71,6 +73,7 @@ export default function AdminDashboard() {
     database: false
   })
   const [loading, setLoading] = useState(true)
+  const [showPayplugConfig, setShowPayplugConfig] = useState(false)
 
   useEffect(() => {
     requireAuth()
@@ -208,6 +211,14 @@ export default function AdminDashboard() {
 
   // Actions spécifiques au super admin
   const superAdminActions = [
+    {
+      title: 'Configuration Payplug',
+      description: 'Gérer les clés de paiement (Super Admin)',
+      icon: CreditCard,
+      action: () => setShowPayplugConfig(true),
+      color: 'bg-green-600 hover:bg-green-700',
+      requiredRole: 'super-admin' as const
+    },
     {
       title: 'Configuration SMTP',
       description: 'Paramètres d\'envoi d\'emails (Super Admin)',
@@ -432,7 +443,7 @@ export default function AdminDashboard() {
                 </div>
                 <p className="text-gray-400 mb-4">{action.description}</p>
                 <button 
-                  onClick={() => handleQuickAction(action.href)}
+                  onClick={() => action.action ? action.action() : handleQuickAction(action.href)}
                   className={`w-full ${action.color} text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors`}
                 >
                   {action.requiredRole === 'super-admin' ? 'Accéder (Super Admin)' : 'Accéder'}
@@ -533,6 +544,11 @@ export default function AdminDashboard() {
           </div>
         </div>
       </div>
+
+      {/* Modal de configuration Payplug */}
+      {showPayplugConfig && (
+        <PayplugConfig onClose={() => setShowPayplugConfig(false)} />
+      )}
     </div>
   )
 }

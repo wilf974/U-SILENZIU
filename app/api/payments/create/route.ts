@@ -51,7 +51,7 @@ export async function POST(request: NextRequest) {
     // Construire l'URL de base
     const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'
     
-    // Données du paiement pour Payplug
+    // Données du paiement pour Payplug selon la doc officielle
     const paymentData = {
       amount: Math.round(body.amount * 100), // Convertir en centimes
       currency: 'EUR',
@@ -66,7 +66,11 @@ export async function POST(request: NextRequest) {
         ...body.custom_data
       },
       return_url: `${baseUrl}/reservation/payment/return?reservation=${body.reservationNumber}`,
-      notification_url: `${baseUrl}/api/webhooks/payplug`
+      notification_url: `${baseUrl}/api/webhooks/payplug`,
+      hosted_payment: {
+        return_url: `${baseUrl}/reservation/payment/return?reservation=${body.reservationNumber}&status=success`,
+        cancel_url: `${baseUrl}/reservation/payment/return?reservation=${body.reservationNumber}&status=cancelled`
+      }
     }
 
     console.log('Données paiement Payplug:', paymentData)

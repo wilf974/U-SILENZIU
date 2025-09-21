@@ -22,6 +22,10 @@ interface PaymentData {
   custom_data?: Record<string, any>
   return_url: string
   notification_url: string
+  hosted_payment?: {
+    return_url: string
+    cancel_url: string
+  }
 }
 
 interface PaymentResponse {
@@ -62,9 +66,8 @@ class PayplugService {
       mode: (process.env.PAYPLUG_MODE as 'test' | 'live') || 'test'
     }
 
-    this.baseUrl = this.config.mode === 'live' 
-      ? 'https://api.payplug.com' 
-      : 'https://api-sandbox.payplug.com'
+    // Payplug utilise la même URL pour test et live selon la documentation
+    this.baseUrl = 'https://api.payplug.com'
   }
 
   /**
@@ -96,6 +99,7 @@ class PayplugService {
         headers: {
           'Authorization': `Bearer ${this.config.secretKey}`,
           'Content-Type': 'application/json',
+          'PayPlug-Version': '2019-08-06' // Version API requise selon la doc
         },
         body: JSON.stringify(paymentData)
       })
@@ -113,7 +117,7 @@ class PayplugService {
       
       return {
         success: true,
-        payment_url: payment.hosted_payment.payment_url
+        payment_url: payment.hosted_payment?.payment_url || payment.payment_url
       }
     } catch (error) {
       console.error('Erreur lors de la création du paiement Payplug:', error)
@@ -140,6 +144,7 @@ class PayplugService {
         headers: {
           'Authorization': `Bearer ${this.config.secretKey}`,
           'Content-Type': 'application/json',
+          'PayPlug-Version': '2019-08-06'
         }
       })
 
@@ -240,6 +245,7 @@ class PayplugService {
         headers: {
           'Authorization': `Bearer ${this.config.secretKey}`,
           'Content-Type': 'application/json',
+          'PayPlug-Version': '2019-08-06'
         },
         body: JSON.stringify(refundData)
       })
