@@ -190,7 +190,8 @@ const ReservationForm = () => {
       const response = await fetch(url)
       if (response.ok) {
         const data = await response.json()
-        setAvailabilityData(data.data || {})
+        // L'API retourne data.availability, pas data directement
+        setAvailabilityData(data.data?.availability || data.data || {})
       } else {
         console.error('Erreur lors de la récupération des disponibilités:', response.statusText)
         setAvailabilityData({})
