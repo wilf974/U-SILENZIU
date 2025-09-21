@@ -22,10 +22,13 @@ print_error() {
     echo -e "${RED}❌ $1${NC}"
 }
 
-# 1. Arrêter tous les conteneurs existants
-echo "🛑 Arrêt des conteneurs existants..."
+# 1. Arrêter et supprimer TOUS les conteneurs existants
+echo "🛑 Arrêt et suppression de tous les conteneurs existants..."
 docker stop u-silenziu-app u-silenziu-nginx-prod u-silenziu-postgres 2>/dev/null || true
-docker rm u-silenziu-app u-silenziu-nginx-prod 2>/dev/null || true
+docker rm u-silenziu-app u-silenziu-nginx-prod u-silenziu-postgres 2>/dev/null || true
+
+# Attendre un peu pour s'assurer que tout est arrêté
+sleep 3
 
 # 2. Démarrer PostgreSQL
 echo "🐘 Démarrage de PostgreSQL..."
@@ -39,7 +42,11 @@ docker run -d --name u-silenziu-postgres \
 
 # Attendre que PostgreSQL soit prêt
 echo "⏳ Attente que PostgreSQL soit prêt..."
-sleep 10
+sleep 15
+
+# Vérifier que PostgreSQL est bien démarré
+echo "🔍 Vérification de PostgreSQL..."
+docker ps | grep u-silenziu-postgres
 
 # 3. Démarrer l'application avec les variables Payplug
 echo "🚀 Démarrage de l'application avec Payplug..."
@@ -61,7 +68,7 @@ docker run -d --name u-silenziu-app \
 
 # Attendre que l'application soit prête
 echo "⏳ Attente que l'application soit prête..."
-sleep 15
+sleep 20
 
 # 4. Démarrer nginx
 echo "🌐 Démarrage de nginx..."
