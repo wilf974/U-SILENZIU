@@ -27,18 +27,17 @@ export interface Room {
 export interface Reservation {
   id: string;
   reservation_number: string;
-  first_name: string;
-  last_name: string;
-  email: string;
-  phone: string;
+  customer_name: string;
+  customer_email: string;
+  customer_phone: string;
   room_name: string;
   date: string;
-  time: string;
+  time_slot: string;
   duration: number;
-  number_of_people: number;
+  participants: number;
   status: 'pending' | 'confirmed' | 'cancelled';
   amount: number;
-  notes?: string;
+  special_requests?: string;
   created_at: Date;
   updated_at: Date;
 }
@@ -619,8 +618,27 @@ export async function getReservationById(id: string): Promise<Reservation | null
 export async function createReservation(reservationData: any): Promise<any> {
   const client = await getClient();
   try {
+    // DEBUG: Log des données reçues
+    console.log('🔧 createReservation - Données reçues:', reservationData);
+    
     // Générer un numéro de réservation si pas fourni
     const reservationNumber = reservationData.reservation_number || await generateReservationNumber();
+    
+    // DEBUG: Log des valeurs finales
+    console.log('🔧 createReservation - Valeurs finales:', {
+      reservationNumber,
+      customer_name: reservationData.customer_name,
+      customer_email: reservationData.customer_email,
+      customer_phone: reservationData.customer_phone,
+      room_name: reservationData.room_name,
+      date: reservationData.date,
+      time_slot: reservationData.time_slot,
+      duration: reservationData.duration,
+      participants: reservationData.participants,
+      status: reservationData.status,
+      amount: reservationData.amount,
+      special_requests: reservationData.special_requests
+    });
     
     const result = await client.query(
       `INSERT INTO reservations (reservation_number, customer_name, customer_email, customer_phone, room_name, date, time_slot, duration, participants, status, amount, special_requests)
