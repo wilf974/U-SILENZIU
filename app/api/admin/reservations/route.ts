@@ -139,6 +139,9 @@ export async function POST(request: NextRequest) {
     }
     
     console.log('🔧 API Admin POST - Données pour createReservation:', reservationData)
+    console.log('🔧 API Admin POST - customer_name:', reservationData.customer_name)
+    console.log('🔧 API Admin POST - first_name:', body.first_name)
+    console.log('🔧 API Admin POST - last_name:', body.last_name)
     
     // Créer la réservation
     const reservation = await createReservation(reservationData)
