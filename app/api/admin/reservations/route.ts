@@ -123,9 +123,14 @@ export async function POST(request: NextRequest) {
     }
     
     // DEBUG: Log des données avant createReservation
+    const customerName = `${body.first_name} ${body.last_name}`;
+    console.log('🔧 API Admin POST - customer_name construit:', customerName);
+    console.log('🔧 API Admin POST - first_name:', body.first_name);
+    console.log('🔧 API Admin POST - last_name:', body.last_name);
+    
     const reservationData = {
       reservation_number: reservationNumber,
-      customer_name: `${body.first_name} ${body.last_name}`,
+      customer_name: customerName,
       customer_email: body.email,
       customer_phone: body.phone,
       date: body.date,
@@ -139,9 +144,6 @@ export async function POST(request: NextRequest) {
     }
     
     console.log('🔧 API Admin POST - Données pour createReservation:', reservationData)
-    console.log('🔧 API Admin POST - customer_name:', reservationData.customer_name)
-    console.log('🔧 API Admin POST - first_name:', body.first_name)
-    console.log('🔧 API Admin POST - last_name:', body.last_name)
     
     // Créer la réservation
     const reservation = await createReservation(reservationData)
