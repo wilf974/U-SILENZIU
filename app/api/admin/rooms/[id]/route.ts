@@ -56,7 +56,8 @@ export async function PUT(
     // Normalisation des champs provenant du formulaire (string -> number/array)
     const duration = raw.duration !== undefined ? Number(raw.duration) : undefined;
     const price = raw.price !== undefined ? Number(raw.price) : undefined;
-    const maxPeople = raw.maxPeople !== undefined ? Number(raw.maxPeople) : undefined;
+    const maxPeople = (raw.maxPeople !== undefined ? Number(raw.maxPeople) : 
+                      (raw.max_people !== undefined ? Number(raw.max_people) : undefined));
     const objectsToDestroy = Array.isArray(raw.objects_to_destroy || raw.objectsToDestroy)
       ? (raw.objects_to_destroy || raw.objectsToDestroy)
       : (typeof (raw.objects_to_destroy || raw.objectsToDestroy) === 'string'
