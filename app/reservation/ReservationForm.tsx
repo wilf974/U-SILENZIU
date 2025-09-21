@@ -244,15 +244,15 @@ const ReservationForm = () => {
         const end = new Date(start)
         end.setMinutes(start.getMinutes() + duration)
         
-        // Format de l'heure pour correspondre à la base de données (HH:MM:SS)
-        const timeStr = `${hour.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')}:00`
+        // Format de l'heure pour correspondre à la base de données (HH:MM)
+        const timeStr = `${hour.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')}`
         
-        // Récupérer le nombre de personnes déjà réservées pour ce créneau
-        const currentBookings = dayReservations[timeStr] || 0
+        // Vérifier la disponibilité depuis l'API (booléen)
+        const slotAvailable = dayReservations[timeStr]
         
-        
-        // Vérifier la disponibilité
-        const available = currentBookings + numberOfPeople <= maxCapacity
+        // Si l'API indique false, le créneau est indisponible peu importe le nombre de personnes
+        // Si pas de données de l'API, considérer comme disponible par défaut
+        const available = slotAvailable !== false
         
         slots.push({
           id: `${hour}-${minute}`,
@@ -260,7 +260,7 @@ const ReservationForm = () => {
           end,
           available,
           maxCapacity,
-          currentBookings
+          currentBookings: available ? 0 : maxCapacity // Simulation pour compatibilité
         })
       }
     }
