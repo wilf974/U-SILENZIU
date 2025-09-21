@@ -168,8 +168,8 @@ const ReservationForm = () => {
     }
   }, [selectedRoom])
 
-  // État pour les disponibilités réelles
-  const [availabilityData, setAvailabilityData] = useState<{ [key: string]: { [key: string]: number } }>({})
+  // État pour les disponibilités réelles (peut être number ou boolean selon l'API)
+  const [availabilityData, setAvailabilityData] = useState<{ [key: string]: { [key: string]: number | boolean } }>({})
 
   // Fonction pour récupérer les disponibilités réelles depuis l'API
   const fetchAvailabilityData = async (startDate: Date, endDate: Date, roomName?: string) => {
@@ -247,12 +247,12 @@ const ReservationForm = () => {
         // Format de l'heure pour correspondre à la base de données (HH:MM)
         const timeStr = `${hour.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')}`
         
-        // Vérifier la disponibilité depuis l'API (booléen)
-        const slotAvailable = dayReservations[timeStr]
+        // Vérifier la disponibilité depuis l'API (peut être booléen ou nombre)
+        const slotData = dayReservations[timeStr]
         
-        // Si l'API indique false, le créneau est indisponible peu importe le nombre de personnes
-        // Si pas de données de l'API, considérer comme disponible par défaut
-        const available = slotAvailable !== false
+        // Si l'API indique false (booléen), le créneau est indisponible
+        // Si pas de données de l'API (undefined), considérer comme disponible par défaut
+        const available = slotData !== false
         
         slots.push({
           id: `${hour}-${minute}`,
