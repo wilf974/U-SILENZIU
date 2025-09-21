@@ -71,12 +71,15 @@ services:
       - UPLOAD_DIR=/app/public/uploads
       - UPLOAD_MAX_SIZE=10485760
       - UPLOAD_ALLOWED_TYPES=image/jpeg,image/png,image/gif,image/webp
+      # Configuration Payplug
+      - PAYPLUG_SECRET_KEY=sk_test_4qzp5fowqEGBG93PjzZOlF
+      - PAYPLUG_MODE=test
     restart: unless-stopped
     depends_on:
       postgres:
         condition: service_healthy
     healthcheck:
-      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:3000/"]
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://127.0.0.1:3000/"]
       interval: 30s
       timeout: 10s
       retries: 3
@@ -85,6 +88,22 @@ services:
       # Volume pour les uploads et logs
       - ./public/uploads:/app/public/uploads
       - ./logs:/app/logs
+    networks:
+      - u-silenziu-prod-network
+
+  # Nginx - Reverse Proxy pour HTTPS
+  nginx:
+    image: nginx:alpine
+    container_name: u-silenziu-nginx-prod
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/conf.d:/etc/nginx/conf.d
+      - /opt/ssl/rageroom.usilenziu.com:/etc/letsencrypt/live/rageroom.usilenziu.com:ro
+    depends_on:
+      - u-silenziu
+    restart: unless-stopped
     networks:
       - u-silenziu-prod-network
 
