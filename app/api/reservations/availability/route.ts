@@ -73,23 +73,44 @@ export async function GET(request: NextRequest) {
     
     // Marquer les créneaux occupés
     reservationsInPeriod.forEach(reservation => {
-      const dateStr = reservation.date
+      // Normaliser la date de la réservation (peut être ISO ou YYYY-MM-DD)
+      const reservationDate = new Date(reservation.date)
+      const dateStr = reservationDate.toISOString().split('T')[0]
       const timeSlot = reservation.time_slot
       
-      console.log('Réservation trouvée:', { dateStr, timeSlot, duration: reservation.duration, participants: reservation.participants })
+      console.log('Réservation trouvée:', { 
+        originalDate: reservation.date,
+        normalizedDate: dateStr, 
+        timeSlot, 
+        duration: reservation.duration, 
+        participants: reservation.participants 
+      })
+      
+      console.log('Availability keys:', Object.keys(availability))
+      console.log('Looking for dateStr:', dateStr)
       
       if (availability[dateStr] && timeSlot) {
         // Extraire l'heure de début du créneau (ex: "14:00 - 14:20" -> "14:00")
         const startTime = timeSlot.split(' - ')[0]
         
+        console.log('Extracted startTime:', startTime)
+        console.log('Availability for date before:', availability[dateStr])
+        
         if (availability[dateStr][startTime] !== undefined) {
           availability[dateStr][startTime] = false
-          console.log(`Créneau marqué comme occupé: ${dateStr} ${startTime}`)
+          console.log(`✅ Créneau marqué comme occupé: ${dateStr} ${startTime}`)
+        } else {
+          console.log(`❌ StartTime ${startTime} not found in availability for ${dateStr}`)
         }
+      } else {
+        console.log(`❌ Date ${dateStr} not found in availability or timeSlot missing`)
+      }
         
-        // Marquer aussi les créneaux suivants si la durée le nécessite
+      // Marquer aussi les créneaux suivants si la durée le nécessite (seulement si le créneau principal a été trouvé)
+      if (availability[dateStr] && timeSlot) {
         const duration = reservation.duration || 20
         const additionalSlots = Math.ceil(duration / 20) - 1 // Créneaux de 20 minutes
+        const startTime = timeSlot.split(' - ')[0]
         
         const currentSlotIndex = timeSlots.indexOf(startTime)
         if (currentSlotIndex !== -1) {
