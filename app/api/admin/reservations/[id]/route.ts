@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getReservationById, updateReservation, deleteReservation } from '@/lib/database'
-import { sendReservationValidationEmail, sendReservationCancellationEmail } from '@/lib/reservationEmails'
+import { sendReservationValidationEmail, sendReservationCancellationEmail } from '@/lib/email'
 
 /**
  * API Route pour la gestion d'une réservation spécifique
