@@ -693,6 +693,38 @@ export async function updateReservation(id: string, reservationData: Partial<Res
   }
 }
 
+/**
+ * Met à jour une réservation par son numéro de réservation
+ * Utilisé par les webhooks Payplug
+ */
+export async function updateReservationByNumber(reservationNumber: string, reservationData: Partial<Reservation>): Promise<Reservation | null> {
+  const client = await getClient();
+  try {
+    const fields: string[] = [];
+    const values: any[] = [];
+    let paramCount = 1;
+
+    Object.entries(reservationData).forEach(([key, value]) => {
+      if (value !== undefined && key !== 'id' && key !== 'created_at' && key !== 'updated_at') {
+        fields.push(`${key} = $${paramCount++}`);
+        values.push(value);
+      }
+    });
+
+    if (fields.length === 0) return null;
+
+    values.push(reservationNumber);
+    const result = await client.query(
+      `UPDATE reservations SET ${fields.join(', ')} WHERE reservation_number = $${paramCount} RETURNING *`,
+      values
+    );
+
+    return result.rows[0] || null;
+  } finally {
+    client.release();
+  }
+}
+
 export async function deleteReservation(id: string): Promise<boolean> {
   const client = await getClient();
   try {

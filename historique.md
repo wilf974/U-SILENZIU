@@ -3,6 +3,54 @@
 ## Vue d'ensemble du projet
 Site web pour U Silenziu, zone de défoulement située à Buros. Le site présente les services de défoulement et les activités proposées (lancer de haches, shurikens, fléchettes, défoulement, color zone, bras de fer).
 
+## 💳 Intégration Payplug - Paiement en ligne - Janvier 2025
+
+### Fonctionnalité ajoutée
+- **Paiement sécurisé** : Intégration complète de Payplug pour les paiements en ligne
+- **Paiement hébergé** : Redirection vers Payplug pour une sécurité maximale (PCI-DSS)
+- **Webhooks** : Traitement automatique des confirmations de paiement
+- **Emails adaptatifs** : Notifications selon le statut de paiement
+
+### Architecture implémentée
+- **lib/payplug.ts** : Service Payplug avec API complète (création, vérification, remboursements)
+- **components/PayplugPayment.tsx** : Composant de paiement avec interface utilisateur
+- **app/api/payments/create/route.ts** : API de création de paiement
+- **app/api/webhooks/payplug/route.ts** : Webhook pour les notifications Payplug
+- **app/reservation/payment/return/page.tsx** : Page de retour après paiement
+
+### Modifications apportées
+- **ReservationForm.tsx** : Ajout de l'étape de paiement après création de réservation
+- **lib/email.ts** : Emails adaptatifs selon le statut de paiement
+- **lib/database.ts** : Fonction `updateReservationByNumber` pour les webhooks
+- **add-payment-columns.sql** : Script d'ajout des colonnes de paiement
+
+### Nouvelles colonnes base de données
+- `payment_id` : ID du paiement Payplug
+- `payment_status` : Statut du paiement (pending, paid, failed, refunded)
+- `payment_amount` : Montant effectivement payé
+- `payment_date` : Date du paiement
+- `refund_amount` : Montant remboursé
+- `refund_date` : Date du remboursement
+- `payment_error` : Message d'erreur si échec
+
+### Variables d'environnement ajoutées
+- `PAYPLUG_SECRET_KEY` : Clé secrète Payplug
+- `PAYPLUG_PUBLIC_KEY` : Clé publique Payplug
+- `PAYPLUG_WEBHOOK_SECRET` : Secret pour vérification des webhooks
+- `PAYPLUG_MODE` : Mode test ou live
+
+### Flux de paiement
+1. **Réservation créée** → Statut "pending"
+2. **Redirection Payplug** → Paiement sécurisé
+3. **Webhook confirmation** → Statut "paid" + email confirmation
+4. **Page de retour** → Affichage du statut final
+
+### Sécurité
+- **Signature webhook** : Vérification cryptographique des notifications
+- **HTTPS obligatoire** : Toutes les communications sécurisées
+- **Validation des données** : Contrôles stricts sur les montants et emails
+- **Gestion d'erreurs** : Traitement robuste des échecs de paiement
+
 ## 🗑️ Suppression Section Redondante Dashboard Admin - Janvier 2025
 
 ### Modification effectuée

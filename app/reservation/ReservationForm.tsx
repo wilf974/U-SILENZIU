@@ -9,6 +9,7 @@ import { Clock, Users, CalendarDays, ArrowLeft, Check, MapPin, User, Mail, Phone
 import Link from 'next/link'
 import { useSearchParams } from 'next/navigation'
 import { useRooms, Room } from '@/hooks/useRooms'
+import PayplugPayment from '@/components/PayplugPayment'
 
 // Configuration du localizer avec moment en français
 moment.locale('fr')
@@ -58,6 +59,7 @@ const ReservationForm = () => {
   const [email, setEmail] = useState<string>('')
   const [phone, setPhone] = useState<string>('')
   const [reservationNumber, setReservationNumber] = useState<string>('')
+  const [showPayment, setShowPayment] = useState<boolean>(false)
   
   // État pour le prix de la salle
   const [roomPrice, setRoomPrice] = useState<number>(0)
@@ -371,6 +373,23 @@ const ReservationForm = () => {
   // Validation des champs
   const isPersonalInfoValid = firstName.trim() && lastName.trim() && email.trim() && phone.trim()
 
+  // Gestion des callbacks de paiement
+  const handlePaymentSuccess = (paymentId: string) => {
+    console.log('Paiement confirmé:', paymentId)
+    setShowPayment(false)
+    setCurrentStep(4) // Passer à l'étape de confirmation
+  }
+
+  const handlePaymentError = (error: string) => {
+    console.error('Erreur de paiement:', error)
+    alert(`Erreur de paiement: ${error}`)
+  }
+
+  const handlePaymentCancel = () => {
+    setShowPayment(false)
+    // Optionnel: supprimer la réservation en attente
+  }
+
   // Gestion de la soumission finale
   const handleSubmit = async () => {
     if (selectedTimeSlot && firstName && lastName && email && phone) {
@@ -399,10 +418,10 @@ const ReservationForm = () => {
         const newReservationNumber = await createReservation(reservationData)
         console.log('Réservation créée avec numéro:', newReservationNumber)
         
-        // S'assurer que le numéro est bien défini avant de passer à l'étape 4
+        // S'assurer que le numéro est bien défini avant de passer à l'étape de paiement
         if (newReservationNumber && newReservationNumber !== 'N/A') {
           setReservationNumber(newReservationNumber)
-          setCurrentStep(4)
+          setShowPayment(true)
         } else {
           console.error('Erreur: Numéro de réservation non généré')
           alert('Erreur lors de la génération du numéro de réservation. Veuillez réessayer.')
@@ -454,6 +473,41 @@ const ReservationForm = () => {
               Retour à l'accueil
             </Link>
           </div>
+        </div>
+      </div>
+    )
+  }
+
+  // Affichage de l'étape de paiement
+  if (showPayment && reservationNumber) {
+    return (
+      <div className="min-h-screen bg-dark-bg py-20">
+        <div className="section-container">
+          <div className="text-center mb-8">
+            <h1 className="text-4xl lg:text-5xl font-bold text-white mb-4">
+              Finalisez votre <span className="text-gradient-kaki">Réservation</span>
+            </h1>
+            <p className="text-xl text-gray-300">
+              Paiement sécurisé via Payplug
+            </p>
+          </div>
+          
+          <PayplugPayment
+            reservationData={{
+              reservationNumber,
+              customerName: `${firstName} ${lastName}`,
+              customerEmail: email,
+              amount: Math.round(roomPrice * numberOfPeople),
+              roomName: selectedRoom,
+              date: selectedDate.toLocaleDateString('fr-FR'),
+              timeSlot: selectedTimeSlot ? 
+                `${moment(selectedTimeSlot.start).format('HH:mm')} - ${moment(selectedTimeSlot.end).format('HH:mm')}` : '',
+              participants: numberOfPeople
+            }}
+            onPaymentSuccess={handlePaymentSuccess}
+            onPaymentError={handlePaymentError}
+            onCancel={handlePaymentCancel}
+          />
         </div>
       </div>
     )

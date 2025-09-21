@@ -37,6 +37,8 @@ interface ReservationEmailData {
   participants: number
   amount: number
   specialRequests?: string
+  paymentConfirmed?: boolean
+  paymentStatus?: 'pending' | 'paid' | 'failed' | 'refunded'
 }
 
 /**
@@ -151,6 +153,23 @@ export async function sendReservationConfirmationEmail(data: ReservationEmailDat
               </div>
             </div>
             
+            ${data.paymentConfirmed ? `
+              <div class="payment-status" style="background: #d4edda; border: 1px solid #c3e6cb; color: #155724; padding: 15px; border-radius: 8px; margin: 20px 0;">
+                <h3 style="margin: 0 0 10px 0; color: #155724;">✅ Paiement confirmé</h3>
+                <p style="margin: 0; font-weight: bold;">Votre réservation est confirmée et payée !</p>
+              </div>
+            ` : data.paymentStatus === 'pending' ? `
+              <div class="payment-status" style="background: #fff3cd; border: 1px solid #ffeaa7; color: #856404; padding: 15px; border-radius: 8px; margin: 20px 0;">
+                <h3 style="margin: 0 0 10px 0; color: #856404;">⏳ Paiement en attente</h3>
+                <p style="margin: 0;">Votre réservation est en attente de paiement. Vous recevrez un lien de paiement par email.</p>
+              </div>
+            ` : data.paymentStatus === 'failed' ? `
+              <div class="payment-status" style="background: #f8d7da; border: 1px solid #f5c6cb; color: #721c24; padding: 15px; border-radius: 8px; margin: 20px 0;">
+                <h3 style="margin: 0 0 10px 0; color: #721c24;">❌ Paiement échoué</h3>
+                <p style="margin: 0;">Le paiement a échoué. Veuillez nous contacter pour finaliser votre réservation.</p>
+              </div>
+            ` : ''}
+            
             ${data.specialRequests ? `
               <div class="reservation-details">
                 <h3>Demandes spéciales</h3>
@@ -158,12 +177,21 @@ export async function sendReservationConfirmationEmail(data: ReservationEmailDat
               </div>
             ` : ''}
             
-            <p><strong>Prochaines étapes :</strong></p>
-            <ul>
-              <li>Nous allons vérifier la disponibilité de votre créneau</li>
-              <li>Vous recevrez un email de confirmation dans les 24h</li>
-              <li>En cas de problème, nous vous contacterons par téléphone</li>
-            </ul>
+            ${data.paymentConfirmed ? `
+              <p><strong>Votre réservation est confirmée !</strong></p>
+              <ul>
+                <li>Vous recevrez un rappel 24h avant votre session</li>
+                <li>Présentez-vous 10 minutes avant l'heure prévue</li>
+                <li>En cas d'annulation, contactez-nous au moins 24h à l'avance</li>
+              </ul>
+            ` : `
+              <p><strong>Prochaines étapes :</strong></p>
+              <ul>
+                <li>Nous allons vérifier la disponibilité de votre créneau</li>
+                <li>Vous recevrez un email de confirmation dans les 24h</li>
+                <li>En cas de problème, nous vous contacterons par téléphone</li>
+              </ul>
+            `}
             
             <p>Merci de votre confiance et à bientôt chez U Silenziu !</p>
             
