@@ -29,12 +29,18 @@ const DynamicSection = ({ section }: DynamicSectionProps) => {
   useEffect(() => {
     if (section.content) {
       try {
-        // Essayer de parser le contenu JSON
-        const parsed = JSON.parse(section.content)
+        let parsed: any
+        if (typeof section.content === 'string') {
+          parsed = JSON.parse(section.content)
+        } else if (section.content && typeof section.content === 'object') {
+          parsed = section.content
+        } else {
+          parsed = { content: section.content }
+        }
         setParsedContent(parsed)
-      } catch {
-        // Si ce n'est pas du JSON, traiter comme du texte simple
-        setParsedContent({ type: 'text', content: section.content })
+      } catch (error) {
+        console.error('Erreur parsing JSON:', error)
+        setParsedContent({ content: section.content })
       }
     }
   }, [section.content])
@@ -137,7 +143,15 @@ const DynamicSection = ({ section }: DynamicSectionProps) => {
       default:
         return (
           <div className="text-gray-300">
-            {section.content}
+            {parsedContent?.content && typeof parsedContent.content === 'string' ? (
+              <div className="text-gray-300 whitespace-pre-wrap">
+                {parsedContent.content}
+              </div>
+            ) : (
+              <div className="text-gray-300">
+                Contenu non disponible
+              </div>
+            )}
           </div>
         )
     }
