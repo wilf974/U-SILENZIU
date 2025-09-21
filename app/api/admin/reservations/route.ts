@@ -121,18 +121,17 @@ export async function POST(request: NextRequest) {
     // Créer la réservation
     const reservation = await createReservation({
       reservation_number: reservationNumber,
-      first_name: body.first_name,
-      last_name: body.last_name,
-      email: body.email,
-      phone: body.phone,
+      customer_name: `${body.first_name} ${body.last_name}`,
+      customer_email: body.email,
+      customer_phone: body.phone,
       date: body.date,
-      time: body.time,
+      time_slot: body.time,
       duration: body.duration,
-      number_of_people: body.number_of_people,
+      participants: body.number_of_people,
       room_name: body.room_name,
       status: body.status || 'pending',
       amount: amount,
-      notes: body.notes || ''
+      special_requests: body.notes || ''
     })
 
     return NextResponse.json({
