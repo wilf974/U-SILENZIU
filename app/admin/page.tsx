@@ -13,7 +13,6 @@ import {
   Settings, 
   Mail, 
   FileText, 
-  Plus,
   Edit,
   Trash2,
   Eye,
@@ -179,14 +178,6 @@ export default function AdminDashboard() {
       icon: Calendar,
       href: '/admin/reservations',
       color: 'bg-kaki-600 hover:bg-kaki-700',
-      requiredRole: 'admin' as const
-    },
-    {
-      title: 'Nouvelle Réservation',
-      description: 'Créer une réservation manuelle',
-      icon: Plus,
-      href: '/admin/reservations?new=true',
-      color: 'bg-green-600 hover:bg-green-700',
       requiredRole: 'admin' as const
     },
     {

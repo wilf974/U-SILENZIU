@@ -125,3 +125,4 @@ curl -I https://$DOMAIN/ --connect-timeout 10 || echo "❌ Connexion échouée"
 echo "✅ Script terminé. Teste maintenant l'accès aux images upload."
 
 
+

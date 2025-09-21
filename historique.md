@@ -3,6 +3,22 @@
 ## Vue d'ensemble du projet
 Site web pour U Silenziu, zone de défoulement située à Buros. Le site présente les services de défoulement et les activités proposées (lancer de haches, shurikens, fléchettes, défoulement, color zone, bras de fer).
 
+## 🗑️ Suppression Section Redondante Dashboard Admin - Janvier 2025
+
+### Modification effectuée
+- **Suppression "Nouvelle Réservation"** : Retrait de la carte "Nouvelle Réservation" du dashboard admin
+- **Raison** : Redondance avec la section "Gestion des Réservations" qui contient déjà un bouton "Nouvelle Réservation"
+- **Optimisation UX** : Interface plus épurée et moins confuse pour les administrateurs
+
+### Fichiers modifiés
+- `app/admin/page.tsx` : Suppression de l'objet "Nouvelle Réservation" du tableau `baseActions`
+- Suppression de l'import `Plus` de lucide-react (plus utilisé)
+
+### Impact
+- **Interface simplifiée** : Moins de boutons redondants dans le dashboard
+- **Navigation claire** : Les utilisateurs vont directement dans "Gestion des Réservations" pour créer/modifier
+- **Maintenance réduite** : Moins de code à maintenir pour la même fonctionnalité
+
 ## 🔧 Correction Erreur HTTP 500 Production HTTPS - Septembre 2025
 
 ### Problème résolu
