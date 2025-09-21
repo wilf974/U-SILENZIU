@@ -69,8 +69,14 @@ class PayplugService {
 
   /**
    * Vérifie si Payplug est correctement configuré
+   * En mode test, on accepte seulement la clé secrète
    */
   isConfigured(): boolean {
+    // En mode test, on accepte seulement la clé secrète
+    if (this.config.mode === 'test') {
+      return !!this.config.secretKey
+    }
+    // En mode live, on exige toutes les clés
     return !!(this.config.secretKey && this.config.publicKey && this.config.webhookSecret)
   }
 
@@ -167,6 +173,17 @@ class PayplugService {
    * @returns true si la signature est valide
    */
   verifyWebhookSignature(payload: string, signature: string): boolean {
+    // En mode test sans secret webhook, on accepte tout
+    if (this.config.mode === 'test' && !this.config.webhookSecret) {
+      console.log('Mode test: signature webhook ignorée')
+      return true
+    }
+
+    if (!this.config.webhookSecret) {
+      console.error('Secret webhook non configuré')
+      return false
+    }
+
     try {
       const crypto = require('crypto')
       const expectedSignature = crypto
