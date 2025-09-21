@@ -479,6 +479,9 @@ export async function getRoomsWithoutPrice(): Promise<Room[]> {
 export async function updateRoom(id: string, roomData: Partial<Room>): Promise<Room | null> {
   const client = await getClient();
   try {
+    console.log('🔧 updateRoom - ID:', id);
+    console.log('🔧 updateRoom - roomData reçu:', roomData);
+    
     const fields = [];
     const values = [];
     let paramCount = 1;
@@ -526,13 +529,22 @@ export async function updateRoom(id: string, roomData: Partial<Room>): Promise<R
       values.push(roomData.is_active);
     }
 
-    if (fields.length === 0) return null;
+    console.log('🔧 updateRoom - fields construits:', fields);
+    console.log('🔧 updateRoom - values construites:', values);
+    
+    if (fields.length === 0) {
+      console.log('🔧 updateRoom - AUCUN CHAMP À METTRE À JOUR, return null');
+      return null;
+    }
 
     values.push(id);
-    const result = await client.query(
-      `UPDATE rooms SET ${fields.join(', ')} WHERE id = $${paramCount} RETURNING *`,
-      values
-    );
+    const sqlQuery = `UPDATE rooms SET ${fields.join(', ')} WHERE id = $${paramCount} RETURNING *`;
+    console.log('🔧 updateRoom - SQL query:', sqlQuery);
+    console.log('🔧 updateRoom - Final values:', values);
+    
+    const result = await client.query(sqlQuery, values);
+    
+    console.log('🔧 updateRoom - Résultat SQL:', result.rows.length > 0 ? 'ROWS FOUND' : 'NO ROWS');
 
     if (result.rows.length === 0) return null;
     const row = result.rows[0];

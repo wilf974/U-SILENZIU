@@ -117,7 +117,19 @@ export async function PUT(
       image_url: body.image_url,
       is_active: body.isActive,
     };
+    
+    // DEBUG: Log des données avant updateRoom
+    console.log('🔧 API PUT Room - Données reçues:', { 
+      id, 
+      maxPeople: body.maxPeople, 
+      max_people_in_updates: updates.max_people,
+      raw_max_people: body.max_people
+    });
+    console.log('🔧 API PUT Room - Objet updates complet:', updates);
+    
     const updatedRoom = await updateRoom(id, updates);
+    
+    console.log('🔧 API PUT Room - Résultat updateRoom:', updatedRoom ? 'SUCCESS' : 'NULL');
     
     if (!updatedRoom) {
       return NextResponse.json(
