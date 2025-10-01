@@ -79,10 +79,10 @@ export async function POST(request: NextRequest) {
         city: 'Buros',
         country: 'FR'
       },
-      notification_url: `${baseUrl}/api/webhooks/payplug`,
+      // Pas de webhook - vérification manuelle uniquement
       hosted_payment: {
-        return_url: `${baseUrl}/reservation/payment/return?reservation=${body.reservationNumber}&status=success`,
-        cancel_url: `${baseUrl}/reservation/payment/return?reservation=${body.reservationNumber}&status=cancelled`
+        return_url: `${baseUrl}/reservation/payment/success?reservation=${body.reservationNumber}`,
+        cancel_url: `${baseUrl}/reservation/payment/cancelled?reservation=${body.reservationNumber}`
       },
       metadata: {
         reservation_number: body.reservationNumber,
