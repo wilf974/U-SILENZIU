@@ -1,10 +1,17 @@
 import React from 'react'
+import { getLegalPageByType } from '@/lib/database'
+import { Metadata } from 'next'
 
 /**
  * Page des Mentions Légales
  * @returns JSX.Element
  */
-export default function MentionsLegalesPage() {
+export default async function MentionsLegalesPage() {
+  // Récupérer le contenu depuis la base de données
+  const legalPage = await getLegalPageByType('legal')
+  
+  // Si pas de page en base, afficher le contenu par défaut
+  if (!legalPage) {
   return (
     <div className="min-h-screen bg-gray-900 text-white">
       <div className="container mx-auto px-4 py-8 max-w-4xl">
@@ -99,4 +106,46 @@ export default function MentionsLegalesPage() {
       </div>
     </div>
   )
+  }
+
+  // Afficher le contenu depuis la base de données
+  return (
+    <div className="min-h-screen bg-gray-900 text-white">
+      <div className="container mx-auto px-4 py-8 max-w-4xl">
+        <h1 className="text-3xl font-bold mb-8 text-center">{legalPage.title}</h1>
+        
+        <div 
+          className="prose prose-invert max-w-none"
+          dangerouslySetInnerHTML={{ __html: legalPage.content }}
+        />
+        
+        <section className="pt-6 border-t border-gray-700">
+          <p className="text-sm text-gray-400">
+            Dernière mise à jour : {new Date(legalPage.updated_at).toLocaleDateString('fr-FR')}
+            {legalPage.last_updated_by && ` par ${legalPage.last_updated_by}`}
+          </p>
+        </section>
+      </div>
+    </div>
+  )
+}
+
+/**
+ * Métadonnées SEO pour la page Mentions Légales
+ */
+export async function generateMetadata(): Promise<Metadata> {
+  const legalPage = await getLegalPageByType('legal')
+  
+  if (legalPage) {
+    return {
+      title: legalPage.seo_title || legalPage.title,
+      description: legalPage.meta_description || 'Mentions légales de U Silenziu',
+      keywords: legalPage.keywords?.join(', ') || 'mentions légales, U Silenziu, Buros'
+    }
+  }
+  
+  return {
+    title: 'Mentions Légales - U Silenziu',
+    description: 'Mentions légales de U Silenziu, zone de défoulement à Buros'
+  }
 }

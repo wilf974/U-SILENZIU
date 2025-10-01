@@ -1,10 +1,17 @@
 import React from 'react'
+import { getLegalPageByType } from '@/lib/database'
+import { Metadata } from 'next'
 
 /**
  * Page de la Politique de Confidentialité
  * @returns JSX.Element
  */
-export default function PolitiqueConfidentialitePage() {
+export default async function PolitiqueConfidentialitePage() {
+  // Récupérer le contenu depuis la base de données
+  const legalPage = await getLegalPageByType('privacy')
+  
+  // Si pas de page en base, afficher le contenu par défaut
+  if (!legalPage) {
   return (
     <div className="min-h-screen bg-gray-900 text-white">
       <div className="container mx-auto px-4 py-8 max-w-4xl">
@@ -122,4 +129,46 @@ export default function PolitiqueConfidentialitePage() {
       </div>
     </div>
   )
+  }
+
+  // Afficher le contenu depuis la base de données
+  return (
+    <div className="min-h-screen bg-gray-900 text-white">
+      <div className="container mx-auto px-4 py-8 max-w-4xl">
+        <h1 className="text-3xl font-bold mb-8 text-center">{legalPage.title}</h1>
+        
+        <div 
+          className="prose prose-invert max-w-none"
+          dangerouslySetInnerHTML={{ __html: legalPage.content }}
+        />
+        
+        <section className="pt-6 border-t border-gray-700">
+          <p className="text-sm text-gray-400">
+            Dernière mise à jour : {new Date(legalPage.updated_at).toLocaleDateString('fr-FR')}
+            {legalPage.last_updated_by && ` par ${legalPage.last_updated_by}`}
+          </p>
+        </section>
+      </div>
+    </div>
+  )
+}
+
+/**
+ * Métadonnées SEO pour la page Politique de Confidentialité
+ */
+export async function generateMetadata(): Promise<Metadata> {
+  const legalPage = await getLegalPageByType('privacy')
+  
+  if (legalPage) {
+    return {
+      title: legalPage.seo_title || legalPage.title,
+      description: legalPage.meta_description || 'Politique de confidentialité de U Silenziu',
+      keywords: legalPage.keywords?.join(', ') || 'politique confidentialité, RGPD, U Silenziu'
+    }
+  }
+  
+  return {
+    title: 'Politique de Confidentialité - U Silenziu',
+    description: 'Politique de confidentialité de U Silenziu, zone de défoulement à Buros'
+  }
 }
