@@ -286,17 +286,57 @@ export default function ReservationsAdminPage() {
   }
 
   /**
-   * Formate la date pour l'affichage
+   * Formate la date pour l'affichage avec gestion d'erreur
    */
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('fr-FR')
+  const formatDate = (dateString?: string | null) => {
+    if (!dateString) return 'N/A'
+    try {
+      return new Date(dateString).toLocaleDateString('fr-FR')
+    } catch (error) {
+      console.error('Erreur lors du formatage de la date:', error)
+      return 'Date invalide'
+    }
   }
 
   /**
-   * Formate l'heure pour l'affichage
+   * Formate l'heure pour l'affichage avec gestion d'erreur
    */
-  const formatTime = (timeString: string) => {
-    return timeString.substring(0, 5) // Affiche seulement HH:MM
+  const formatTime = (timeString?: string | null) => {
+    if (!timeString) return 'N/A'
+    try {
+      // Vérifier que la chaîne contient au moins le format HH:MM
+      if (timeString.length >= 5) {
+        return timeString.substring(0, 5) // Affiche seulement HH:MM
+      }
+      return timeString // Retourner tel quel si format inattendu
+    } catch (error) {
+      console.error('Erreur lors du formatage de l\'heure:', error)
+      return 'Heure invalide'
+    }
+  }
+
+  /**
+   * Formate le nom du client avec gestion d'erreur
+   */
+  const formatClientName = (firstName?: string | null, lastName?: string | null) => {
+    if (!firstName && !lastName) return 'Client inconnu'
+    return `${firstName || ''} ${lastName || ''}`.trim() || 'Client inconnu'
+  }
+
+  /**
+   * Formate le téléphone avec gestion d'erreur
+   */
+  const formatPhone = (phone?: string | null) => {
+    if (!phone) return 'N/A'
+    return phone
+  }
+
+  /**
+   * Formate l'email avec gestion d'erreur
+   */
+  const formatEmail = (email?: string | null) => {
+    if (!email) return 'N/A'
+    return email
   }
 
   // Pagination
@@ -550,23 +590,23 @@ export default function ReservationsAdminPage() {
                     return (
                       <tr key={reservation.id} className="hover:bg-gray-700">
                         <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-white">
-                          {reservation.reservation_number}
+                          {reservation.reservation_number || 'N/A'}
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-300">
                           <div>
-                            <div className="font-medium">{reservation.customer_name}</div>
-                            <div className="text-gray-400">{reservation.customer_email}</div>
-                            <div className="text-gray-400">{reservation.customer_phone}</div>
+                            <div className="font-medium">{formatClientName(reservation.first_name, reservation.last_name) || reservation.customer_name || 'Client inconnu'}</div>
+                            <div className="text-gray-400">{formatEmail(reservation.email) || reservation.customer_email || 'N/A'}</div>
+                            <div className="text-gray-400">{formatPhone(reservation.phone) || reservation.customer_phone || 'N/A'}</div>
                           </div>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-300">
-                          {reservation.room_name}
+                          {reservation.room_name || 'Salle inconnue'}
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-300">
                           <div>
                             <div>{formatDate(reservation.date)}</div>
-                            <div className="text-gray-400">{formatTime(reservation.time_slot)}</div>
-                            <div className="text-gray-400">{reservation.duration}min</div>
+                            <div className="text-gray-400">{formatTime(reservation.time_slot || reservation.time)}</div>
+                            <div className="text-gray-400">{reservation.duration || reservation.number_of_people ? `${reservation.duration || reservation.number_of_people} pers.` : 'N/A'}</div>
                           </div>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
@@ -576,7 +616,7 @@ export default function ReservationsAdminPage() {
                           </span>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-300">
-                          {reservation.amount}€
+                          {reservation.amount ? `${reservation.amount}€` : 'N/A'}
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                           <div className="flex items-center space-x-2">
