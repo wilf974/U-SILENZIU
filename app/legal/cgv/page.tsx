@@ -1,83 +1,95 @@
-import { Metadata } from 'next'
-import { getLegalPageByType } from '@/lib/database'
-import Header from '@/components/Header'
-import Footer from '@/components/Footer'
+import React from 'react'
 
-export const dynamic = 'force-dynamic'
-
-export const metadata: Metadata = {
-  title: 'Conditions Générales de Vente - U Silenziu',
-  description: 'Consultez nos conditions générales de vente pour les réservations de salles à U Silenziu.',
-  keywords: ['conditions générales', 'vente', 'réservation', 'salle', 'U Silenziu'],
-  openGraph: {
-    title: 'Conditions Générales de Vente - U Silenziu',
-    description: 'Consultez nos conditions générales de vente pour les réservations de salles à U Silenziu.',
-    type: 'website',
-  },
-}
-
-export default async function CGVPage() {
-  const page = await getLegalPageByType('cgv')
-
-  if (!page) {
-    return (
-      <main className="min-h-screen bg-dark-bg">
-        <Header />
-        <div className="py-12">
-          <div className="max-w-4xl mx-auto px-4">
-            <div className="bg-dark-surface rounded-lg shadow-lg border border-kaki-800/30 p-8">
-              <div className="flex items-center space-x-3 mb-6">
-                <div className="w-10 h-10 bg-gradient-to-br from-kaki-500 to-kaki-700 rounded-lg flex items-center justify-center">
-                  <span className="text-white font-bold text-xl">U</span>
-                </div>
-                <h1 className="text-3xl font-bold text-white">
-                  Conditions Générales de Vente
-                </h1>
-              </div>
-              <p className="text-kaki-300">
-                Cette page est temporairement indisponible.
-              </p>
-            </div>
-          </div>
-        </div>
-        <Footer />
-      </main>
-    )
-  }
-
+/**
+ * Page des Conditions Générales de Vente
+ * @returns JSX.Element
+ */
+export default function CGVPage() {
   return (
-    <main className="min-h-screen bg-dark-bg">
-      <Header />
-      <div className="py-12">
-        <div className="max-w-4xl mx-auto px-4">
-          <div className="bg-dark-surface rounded-lg shadow-lg border border-kaki-800/30 p-8">
-            <div className="flex items-center space-x-3 mb-6">
-              <div className="w-10 h-10 bg-gradient-to-br from-kaki-500 to-kaki-700 rounded-lg flex items-center justify-center">
-                <span className="text-white font-bold text-xl">U</span>
-              </div>
-              <h1 className="text-3xl font-bold text-white">
-                {page.title}
-              </h1>
+    <div className="min-h-screen bg-gray-900 text-white">
+      <div className="container mx-auto px-4 py-8 max-w-4xl">
+        <h1 className="text-3xl font-bold mb-8 text-center">Conditions Générales de Vente</h1>
+        
+        <div className="space-y-6">
+          <section>
+            <h2 className="text-2xl font-semibold mb-4 text-kaki-400">1. Objet</h2>
+            <p className="text-gray-300 leading-relaxed">
+              Les présentes conditions générales de vente régissent les relations contractuelles entre U Silenziu 
+              et ses clients concernant la réservation et l'utilisation des salles de défoulement.
+            </p>
+          </section>
+
+          <section>
+            <h2 className="text-2xl font-semibold mb-4 text-kaki-400">2. Services proposés</h2>
+            <p className="text-gray-300 leading-relaxed">
+              U Silenziu propose des salles de défoulement équipées pour la destruction d'objets dans un cadre sécurisé. 
+              Les services incluent la mise à disposition d'équipements de protection, de matériel de destruction 
+              et d'instructions de sécurité.
+            </p>
+          </section>
+
+          <section>
+            <h2 className="text-2xl font-semibold mb-4 text-kaki-400">3. Réservations</h2>
+            <div className="text-gray-300 leading-relaxed space-y-2">
+              <p>• Les réservations s'effectuent en ligne via notre site web</p>
+              <p>• Toute réservation est soumise à disponibilité</p>
+              <p>• Le paiement est requis pour confirmer la réservation</p>
+              <p>• Un numéro de réservation unique est attribué à chaque commande</p>
             </div>
-            
-            <div 
-              className="prose prose-lg max-w-none prose-invert"
-              style={{
-                color: '#e5e7eb',
-                lineHeight: '1.6'
-              }}
-              dangerouslySetInnerHTML={{ __html: page.content }}
-            />
-            
-            <div className="mt-8 pt-6 border-t border-kaki-800/30">
-              <p className="text-sm text-kaki-300">
-                Dernière mise à jour : {new Date(page.updated_at).toLocaleDateString('fr-FR')}
-              </p>
+          </section>
+
+          <section>
+            <h2 className="text-2xl font-semibold mb-4 text-kaki-400">4. Tarifs et paiement</h2>
+            <div className="text-gray-300 leading-relaxed space-y-2">
+              <p>• Les tarifs sont indiqués en euros TTC</p>
+              <p>• Le paiement s'effectue en ligne via Payplug</p>
+              <p>• Aucun remboursement n'est possible après utilisation du service</p>
+              <p>• Les tarifs peuvent être modifiés sans préavis</p>
             </div>
-          </div>
+          </section>
+
+          <section>
+            <h2 className="text-2xl font-semibold mb-4 text-kaki-400">5. Annulation et modification</h2>
+            <div className="text-gray-300 leading-relaxed space-y-2">
+              <p>• Annulation gratuite jusqu'à 24h avant la réservation</p>
+              <p>• Annulation entre 24h et 2h : 50% de frais</p>
+              <p>• Annulation moins de 2h avant : aucun remboursement</p>
+              <p>• Les modifications sont soumises à disponibilité</p>
+            </div>
+          </section>
+
+          <section>
+            <h2 className="text-2xl font-semibold mb-4 text-kaki-400">6. Responsabilité</h2>
+            <p className="text-gray-300 leading-relaxed">
+              Le client s'engage à respecter les consignes de sécurité et à utiliser les équipements 
+              conformément aux instructions. U Silenziu décline toute responsabilité en cas de non-respect 
+              des règles de sécurité.
+            </p>
+          </section>
+
+          <section>
+            <h2 className="text-2xl font-semibold mb-4 text-kaki-400">7. Données personnelles</h2>
+            <p className="text-gray-300 leading-relaxed">
+              Les données personnelles collectées sont traitées conformément à notre politique de confidentialité. 
+              Elles sont utilisées uniquement pour la gestion des réservations et la communication avec le client.
+            </p>
+          </section>
+
+          <section>
+            <h2 className="text-2xl font-semibold mb-4 text-kaki-400">8. Droit applicable</h2>
+            <p className="text-gray-300 leading-relaxed">
+              Les présentes conditions sont soumises au droit français. En cas de litige, les tribunaux 
+              français seront compétents.
+            </p>
+          </section>
+
+          <section className="pt-6 border-t border-gray-700">
+            <p className="text-sm text-gray-400">
+              Dernière mise à jour : {new Date().toLocaleDateString('fr-FR')}
+            </p>
+          </section>
         </div>
       </div>
-      <Footer />
-    </main>
+    </div>
   )
 }

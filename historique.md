@@ -52,6 +52,7 @@ Site web pour U Silenziu, zone de défoulement située à Buros. Le site présen
 - **Flux de paiement opérationnel** : Création, retour et webhook fonctionnels en local
 - **Préparation production** : Configuration des fichiers de production avec clés Payplug
 - **Scripts de déploiement** : Scripts automatisés pour déploiement VPS et tests de validation
+- **Pages légales créées** : CGV, Mentions légales et Politique de confidentialité avec contenu de base
 
 ### Flux de paiement
 1. **Réservation créée** → Statut "pending"
