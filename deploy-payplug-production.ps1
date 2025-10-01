@@ -38,29 +38,25 @@ Write-Host ""
 Write-Host "⚠️  CONFIGURATION PAYPLUG PRODUCTION" -ForegroundColor Yellow
 Write-Host "====================================" -ForegroundColor Yellow
 Write-Host ""
-Write-Host "🔑 Vous devez configurer les clés Payplug de production :" -ForegroundColor White
+Write-Host "🔑 Configuration Payplug en mode TEST pour les tests :" -ForegroundColor White
 Write-Host ""
-Write-Host "   1. Connectez-vous à votre compte Payplug" -ForegroundColor Gray
-Write-Host "   2. Activez votre clé LIVE (Clé LIVE)" -ForegroundColor Gray
-Write-Host "   3. Récupérez vos clés de production :" -ForegroundColor Gray
-Write-Host "      - PAYPLUG_SECRET_KEY (sk_live_...)" -ForegroundColor Gray
-Write-Host "      - PAYPLUG_PUBLIC_KEY (pk_live_...)" -ForegroundColor Gray
-Write-Host "      - PAYPLUG_WEBHOOK_SECRET (whsec_live_...)" -ForegroundColor Gray
+Write-Host "   ✅ Clés de test déjà configurées" -ForegroundColor Green
+Write-Host "   ✅ Mode test activé pour les tests de production" -ForegroundColor Green
+Write-Host "   ✅ URLs de production configurées" -ForegroundColor Green
 Write-Host ""
-Write-Host "   4. Modifiez le fichier docker-compose.prod.yml" -ForegroundColor Gray
-Write-Host "   5. Remplacez les valeurs CHANGE_ME_* par vos vraies clés" -ForegroundColor Gray
+Write-Host "   📝 Pour passer en mode LIVE plus tard :" -ForegroundColor Gray
+Write-Host "   1. Activez votre clé LIVE dans Payplug" -ForegroundColor Gray
+Write-Host "   2. Remplacez les clés sk_test_ par sk_live_" -ForegroundColor Gray
+Write-Host "   3. Changez PAYPLUG_MODE=test vers PAYPLUG_MODE=live" -ForegroundColor Gray
 Write-Host ""
 
-$configure = Read-Host "Avez-vous configuré vos clés Payplug de production ? (o/n)"
+$configure = Read-Host "Voulez-vous continuer avec le déploiement en mode TEST ? (o/n)"
 if ($configure -ne "o" -and $configure -ne "O") {
-    Write-Host "❌ Veuillez d'abord configurer vos clés Payplug de production" -ForegroundColor Red
+    Write-Host "❌ Déploiement annulé" -ForegroundColor Red
     Write-Host ""
-    Write-Host "📝 Instructions détaillées :" -ForegroundColor Cyan
-    Write-Host "   1. Ouvrez docker-compose.prod.yml" -ForegroundColor White
-    Write-Host "   2. Remplacez CHANGE_ME_PAYPLUG_SECRET_KEY_PRODUCTION par votre clé secrète" -ForegroundColor White
-    Write-Host "   3. Remplacez CHANGE_ME_PAYPLUG_PUBLIC_KEY_PRODUCTION par votre clé publique" -ForegroundColor White
-    Write-Host "   4. Remplacez CHANGE_ME_PAYPLUG_WEBHOOK_SECRET_PRODUCTION par votre secret webhook" -ForegroundColor White
-    Write-Host "   5. Relancez ce script" -ForegroundColor White
+    Write-Host "📝 Pour déployer plus tard :" -ForegroundColor Cyan
+    Write-Host "   1. Relancez ce script" -ForegroundColor White
+    Write-Host "   2. Ou modifiez les clés pour passer en mode LIVE" -ForegroundColor White
     exit 1
 }
 
