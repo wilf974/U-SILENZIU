@@ -1,10 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getAllLegalPages, createLegalPage } from '@/lib/database';
+import { getAllLegalPages, createLegalPage, updateLegalPageStatus } from '@/lib/database';
 
 /**
  * API Route d'administration pour la gestion des pages légales
  * GET /api/admin/legal-pages - Récupérer toutes les pages légales
  * POST /api/admin/legal-pages - Créer une nouvelle page légale
+ * PUT /api/admin/legal-pages/[page_type] - Mettre à jour le statut d'une page légale
  */
 
 export async function GET() {
@@ -66,6 +67,56 @@ export async function POST(request: NextRequest) {
     console.error('Erreur lors de la création de la page légale:', error);
     return NextResponse.json(
       { success: false, error: 'Erreur lors de la création de la page légale' },
+      { status: 500 }
+    );
+  }
+}
+
+export async function PUT(request: NextRequest) {
+  try {
+    const url = new URL(request.url);
+    const pageType = url.pathname.split('/').pop();
+
+    if (!pageType) {
+      return NextResponse.json(
+        { success: false, error: 'Type de page légale requis' },
+        { status: 400 }
+      );
+    }
+
+    const body = await request.json();
+    const { is_published } = body;
+
+    // Validation du type de page
+    const validTypes = ['cgv', 'privacy', 'legal', 'cookies'];
+    if (!validTypes.includes(pageType)) {
+      return NextResponse.json(
+        { success: false, error: 'Type de page légale invalide' },
+        { status: 400 }
+      );
+    }
+
+    if (typeof is_published !== 'boolean') {
+      return NextResponse.json(
+        { success: false, error: 'Le champ is_published doit être un booléen' },
+        { status: 400 }
+      );
+    }
+
+    const updatedPage = await updateLegalPageStatus(pageType, is_published);
+
+    if (!updatedPage) {
+      return NextResponse.json(
+        { success: false, error: 'Erreur lors de la mise à jour de la page légale' },
+        { status: 500 }
+      );
+    }
+
+    return NextResponse.json({ success: true, data: updatedPage });
+  } catch (error) {
+    console.error('Erreur lors de la mise à jour de la page légale:', error);
+    return NextResponse.json(
+      { success: false, error: 'Erreur lors de la mise à jour de la page légale' },
       { status: 500 }
     );
   }

@@ -2573,6 +2573,39 @@ export async function deleteLegalPage(id: string): Promise<boolean> {
 }
 
 /**
+ * Met à jour le statut de publication d'une page légale
+ * @param pageType - Type de la page légale (cgv, privacy, legal, cookies)
+ * @param isPublished - Statut de publication
+ * @returns Promise<LegalPage | null> - Page légale mise à jour ou null si non trouvée
+ */
+export async function updateLegalPageStatus(pageType: string, isPublished: boolean): Promise<LegalPage | null> {
+  const client = await getClient();
+  try {
+    const result = await client.query(
+      `UPDATE legal_pages
+       SET is_published = $1, updated_at = NOW()
+       WHERE page_type = $2
+       RETURNING *`,
+      [isPublished, pageType]
+    );
+
+    if (result.rows.length === 0) {
+      return null;
+    }
+
+    return {
+      ...result.rows[0],
+      keywords: result.rows[0].keywords || []
+    };
+  } catch (error) {
+    console.error('Erreur lors de la mise à jour du statut de la page légale:', error);
+    return null;
+  } finally {
+    client.release();
+  }
+}
+
+/**
  * Récupère les pages légales publiées pour l'affichage public
  * @returns Promise<LegalPage[]> - Liste des pages légales publiées
  */
