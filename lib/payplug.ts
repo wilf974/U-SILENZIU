@@ -13,19 +13,36 @@ interface PayplugConfig {
 interface PaymentData {
   amount: number
   currency: string
-  customer: {
-    email: string
+  billing: {
+    title: string
     first_name: string
     last_name: string
+    email: string
+    mobile_phone_number: string
+    address1: string
+    address2: string
+    postcode: string
+    city: string
+    country: string
   }
-  order: string
-  custom_data?: Record<string, any>
-  return_url: string
+  shipping: {
+    title: string
+    first_name: string
+    last_name: string
+    email: string
+    mobile_phone_number: string
+    address1: string
+    address2: string
+    postcode: string
+    city: string
+    country: string
+  }
   notification_url: string
   hosted_payment?: {
     return_url: string
     cancel_url: string
   }
+  metadata?: Record<string, any>
 }
 
 interface PaymentResponse {

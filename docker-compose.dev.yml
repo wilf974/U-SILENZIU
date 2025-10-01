@@ -63,6 +63,11 @@ services:
       - POSTGRES_DB=usilenzio
       - POSTGRES_USER=usilenzio_user
       - POSTGRES_PASSWORD=usilenzio_password_2024
+      # Configuration Payplug (copiée depuis prod)
+      - PAYPLUG_SECRET_KEY=sk_test_4qzp5fowqEGBG93PjzZOlF
+      - PAYPLUG_MODE=test
+      # URL de base pour les retours Payplug
+      - NEXT_PUBLIC_SITE_URL=http://localhost:8080
     restart: unless-stopped
     depends_on:
       postgres:

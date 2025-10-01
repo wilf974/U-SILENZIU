@@ -111,16 +111,16 @@ async function handlePaymentPaid(paymentData: any) {
     try {
       await sendReservationConfirmationEmail({
         reservationNumber: updatedReservation.reservation_number,
-        customerName: updatedReservation.customer_name,
-        customerEmail: updatedReservation.customer_email,
-        customerPhone: updatedReservation.customer_phone,
+        customerName: `${updatedReservation.first_name} ${updatedReservation.last_name}`,
+        customerEmail: updatedReservation.email,
+        customerPhone: updatedReservation.phone,
         roomName: updatedReservation.room_name,
         date: updatedReservation.date,
-        timeSlot: updatedReservation.time_slot,
+        timeSlot: `${updatedReservation.time} - ${updatedReservation.time}`,
         duration: updatedReservation.duration,
-        participants: updatedReservation.participants,
+        participants: updatedReservation.number_of_people,
         amount: updatedReservation.amount,
-        specialRequests: updatedReservation.special_requests || '',
+        specialRequests: updatedReservation.notes || '',
         paymentConfirmed: true
       })
       

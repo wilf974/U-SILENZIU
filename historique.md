@@ -34,10 +34,24 @@ Site web pour U Silenziu, zone de défoulement située à Buros. Le site présen
 - `payment_error` : Message d'erreur si échec
 
 ### Variables d'environnement ajoutées
-- `PAYPLUG_SECRET_KEY` : Clé secrète Payplug
+- `PAYPLUG_SECRET_KEY` : Clé secrète Payplug (sk_test_4qzp5fowqEGBG93PjzZOlF)
+- `PAYPLUG_MODE` : Mode test pour le développement local
+- **Test local réussi** : L'API de paiement fonctionne en local avec la clé de test
+- **URL de test** : https://secure.payplug.com/pay/test/3q5dypmfv4BegOULZwbo4F
 - `PAYPLUG_PUBLIC_KEY` : Clé publique Payplug
 - `PAYPLUG_WEBHOOK_SECRET` : Secret pour vérification des webhooks
 - `PAYPLUG_MODE` : Mode test ou live
+- `NEXT_PUBLIC_SITE_URL` : URL de base pour les retours Payplug (http://localhost:8080)
+
+### Corrections apportées
+- **URLs de retour corrigées** : Passage de localhost:3000 à localhost:8080 pour Docker
+- **Page de retour fonctionnelle** : /reservation/payment/return accessible
+- **Webhook accessible** : /api/webhooks/payplug opérationnel
+- **Schéma base de données** : Harmonisation des colonnes (first_name, last_name, email, phone, time, number_of_people, notes)
+- **Test complet réussi** : Script de validation automatisé créé et exécuté avec succès
+- **Flux de paiement opérationnel** : Création, retour et webhook fonctionnels en local
+- **Préparation production** : Configuration des fichiers de production avec clés Payplug
+- **Scripts de déploiement** : Scripts automatisés pour déploiement VPS et tests de validation
 
 ### Flux de paiement
 1. **Réservation créée** → Statut "pending"

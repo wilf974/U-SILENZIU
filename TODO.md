@@ -1763,3 +1763,53 @@ Supprimer tous les fichiers de test inutiles, redondants et obsolètes pour simp
 
 ### Statut final
 🟢 **TERMINÉ** - Le nettoyage des fichiers de test est terminé. Le projet contient maintenant uniquement les 14 fichiers de test essentiels, réduisant l'encombrement de 84% tout en conservant une couverture de test complète.
+
+## ✅ Correction des URLs de Retour Payplug - Janvier 2025
+
+### Objectif
+Corriger les URLs de retour Payplug pour qu'elles pointent vers `localhost:8080` au lieu de `localhost:3000` afin que les utilisateurs soient correctement redirigés après le paiement.
+
+### Problème résolu
+- **URLs incorrectes** : Les URLs de retour Payplug pointaient vers `localhost:3000` alors que l'application Docker fonctionne sur `localhost:8080`
+- **Pas de retour après paiement** : Les utilisateurs n'étaient pas redirigés vers le site après le paiement
+- **Configuration Docker** : L'application Next.js fonctionne sur le port 3000 dans le conteneur mais est exposée sur le port 8080 via Nginx
+
+### Solution implémentée
+- ✅ **Correction de l'URL de base** : Modification de `app/api/payments/create/route.ts` pour utiliser `localhost:8080`
+- ✅ **Variable d'environnement** : Ajout de `NEXT_PUBLIC_SITE_URL=http://localhost:8080` dans `docker-compose.dev.yml`
+- ✅ **Page de retour fonctionnelle** : Vérification que `/reservation/payment/return` est accessible
+- ✅ **Webhook accessible** : Confirmation que `/api/webhooks/payplug` est opérationnel
+- ✅ **Test de paiement** : Validation que la création de paiement fonctionne avec les bonnes URLs
+
+### Architecture technique
+- **URL de base dynamique** : Utilisation de `process.env.NEXT_PUBLIC_SITE_URL` avec fallback sur `localhost:8080`
+- **URLs de retour** : 
+  - Succès : `http://localhost:8080/reservation/payment/return?reservation=XXX&status=success`
+  - Annulation : `http://localhost:8080/reservation/payment/return?reservation=XXX&status=cancelled`
+- **Webhook** : `http://localhost:8080/api/webhooks/payplug`
+- **Configuration Docker** : Variable d'environnement passée au conteneur Next.js
+
+### Tests et validation
+- ✅ **Création de paiement** : Test réussi avec URL Payplug générée
+- ✅ **Page de retour** : Accessible et fonctionnelle
+- ✅ **Webhook** : Endpoint accessible (erreur 400 normale sans signature Payplug)
+- ✅ **URLs correctes** : Toutes les URLs pointent maintenant vers `localhost:8080`
+
+### Résultats obtenus
+- ✅ **URLs de retour corrigées** : Passage de localhost:3000 à localhost:8080
+- ✅ **Page de retour fonctionnelle** : `/reservation/payment/return` accessible
+- ✅ **Webhook accessible** : `/api/webhooks/payplug` opérationnel
+- ✅ **Paiement test réussi** : URL Payplug générée avec les bonnes URLs de retour
+
+### Fichiers modifiés
+- `app/api/payments/create/route.ts` : Correction de l'URL de base
+- `docker-compose.dev.yml` : Ajout de la variable d'environnement `NEXT_PUBLIC_SITE_URL`
+
+### Avantages
+- **Retour après paiement** : Les utilisateurs sont maintenant correctement redirigés
+- **Expérience utilisateur** : Flux de paiement complet et fonctionnel
+- **Configuration Docker** : URLs cohérentes avec l'architecture Docker
+- **Maintenance simplifiée** : Variable d'environnement pour faciliter les changements
+
+### Statut final
+🟢 **TERMINÉ** - Les URLs de retour Payplug sont maintenant correctement configurées pour Docker. Les utilisateurs seront redirigés vers le site après le paiement avec les bonnes URLs.

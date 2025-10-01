@@ -71,9 +71,12 @@ services:
       - UPLOAD_DIR=/app/public/uploads
       - UPLOAD_MAX_SIZE=10485760
       - UPLOAD_ALLOWED_TYPES=image/jpeg,image/png,image/gif,image/webp
-      # Configuration Payplug
-      - PAYPLUG_SECRET_KEY=sk_test_4qzp5fowqEGBG93PjzZOlF
-      - PAYPLUG_MODE=test
+      # Configuration Payplug (PRODUCTION - À CONFIGURER !)
+      - PAYPLUG_SECRET_KEY=CHANGE_ME_PAYPLUG_SECRET_KEY_PRODUCTION
+      - PAYPLUG_PUBLIC_KEY=CHANGE_ME_PAYPLUG_PUBLIC_KEY_PRODUCTION
+      - PAYPLUG_WEBHOOK_SECRET=CHANGE_ME_PAYPLUG_WEBHOOK_SECRET_PRODUCTION
+      - PAYPLUG_MODE=live
+      - NEXT_PUBLIC_SITE_URL=https://rageroom.usilenziu.com
     restart: unless-stopped
     depends_on:
       postgres:

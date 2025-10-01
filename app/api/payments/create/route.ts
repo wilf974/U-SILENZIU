@@ -49,27 +49,44 @@ export async function POST(request: NextRequest) {
     }
 
     // Construire l'URL de base
-    const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'
+    const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:8080'
     
     // Données du paiement pour Payplug selon la doc officielle
     const paymentData = {
       amount: Math.round(body.amount * 100), // Convertir en centimes
       currency: 'EUR',
-      customer: {
+      billing: {
+        title: 'mr',
+        first_name: body.customer.first_name || 'Test',
+        last_name: body.customer.last_name || 'User',
         email: body.customer.email,
-        first_name: body.customer.first_name || '',
-        last_name: body.customer.last_name || ''
+        mobile_phone_number: body.customer.phone || '+33123456789',
+        address1: '18 Rue du Pont Long',
+        address2: 'Zone Berlanne',
+        postcode: '64160',
+        city: 'Buros',
+        country: 'FR'
       },
-      order: body.order || `Réservation ${body.reservationNumber}`,
-      custom_data: {
-        reservation_number: body.reservationNumber,
-        ...body.custom_data
+      shipping: {
+        title: 'mr',
+        first_name: body.customer.first_name || 'Test',
+        last_name: body.customer.last_name || 'User',
+        email: body.customer.email,
+        mobile_phone_number: body.customer.phone || '+33123456789',
+        address1: '18 Rue du Pont Long',
+        address2: 'Zone Berlanne',
+        postcode: '64160',
+        city: 'Buros',
+        country: 'FR'
       },
-      return_url: `${baseUrl}/reservation/payment/return?reservation=${body.reservationNumber}`,
       notification_url: `${baseUrl}/api/webhooks/payplug`,
       hosted_payment: {
         return_url: `${baseUrl}/reservation/payment/return?reservation=${body.reservationNumber}&status=success`,
         cancel_url: `${baseUrl}/reservation/payment/return?reservation=${body.reservationNumber}&status=cancelled`
+      },
+      metadata: {
+        reservation_number: body.reservationNumber,
+        ...body.metadata
       }
     }
 

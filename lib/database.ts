@@ -27,17 +27,18 @@ export interface Room {
 export interface Reservation {
   id: string;
   reservation_number: string;
-  customer_name: string;
-  customer_email: string;
-  customer_phone: string;
+  first_name: string;
+  last_name: string;
+  email: string;
+  phone: string;
   room_name: string;
   date: string;
-  time_slot: string;
+  time: string;
   duration: number;
-  participants: number;
+  number_of_people: number;
   status: 'pending' | 'confirmed' | 'cancelled';
   amount: number;
-  special_requests?: string;
+  notes?: string;
   created_at: Date;
   updated_at: Date;
 }
@@ -627,36 +628,38 @@ export async function createReservation(reservationData: any): Promise<any> {
     // DEBUG: Log des valeurs finales
     console.log('🔧 createReservation - Valeurs finales:', {
       reservationNumber,
-      customer_name: reservationData.customer_name,
-      customer_email: reservationData.customer_email,
-      customer_phone: reservationData.customer_phone,
+      first_name: reservationData.first_name,
+      last_name: reservationData.last_name,
+      email: reservationData.email,
+      phone: reservationData.phone,
       room_name: reservationData.room_name,
       date: reservationData.date,
-      time_slot: reservationData.time_slot,
+      time: reservationData.time,
       duration: reservationData.duration,
-      participants: reservationData.participants,
+      number_of_people: reservationData.number_of_people,
       status: reservationData.status,
       amount: reservationData.amount,
-      special_requests: reservationData.special_requests
+      notes: reservationData.notes
     });
     
     const result = await client.query(
-      `INSERT INTO reservations (reservation_number, customer_name, customer_email, customer_phone, room_name, date, time_slot, duration, participants, status, amount, special_requests)
-       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)
+      `INSERT INTO reservations (reservation_number, first_name, last_name, email, phone, room_name, date, time, duration, number_of_people, status, amount, notes)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)
        RETURNING *`,
       [
         reservationNumber,
-        reservationData.customer_name,
-        reservationData.customer_email,
-        reservationData.customer_phone,
+        reservationData.first_name,
+        reservationData.last_name,
+        reservationData.email,
+        reservationData.phone,
         reservationData.room_name,
         reservationData.date,
-        reservationData.time_slot,
+        reservationData.time,
         reservationData.duration,
-        reservationData.participants,
+        reservationData.number_of_people,
         reservationData.status,
         reservationData.amount,
-        reservationData.special_requests
+        reservationData.notes
       ]
     );
     return result.rows[0];

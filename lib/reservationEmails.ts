@@ -138,7 +138,7 @@ function generateConfirmationEmailTemplate(reservation: Reservation): string {
         
         <div class="status-badge">EN ATTENTE DE CONFIRMATION</div>
 
-        <p>Bonjour <strong>${reservation.customer_name}</strong>,</p>
+        <p>Bonjour <strong>${reservation.first_name} ${reservation.last_name}</strong>,</p>
         
         <p>Nous avons bien reçu votre demande de réservation. Notre équipe va examiner votre demande et vous recontacter rapidement pour confirmer votre créneau.</p>
 
@@ -150,15 +150,15 @@ function generateConfirmationEmailTemplate(reservation: Reservation): string {
           </div>
           <div class="detail-row">
             <span class="detail-label">Nom :</span>
-            <span class="detail-value">${reservation.customer_name}</span>
+            <span class="detail-value">${reservation.first_name} ${reservation.last_name}</span>
           </div>
           <div class="detail-row">
             <span class="detail-label">Email :</span>
-            <span class="detail-value">${reservation.customer_email}</span>
+            <span class="detail-value">${reservation.email}</span>
           </div>
           <div class="detail-row">
             <span class="detail-label">Téléphone :</span>
-            <span class="detail-value">${reservation.customer_phone}</span>
+            <span class="detail-value">${reservation.phone}</span>
           </div>
           <div class="detail-row">
             <span class="detail-label">Date :</span>
@@ -166,7 +166,7 @@ function generateConfirmationEmailTemplate(reservation: Reservation): string {
           </div>
           <div class="detail-row">
             <span class="detail-label">Heure :</span>
-            <span class="detail-value">${formatTime(reservation.time_slot)} - ${formatTime(reservation.time_slot) + reservation.duration}</span>
+            <span class="detail-value">${formatTime(reservation.time)} - ${formatTime(reservation.time) + reservation.duration}</span>
           </div>
           <div class="detail-row">
             <span class="detail-label">Salle :</span>
@@ -178,11 +178,11 @@ function generateConfirmationEmailTemplate(reservation: Reservation): string {
           </div>
           <div class="detail-row">
             <span class="detail-label">Nombre de personnes :</span>
-            <span class="detail-value">${reservation.participants}</span>
+            <span class="detail-value">${reservation.number_of_people}</span>
           </div>
           <div class="detail-row">
             <span class="detail-label">Prix par personne :</span>
-            <span class="detail-value">${(Number(reservation.amount) / Number(reservation.participants)).toFixed(2)}€</span>
+            <span class="detail-value">${(Number(reservation.amount) / Number(reservation.number_of_people)).toFixed(2)}€</span>
           </div>
           <div class="detail-row">
             <span class="detail-label">Total :</span>
@@ -351,7 +351,7 @@ function generateValidationEmailTemplate(reservation: Reservation): string {
         
         <div class="status-badge">CONFIRMÉE</div>
 
-        <p>Bonjour <strong>${reservation.customer_name}</strong>,</p>
+        <p>Bonjour <strong>${reservation.first_name} ${reservation.last_name}</strong>,</p>
         
         <div class="success-message">
           <h4 style="color: #28a745; margin-top: 0;">✅ Excellente nouvelle !</h4>
@@ -366,15 +366,15 @@ function generateValidationEmailTemplate(reservation: Reservation): string {
           </div>
           <div class="detail-row">
             <span class="detail-label">Nom :</span>
-            <span class="detail-value">${reservation.customer_name}</span>
+            <span class="detail-value">${reservation.first_name} ${reservation.last_name}</span>
           </div>
           <div class="detail-row">
             <span class="detail-label">Email :</span>
-            <span class="detail-value">${reservation.customer_email}</span>
+            <span class="detail-value">${reservation.email}</span>
           </div>
           <div class="detail-row">
             <span class="detail-label">Téléphone :</span>
-            <span class="detail-value">${reservation.customer_phone}</span>
+            <span class="detail-value">${reservation.phone}</span>
           </div>
           <div class="detail-row">
             <span class="detail-label">Date :</span>
@@ -382,7 +382,7 @@ function generateValidationEmailTemplate(reservation: Reservation): string {
           </div>
           <div class="detail-row">
             <span class="detail-label">Heure :</span>
-            <span class="detail-value">${formatTime(reservation.time_slot)} - ${formatTime(reservation.time_slot) + reservation.duration}</span>
+            <span class="detail-value">${formatTime(reservation.time)} - ${formatTime(reservation.time) + reservation.duration}</span>
           </div>
           <div class="detail-row">
             <span class="detail-label">Salle :</span>
@@ -394,11 +394,11 @@ function generateValidationEmailTemplate(reservation: Reservation): string {
           </div>
           <div class="detail-row">
             <span class="detail-label">Nombre de personnes :</span>
-            <span class="detail-value">${reservation.participants}</span>
+            <span class="detail-value">${reservation.number_of_people}</span>
           </div>
           <div class="detail-row">
             <span class="detail-label">Prix par personne :</span>
-            <span class="detail-value">${(Number(reservation.amount) / Number(reservation.participants)).toFixed(2)}€</span>
+            <span class="detail-value">${(Number(reservation.amount) / Number(reservation.number_of_people)).toFixed(2)}€</span>
           </div>
           <div class="detail-row">
             <span class="detail-label">Total :</span>
@@ -572,7 +572,7 @@ function generateCancellationEmailTemplate(reservation: Reservation): string {
         
         <div class="status-badge">ANNULÉE</div>
 
-        <p>Bonjour <strong>${reservation.customer_name}</strong>,</p>
+        <p>Bonjour <strong>${reservation.first_name} ${reservation.last_name}</strong>,</p>
         
         <div class="cancellation-message">
           <h4 style="color: #dc3545; margin-top: 0;">⚠️ Réservation annulée</h4>
@@ -587,15 +587,15 @@ function generateCancellationEmailTemplate(reservation: Reservation): string {
           </div>
           <div class="detail-row">
             <span class="detail-label">Nom :</span>
-            <span class="detail-value">${reservation.customer_name}</span>
+            <span class="detail-value">${reservation.first_name} ${reservation.last_name}</span>
           </div>
           <div class="detail-row">
             <span class="detail-label">Email :</span>
-            <span class="detail-value">${reservation.customer_email}</span>
+            <span class="detail-value">${reservation.email}</span>
           </div>
           <div class="detail-row">
             <span class="detail-label">Téléphone :</span>
-            <span class="detail-value">${reservation.customer_phone}</span>
+            <span class="detail-value">${reservation.phone}</span>
           </div>
           <div class="detail-row">
             <span class="detail-label">Date :</span>
@@ -603,7 +603,7 @@ function generateCancellationEmailTemplate(reservation: Reservation): string {
           </div>
           <div class="detail-row">
             <span class="detail-label">Heure :</span>
-            <span class="detail-value">${formatTime(reservation.time_slot)} - ${formatTime(reservation.time_slot) + reservation.duration}</span>
+            <span class="detail-value">${formatTime(reservation.time)} - ${formatTime(reservation.time) + reservation.duration}</span>
           </div>
           <div class="detail-row">
             <span class="detail-label">Salle :</span>
@@ -615,7 +615,7 @@ function generateCancellationEmailTemplate(reservation: Reservation): string {
           </div>
           <div class="detail-row">
             <span class="detail-label">Nombre de personnes :</span>
-            <span class="detail-value">${reservation.participants}</span>
+            <span class="detail-value">${reservation.number_of_people}</span>
           </div>
           <div class="detail-row">
             <span class="detail-label">Montant :</span>
@@ -663,20 +663,20 @@ export async function sendReservationConfirmationEmail(reservation: Reservation)
 
     const subject = `Demande de réservation reçue - U Silenziu (${reservation.reservation_number})`
     const html = generateConfirmationEmailTemplate(reservation)
-    const text = `Demande de réservation reçue pour ${reservation.room_name} le ${reservation.date} à ${reservation.time_slot}. Numéro: ${reservation.reservation_number}`
+    const text = `Demande de réservation reçue pour ${reservation.room_name} le ${reservation.date} à ${reservation.time}. Numéro: ${reservation.reservation_number}`
 
     const result = await mailerService.sendEmail({
-      to: reservation.customer_email,
+      to: reservation.email,
       subject: subject,
       html: html,
       text: text
     })
 
     if (result.success) {
-      console.log(`✅ Email de confirmation envoyé à ${reservation.customer_email} (${reservation.reservation_number})`)
+      console.log(`✅ Email de confirmation envoyé à ${reservation.email} (${reservation.reservation_number})`)
       return true
     } else {
-      console.error(`❌ Échec envoi email de confirmation à ${reservation.customer_email}:`, result.error)
+      console.error(`❌ Échec envoi email de confirmation à ${reservation.email}:`, result.error)
       return false
     }
   } catch (error) {
@@ -700,20 +700,20 @@ export async function sendReservationValidationEmail(reservation: Reservation): 
 
     const subject = `Réservation confirmée - U Silenziu (${reservation.reservation_number})`
     const html = generateValidationEmailTemplate(reservation)
-    const text = `Votre réservation pour ${reservation.room_name} le ${reservation.date} à ${reservation.time_slot} a été confirmée. Numéro: ${reservation.reservation_number}`
+    const text = `Votre réservation pour ${reservation.room_name} le ${reservation.date} à ${reservation.time} a été confirmée. Numéro: ${reservation.reservation_number}`
 
     const result = await mailerService.sendEmail({
-      to: reservation.customer_email,
+      to: reservation.email,
       subject: subject,
       html: html,
       text: text
     })
 
     if (result.success) {
-      console.log(`✅ Email de validation envoyé à ${reservation.customer_email} (${reservation.reservation_number})`)
+      console.log(`✅ Email de validation envoyé à ${reservation.email} (${reservation.reservation_number})`)
       return true
     } else {
-      console.error(`❌ Échec envoi email de validation à ${reservation.customer_email}:`, result.error)
+      console.error(`❌ Échec envoi email de validation à ${reservation.email}:`, result.error)
       return false
     }
   } catch (error) {
@@ -737,20 +737,20 @@ export async function sendReservationCancellationEmail(reservation: Reservation)
 
     const subject = `Réservation annulée - U Silenziu (${reservation.reservation_number})`
     const html = generateCancellationEmailTemplate(reservation)
-    const text = `Votre réservation pour ${reservation.room_name} le ${reservation.date} à ${reservation.time_slot} a été annulée. Numéro: ${reservation.reservation_number}`
+    const text = `Votre réservation pour ${reservation.room_name} le ${reservation.date} à ${reservation.time} a été annulée. Numéro: ${reservation.reservation_number}`
 
     const result = await mailerService.sendEmail({
-      to: reservation.customer_email,
+      to: reservation.email,
       subject: subject,
       html: html,
       text: text
     })
 
     if (result.success) {
-      console.log(`✅ Email d'annulation envoyé à ${reservation.customer_email} (${reservation.reservation_number})`)
+      console.log(`✅ Email d'annulation envoyé à ${reservation.email} (${reservation.reservation_number})`)
       return true
     } else {
-      console.error(`❌ Échec envoi email d'annulation à ${reservation.customer_email}:`, result.error)
+      console.error(`❌ Échec envoi email d'annulation à ${reservation.email}:`, result.error)
       return false
     }
   } catch (error) {

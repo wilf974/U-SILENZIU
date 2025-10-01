@@ -85,7 +85,7 @@ class CronService {
         try {
           // Générer l'email de rappel
           const emailData = {
-            to: reservation.customer_email,
+            to: reservation.email,
             subject: `Rappel de réservation - U Silenziu (${reservation.reservation_number})`,
             html: this.generateReminderEmail(reservation)
           }
@@ -95,17 +95,17 @@ class CronService {
           
           if (result) {
             sentCount++
-            console.log(`✅ Email envoyé: ${reservation.customer_email} (${reservation.reservation_number})`)
+            console.log(`✅ Email envoyé: ${reservation.email} (${reservation.reservation_number})`)
           } else {
             errorCount++
-            errors.push(`${reservation.customer_email}: Échec de l'envoi`)
-            console.error(`❌ Échec envoi: ${reservation.customer_email}`)
+            errors.push(`${reservation.email}: Échec de l'envoi`)
+            console.error(`❌ Échec envoi: ${reservation.email}`)
           }
         } catch (error) {
           errorCount++
           const errorMessage = error instanceof Error ? error.message : 'Erreur inconnue'
-          errors.push(`${reservation.customer_email}: ${errorMessage}`)
-          console.error(`❌ Erreur pour ${reservation.customer_email}:`, error)
+          errors.push(`${reservation.email}: ${errorMessage}`)
+          console.error(`❌ Erreur pour ${reservation.email}:`, error)
         }
       }
 

@@ -82,17 +82,18 @@ export async function POST(request: NextRequest) {
     // Créer la réservation avec les bons noms de champs (correspondant à la structure DB)
     const reservationData = {
       reservation_number: reservationNumber,
-      customer_name: `${body.firstName} ${body.lastName}`,
-      customer_email: body.email,
-      customer_phone: body.phone,
+      first_name: body.firstName,
+      last_name: body.lastName,
+      email: body.email,
+      phone: body.phone,
       room_name: body.roomName,
       date: body.date,
-      time_slot: body.timeSlot,
+      time: body.timeSlot.split(' - ')[0], // Extraire l'heure de début
       duration: body.duration,
-      participants: body.numberOfPeople,
+      number_of_people: body.numberOfPeople,
       amount: totalAmount,
       status: 'pending' as const,
-      special_requests: body.specialRequests || ''
+      notes: body.specialRequests || ''
     }
     
     console.log('Données pour createReservation:', reservationData)
