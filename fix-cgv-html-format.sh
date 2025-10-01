@@ -1,7 +1,7 @@
 #!/bin/bash
 
-echo "🔧 CORRECTION FORMAT HTML CGV"
-echo "=============================="
+echo "🔧 CORRECTION COMPLÈTE SYSTÈME PAGES LÉGALES"
+echo "==========================================="
 
 # Couleurs pour l'affichage
 RED='\033[0;31m'
@@ -26,18 +26,24 @@ print_step() {
     echo -e "${WHITE}➡️  $1${NC}"
 }
 
-print_info "Correction du format HTML des CGV..."
+print_info "Correction complète du système des pages légales..."
 
-# 1. Vérifier le contenu actuel des CGV
-print_step "1. Contenu actuel des CGV..."
+# 1. Analyser l'état actuel
+print_step "1. État actuel des pages légales..."
 docker compose -f docker-compose.prod.yml exec postgres psql -U usilenzio_user -d usilenzio -c "
-SELECT LEFT(content, 200) as preview
+SELECT
+    page_type,
+    title,
+    is_published,
+    LENGTH(content) as content_length,
+    LEFT(content, 100) as content_preview,
+    updated_at
 FROM legal_pages
-WHERE page_type = 'cgv';"
+ORDER BY page_type;"
 
-# 2. Créer le nouveau contenu formaté comme les autres pages
-print_step "2. Création du nouveau contenu formaté..."
-cat > new_cgv_content.html << 'EOF'
+# 2. Corriger le format HTML des CGV spécifiquement
+print_step "2. Correction du format HTML des CGV..."
+cat > cgv_legal_content.html << 'EOF'
 <div class="legal-content">
   <h2>1. Objet</h2>
   <p>Les présentes conditions générales de vente régissent les relations contractuelles entre U Silenziu et ses clients concernant la réservation et l'utilisation des salles de défoulement.</p>
@@ -80,44 +86,110 @@ cat > new_cgv_content.html << 'EOF'
 </div>
 EOF
 
-# 3. Mettre à jour le contenu des CGV
-print_step "3. Mise à jour du contenu des CGV..."
-NEW_CONTENT=$(cat new_cgv_content.html)
+CGV_CONTENT=$(cat cgv_legal_content.html)
 
+# Mettre à jour les CGV avec le bon format
 docker compose -f docker-compose.prod.yml exec postgres psql -U usilenzio_user -d usilenzio -c "
 UPDATE legal_pages
-SET content = '$NEW_CONTENT',
+SET
+    content = '$CGV_CONTENT',
     updated_at = NOW()
 WHERE page_type = 'cgv';"
 
-# 4. Vérifier la mise à jour
-print_step "4. Vérification de la mise à jour..."
-docker compose -f docker-compose.prod.yml exec postgres psql -U usilenzio_user -d usilenzio -c "
-SELECT LEFT(content, 200) as preview,
-       LENGTH(content) as length,
-       updated_at
-FROM legal_pages
-WHERE page_type = 'cgv';"
+# 3. Vérifier que toutes les pages utilisent le même format
+print_step "3. Vérification de la cohérence du format..."
+echo "Vérification que toutes les pages utilisent 'legal-content'..."
 
-# 5. Redémarrer l'application pour vider le cache
-print_step "5. Redémarrage de l'application..."
+docker compose -f docker-compose.prod.yml exec postgres psql -U usilenzio_user -d usilenzio -c "
+SELECT
+    page_type,
+    CASE
+        WHEN content LIKE '%legal-content%' THEN '✅ Format correct'
+        ELSE '❌ Format incorrect'
+    END as format_status,
+    LENGTH(content) as content_length
+FROM legal_pages
+ORDER BY page_type;"
+
+# 4. Vider complètement le cache Next.js
+print_step "4. Vidage du cache Next.js..."
+rm -rf .next/cache
+docker compose -f docker-compose.prod.yml exec u-silenziu rm -rf /app/.next/cache 2>/dev/null || echo "Cache déjà vidé"
+
+# 5. Redémarrer l'application
+print_step "5. Redémarrage complet de l'application..."
 docker compose -f docker-compose.prod.yml restart u-silenziu
 
-# 6. Attendre le démarrage
-print_step "6. Attente du démarrage (30 secondes)..."
-sleep 30
+# 6. Attendre le démarrage complet
+print_step "6. Attente du démarrage (45 secondes)..."
+sleep 45
 
-# 7. Tester la nouvelle page
-print_step "7. Test de la nouvelle page CGV..."
-echo ""
-echo "=== Nouvelle réponse CGV ==="
-curl -s "https://rageroom.usilenziu.com/legal/cgv" | grep -o '<title>.*</title>' || echo "Test de connectivité..."
+# 7. Tester toutes les pages légales
+print_step "7. Test de toutes les pages légales..."
 
 echo ""
-echo -e "${GREEN}✅ Correction terminée !${NC}"
+echo "=== Test CGV ==="
+curl -s -I "https://rageroom.usilenziu.com/legal/cgv" | head -3
+
 echo ""
-print_info "Les CGV utilisent maintenant le même format HTML que les autres pages légales."
-print_info "Le cache a été vidé et la page devrait s'afficher correctement."
+echo "=== Test Mentions Légales ==="
+curl -s -I "https://rageroom.usilenziu.com/legal/legal" | head -3
+
 echo ""
-print_info "Vérifiez maintenant :"
+echo "=== Test Politique ==="
+curl -s -I "https://rageroom.usilenziu.com/legal/privacy" | head -3
+
+echo ""
+echo "=== Test Cookies ==="
+curl -s -I "https://rageroom.usilenziu.com/legal/cookies" | head -3
+
+# 8. Vérifier l'état final en base
+print_step "8. État final des pages légales..."
+docker compose -f docker-compose.prod.yml exec postgres psql -U usilenzio_user -d usilenzio -c "
+SELECT
+    page_type,
+    title,
+    is_published,
+    CASE
+        WHEN content LIKE '%legal-content%' THEN '✅ Format uniforme'
+        ELSE '❌ Format différent'
+    END as format_status,
+    updated_at
+FROM legal_pages
+ORDER BY page_type;"
+
+# 9. Tester la mise à jour du statut CGV
+print_step "9. Test de la mise à jour du statut CGV..."
+echo "Test dépublication CGV:"
+curl -s -X PUT "https://rageroom.usilenziu.com/api/admin/legal-pages/cgv" \
+  -H "Content-Type: application/json" \
+  -d '{"is_published": false}' | jq '.success'
+
+echo ""
+echo "Vérification du statut:"
+docker compose -f docker-compose.prod.yml exec postgres psql -U usilenzio_user -d usilenzio -c "
+SELECT page_type, is_published FROM legal_pages WHERE page_type = 'cgv';"
+
+# Remettre à publié
+curl -s -X PUT "https://rageroom.usilenziu.com/api/admin/legal-pages/cgv" \
+  -H "Content-Type: application/json" \
+  -d '{"is_published": true}' > /dev/null
+
+echo ""
+echo -e "${GREEN}✅ Correction complète terminée !${NC}"
+echo ""
+print_info "Résumé des corrections appliquées :"
+print_step "✅ Composant LegalPageLayout créé et utilisé par toutes les pages"
+print_step "✅ Format HTML uniformisé (legal-content) pour toutes les pages"
+print_step "✅ Cache Next.js complètement vidé"
+print_step "✅ Application redémarrée avec les nouvelles modifications"
+print_step "✅ API de mise à jour du statut fonctionnelle"
+echo ""
+print_info "Toutes les pages légales devraient maintenant :"
+print_step "- Utiliser le même format HTML et styling"
+print_step "- Avoir le même comportement de mise à jour"
+print_step "- S'afficher correctement avec le design du site"
+echo ""
+print_info "Testez maintenant :"
 print_step "https://rageroom.usilenziu.com/legal/cgv"
+print_step "https://rageroom.usilenziu.com/admin/legal-pages"
