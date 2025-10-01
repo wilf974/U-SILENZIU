@@ -59,8 +59,8 @@ export default async function CGVPage() {
                 {page.title}
               </h1>
             </div>
-            
-            <div 
+
+            <div
               className="prose prose-lg max-w-none prose-invert"
               style={{
                 color: '#e5e7eb',
@@ -68,7 +68,7 @@ export default async function CGVPage() {
               }}
               dangerouslySetInnerHTML={{ __html: page.content }}
             />
-            
+
             <div className="mt-8 pt-6 border-t border-kaki-800/30">
               <p className="text-sm text-kaki-300">
                 Dernière mise à jour : {new Date(page.updated_at).toLocaleDateString('fr-FR')}
