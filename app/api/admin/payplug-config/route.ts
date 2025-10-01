@@ -121,12 +121,38 @@ export async function POST(request: NextRequest) {
 
     const updatedContent = [...filteredLines, ...newPayplugConfig].join('\n')
 
-    // Sauvegarder le fichier
+    // Sauvegarder le fichier env.prod
     writeFileSync(envPath, updatedContent, 'utf-8')
+
+    // Mettre à jour aussi docker-compose.prod.yml
+    const dockerComposePath = join(process.cwd(), 'docker-compose.prod.yml')
+    if (existsSync(dockerComposePath)) {
+      let dockerComposeContent = readFileSync(dockerComposePath, 'utf-8')
+      
+      // Mettre à jour les variables Payplug dans docker-compose.prod.yml
+      dockerComposeContent = dockerComposeContent.replace(
+        /PAYPLUG_SECRET_KEY=.*/g,
+        `PAYPLUG_SECRET_KEY=${secretKey}`
+      )
+      dockerComposeContent = dockerComposeContent.replace(
+        /PAYPLUG_PUBLIC_KEY=.*/g,
+        `PAYPLUG_PUBLIC_KEY=${publicKey || ''}`
+      )
+      dockerComposeContent = dockerComposeContent.replace(
+        /PAYPLUG_WEBHOOK_SECRET=.*/g,
+        `PAYPLUG_WEBHOOK_SECRET=${webhookSecret || ''}`
+      )
+      dockerComposeContent = dockerComposeContent.replace(
+        /PAYPLUG_MODE=.*/g,
+        `PAYPLUG_MODE=${mode}`
+      )
+      
+      writeFileSync(dockerComposePath, dockerComposeContent, 'utf-8')
+    }
 
     // Redémarrer l'application Docker
     const { exec } = require('child_process')
-    exec('docker restart u-silenziu-app', (error: any, stdout: any, stderr: any) => {
+    exec('docker-compose -f docker-compose.prod.yml restart u-silenziu', (error: any, stdout: any, stderr: any) => {
       if (error) {
         console.error('Erreur lors du redémarrage:', error)
       } else {

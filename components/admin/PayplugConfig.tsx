@@ -50,11 +50,50 @@ export default function PayplugConfig({ onClose }: PayplugConfigProps) {
   }
 
   /**
+   * Valide la configuration selon le mode
+   */
+  const validateConfig = () => {
+    if (!config.secretKey) {
+      setMessage({ type: 'error', text: 'Clé secrète requise' })
+      return false
+    }
+
+    // Validation selon le mode
+    if (config.mode === 'test') {
+      if (!config.secretKey.startsWith('sk_test_')) {
+        setMessage({ type: 'error', text: 'En mode TEST, la clé secrète doit commencer par "sk_test_"' })
+        return false
+      }
+      if (config.publicKey && !config.publicKey.startsWith('pk_test_')) {
+        setMessage({ type: 'error', text: 'En mode TEST, la clé publique doit commencer par "pk_test_"' })
+        return false
+      }
+    } else if (config.mode === 'live') {
+      if (!config.secretKey.startsWith('sk_live_')) {
+        setMessage({ type: 'error', text: 'En mode LIVE, la clé secrète doit commencer par "sk_live_"' })
+        return false
+      }
+      if (config.publicKey && !config.publicKey.startsWith('pk_live_')) {
+        setMessage({ type: 'error', text: 'En mode LIVE, la clé publique doit commencer par "pk_live_"' })
+        return false
+      }
+    }
+
+    return true
+  }
+
+  /**
    * Sauvegarde la configuration
    */
   const saveConfig = async () => {
     setSaving(true)
     setMessage(null)
+    
+    // Validation
+    if (!validateConfig()) {
+      setSaving(false)
+      return
+    }
     
     try {
       const response = await fetch('/api/admin/payplug-config', {
@@ -188,6 +227,22 @@ export default function PayplugConfig({ onClose }: PayplugConfigProps) {
                 <span className="text-white">Live (production)</span>
               </label>
             </div>
+            {config.mode === 'test' && (
+              <div className="mt-2 p-3 bg-blue-900 border border-blue-700 rounded-md">
+                <p className="text-blue-300 text-sm">
+                  <strong>Mode TEST :</strong> Les paiements sont simulés, aucune transaction réelle ne sera effectuée.
+                  Utilisez les clés commençant par <code className="bg-blue-800 px-1 rounded">sk_test_</code> et <code className="bg-blue-800 px-1 rounded">pk_test_</code>.
+                </p>
+              </div>
+            )}
+            {config.mode === 'live' && (
+              <div className="mt-2 p-3 bg-red-900 border border-red-700 rounded-md">
+                <p className="text-red-300 text-sm">
+                  <strong>⚠️ Mode LIVE :</strong> Les paiements seront réels ! Assurez-vous d'utiliser les clés commençant par 
+                  <code className="bg-red-800 px-1 rounded">sk_live_</code> et <code className="bg-red-800 px-1 rounded">pk_live_</code>.
+                </p>
+              </div>
+            )}
           </div>
 
           {/* Clé secrète */}
@@ -199,8 +254,14 @@ export default function PayplugConfig({ onClose }: PayplugConfigProps) {
               type="password"
               value={config.secretKey}
               onChange={(e) => setConfig({ ...config, secretKey: e.target.value })}
-              placeholder="sk_test_... ou sk_live_..."
-              className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-md text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-kaki-500"
+              placeholder={config.mode === 'test' ? 'sk_test_...' : 'sk_live_...'}
+              className={`w-full px-3 py-2 bg-gray-700 border rounded-md text-white placeholder-gray-400 focus:outline-none focus:ring-2 ${
+                config.secretKey && config.mode === 'test' && !config.secretKey.startsWith('sk_test_')
+                  ? 'border-red-500 focus:ring-red-500'
+                  : config.secretKey && config.mode === 'live' && !config.secretKey.startsWith('sk_live_')
+                  ? 'border-red-500 focus:ring-red-500'
+                  : 'border-gray-600 focus:ring-kaki-500'
+              }`}
             />
             <p className="text-xs text-gray-400 mt-1">
               Clé secrète Payplug (obligatoire)
@@ -216,8 +277,14 @@ export default function PayplugConfig({ onClose }: PayplugConfigProps) {
               type="password"
               value={config.publicKey}
               onChange={(e) => setConfig({ ...config, publicKey: e.target.value })}
-              placeholder="pk_test_... ou pk_live_..."
-              className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-md text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-kaki-500"
+              placeholder={config.mode === 'test' ? 'pk_test_...' : 'pk_live_...'}
+              className={`w-full px-3 py-2 bg-gray-700 border rounded-md text-white placeholder-gray-400 focus:outline-none focus:ring-2 ${
+                config.publicKey && config.mode === 'test' && !config.publicKey.startsWith('pk_test_')
+                  ? 'border-red-500 focus:ring-red-500'
+                  : config.publicKey && config.mode === 'live' && !config.publicKey.startsWith('pk_live_')
+                  ? 'border-red-500 focus:ring-red-500'
+                  : 'border-gray-600 focus:ring-kaki-500'
+              }`}
             />
             <p className="text-xs text-gray-400 mt-1">
               Clé publique Payplug (optionnelle en mode test)
