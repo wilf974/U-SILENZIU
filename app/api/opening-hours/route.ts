@@ -69,7 +69,7 @@ export async function GET(request: NextRequest) {
     ]
     
     // Créer un objet avec les horaires par jour
-    const openingHours = {}
+    const openingHours: { [key: number]: any } = {}
     dayMapping.forEach((dayKey, index) => {
       const hours = parseHours(config[dayKey])
       openingHours[index] = hours
