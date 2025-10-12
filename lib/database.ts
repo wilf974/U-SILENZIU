@@ -600,7 +600,8 @@ export async function getAllReservations(): Promise<any[]> {
         room_name, date, time_slot, duration, participants, status, amount,
         special_requests, created_at, updated_at,
         payment_id, payment_status, payment_amount, payment_date,
-        refund_amount, refund_date, payment_error
+        refund_amount, refund_date, payment_error,
+        first_name, last_name, email, phone, number_of_people, notes, time
       FROM reservations
       ORDER BY created_at DESC
     `);
@@ -619,7 +620,8 @@ export async function getReservationById(id: string): Promise<Reservation | null
         room_name, date, time_slot, duration, participants, status, amount,
         special_requests, created_at, updated_at,
         payment_id, payment_status, payment_amount, payment_date,
-        refund_amount, refund_date, payment_error
+        refund_amount, refund_date, payment_error,
+        first_name, last_name, email, phone, number_of_people, notes, time
       FROM reservations WHERE id = $1`,
       [id]
     );
