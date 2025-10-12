@@ -45,7 +45,11 @@ const ReservationForm = () => {
   const searchParams = useSearchParams()
   const { rooms, loading: roomsLoading, getRoomByName, getActiveRooms } = useRooms()
   
-  const [selectedDate, setSelectedDate] = useState<Date>(new Date())
+  const [selectedDate, setSelectedDate] = useState<Date>(() => {
+    const today = new Date()
+    today.setHours(0, 0, 0, 0)
+    return today
+  })
   const [selectedTimeSlot, setSelectedTimeSlot] = useState<TimeSlot | null>(null)
   const [numberOfPeople, setNumberOfPeople] = useState<number>(2)
   const [duration, setDuration] = useState<number>(20)
@@ -237,6 +241,16 @@ const ReservationForm = () => {
   const generateTimeSlots = (date: Date): TimeSlot[] => {
     const slots: TimeSlot[] = []
     
+    // Vérifier si la date est dans le passé
+    const today = new Date()
+    today.setHours(0, 0, 0, 0)
+    const checkDate = new Date(date)
+    checkDate.setHours(0, 0, 0, 0)
+    
+    if (checkDate < today) {
+      return slots // Pas de créneaux pour les dates passées
+    }
+    
     // Utiliser les horaires d'ouverture dynamiques ou des valeurs par défaut
     let startHour = 14 // Valeur par défaut
     let endHour = 21   // Valeur par défaut
@@ -318,6 +332,16 @@ const ReservationForm = () => {
     const endOfMonth = new Date(selectedDate.getFullYear(), selectedDate.getMonth() + 1, 0)
     
     for (let d = new Date(startOfMonth); d <= endOfMonth; d.setDate(d.getDate() + 1)) {
+      const currentDate = new Date(d)
+      const today = new Date()
+      today.setHours(0, 0, 0, 0)
+      currentDate.setHours(0, 0, 0, 0)
+      
+      // Ne pas afficher d'événements pour les dates passées
+      if (currentDate < today) {
+        continue
+      }
+      
       const daySlots = generateTimeSlots(new Date(d))
       const availableSlots = daySlots.filter(slot => slot.available)
       const totalSlots = daySlots.length
@@ -344,7 +368,16 @@ const ReservationForm = () => {
 
   // Gestion de la sélection de date
   const handleSelectSlot = (slotInfo: any) => {
-    setSelectedDate(slotInfo.start)
+    const selectedDate = new Date(slotInfo.start)
+    const today = new Date()
+    today.setHours(0, 0, 0, 0) // Réinitialiser l'heure pour comparer seulement les dates
+    
+    // Empêcher la sélection des dates passées
+    if (selectedDate < today) {
+      return
+    }
+    
+    setSelectedDate(selectedDate)
     setSelectedTimeSlot(null)
   }
 
@@ -650,6 +683,7 @@ const ReservationForm = () => {
                   eventPropGetter={eventStyleGetter}
                   views={['month']}
                   defaultView="month"
+                  min={new Date()} // Désactiver les dates passées
                   date={selectedDate}
                   onNavigate={setSelectedDate}
                   messages={{
