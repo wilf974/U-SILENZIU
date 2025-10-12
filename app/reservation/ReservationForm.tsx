@@ -63,6 +63,7 @@ const ReservationForm = () => {
   
   // État pour le prix de la salle
   const [roomPrice, setRoomPrice] = useState<number>(0)
+  const [openingHours, setOpeningHours] = useState<any>(null)
 
   // Fonction pour récupérer le prix de la salle
   const fetchRoomPrice = async (roomName: string) => {
@@ -75,6 +76,21 @@ const ReservationForm = () => {
     } catch (error) {
       console.error('Erreur lors de la récupération du prix:', error)
       setRoomPrice(0)
+    }
+  }
+
+  // Fonction pour récupérer les horaires d'ouverture
+  const fetchOpeningHours = async () => {
+    try {
+      const response = await fetch('/api/opening-hours')
+      if (response.ok) {
+        const result = await response.json()
+        if (result.success) {
+          setOpeningHours(result.data)
+        }
+      }
+    } catch (error) {
+      console.error('Erreur lors de la récupération des horaires:', error)
     }
   }
 
@@ -212,19 +228,36 @@ const ReservationForm = () => {
     fetchAvailabilityData(startOfMonth, endOfMonth, selectedRoom)
   }, [selectedDate, selectedRoom])
 
+  // Charger les horaires d'ouverture au montage du composant
+  useEffect(() => {
+    fetchOpeningHours()
+  }, [])
+
   // Génération des créneaux disponibles avec tranches de 20 minutes basée sur les vraies données
   const generateTimeSlots = (date: Date): TimeSlot[] => {
     const slots: TimeSlot[] = []
-    const startHour = 14 // 14h00
-    const endHour = 21 // 21h00
+    
+    // Utiliser les horaires d'ouverture dynamiques ou des valeurs par défaut
+    let startHour = 14 // Valeur par défaut
+    let endHour = 21   // Valeur par défaut
+    
+    if (openingHours && openingHours.openingHours) {
+      const dayOfWeek = date.getDay() // 0 = Dimanche, 1 = Lundi, etc.
+      const dayHours = openingHours.openingHours[dayOfWeek]
+      
+      if (dayHours) {
+        startHour = Math.floor(dayHours.start / 60)
+        endHour = Math.floor(dayHours.end / 60)
+      }
+    }
     
     // Récupérer la capacité réelle de la salle sélectionnée
     const selectedRoomData = getRoomByName(selectedRoom)
     const maxCapacity = selectedRoomData?.max_people || 8 // Utiliser la capacité de la salle ou 8 par défaut
     
-    // Vérifier si c'est un jour d'ouverture (mardi à samedi)
+    // Vérifier si c'est un jour d'ouverture basé sur les horaires dynamiques
     const dayOfWeek = date.getDay()
-    const isOpenDay = dayOfWeek >= 2 && dayOfWeek <= 6 // Mardi (2) à Samedi (6)
+    const isOpenDay = openingHours && openingHours.openingHours[dayOfWeek] ? true : (dayOfWeek >= 2 && dayOfWeek <= 6) // Fallback: Mardi (2) à Samedi (6)
     
     if (!isOpenDay) {
       return slots // Pas de créneaux les jours fermés
@@ -274,7 +307,7 @@ const ReservationForm = () => {
   // Créneaux pour la date sélectionnée
   const availableTimeSlots = useMemo(() => {
     return generateTimeSlots(selectedDate)
-  }, [selectedDate, numberOfPeople, duration, availabilityData, selectedRoom])
+  }, [selectedDate, numberOfPeople, duration, availabilityData, selectedRoom, openingHours])
 
   // Événements pour le calendrier (disponibilités par jour)
   const calendarEvents = useMemo(() => {
