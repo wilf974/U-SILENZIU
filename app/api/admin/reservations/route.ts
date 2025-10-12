@@ -49,7 +49,16 @@ export async function GET(request: NextRequest) {
       cancelled: reservations.filter(r => r.status === 'cancelled').length,
       totalRevenue: reservations
         .filter(r => r.status === 'confirmed') // Seulement les réservations confirmées
-        .reduce((sum, r) => sum + (typeof r.amount === 'string' ? parseFloat(r.amount) : (r.amount || 0)), 0)
+        .reduce((sum, r) => {
+          // Gérer les valeurs NULL et les différents formats de montant
+          let amount = 0;
+          if (r.payment_amount !== null && r.payment_amount !== undefined) {
+            amount = r.payment_amount;
+          } else if (r.amount !== null && r.amount !== undefined) {
+            amount = typeof r.amount === 'string' ? parseFloat(r.amount) || 0 : r.amount;
+          }
+          return sum + amount;
+        }, 0)
     }
 
     return NextResponse.json({

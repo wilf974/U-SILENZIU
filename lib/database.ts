@@ -594,9 +594,16 @@ export async function toggleRoomStatus(id: string): Promise<Room | null> {
 export async function getAllReservations(): Promise<any[]> {
   const client = await getClient();
   try {
-    const result = await client.query(
-      'SELECT * FROM reservations ORDER BY created_at DESC'
-    );
+    const result = await client.query(`
+      SELECT
+        id, reservation_number, customer_name, customer_email, customer_phone,
+        room_name, date, time_slot, duration, participants, status, amount,
+        special_requests, created_at, updated_at,
+        payment_id, payment_status, payment_amount, payment_date,
+        refund_amount, refund_date, payment_error
+      FROM reservations
+      ORDER BY created_at DESC
+    `);
     return result.rows;
   } finally {
     client.release();
@@ -606,11 +613,49 @@ export async function getAllReservations(): Promise<any[]> {
 export async function getReservationById(id: string): Promise<Reservation | null> {
   const client = await getClient();
   try {
-    const result = await client.query(
-      'SELECT * FROM reservations WHERE id = $1',
+    const result = await client.query(`
+      SELECT
+        id, reservation_number, customer_name, customer_email, customer_phone,
+        room_name, date, time_slot, duration, participants, status, amount,
+        special_requests, created_at, updated_at,
+        payment_id, payment_status, payment_amount, payment_date,
+        refund_amount, refund_date, payment_error
+      FROM reservations WHERE id = $1`,
       [id]
     );
     return result.rows[0] || null;
+  } finally {
+    client.release();
+  }
+}
+
+/**
+ * Met à jour manuellement le statut de paiement d'une réservation
+ */
+export async function updateReservationPaymentStatus(
+  id: string,
+  paymentId: string,
+  paymentStatus: string,
+  paymentAmount?: number,
+  paymentDate?: Date,
+  paymentError?: string
+): Promise<any> {
+  const client = await getClient();
+  try {
+    const result = await client.query(`
+      UPDATE reservations
+      SET
+        payment_id = $2,
+        payment_status = $3,
+        payment_amount = $4,
+        payment_date = $5,
+        payment_error = $6,
+        updated_at = NOW()
+      WHERE id = $1
+      RETURNING *`,
+      [id, paymentId, paymentStatus, paymentAmount, paymentDate, paymentError]
+    );
+    return result.rows[0];
   } finally {
     client.release();
   }
