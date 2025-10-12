@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import { useState, useEffect } from 'react'
-import { Phone, Mail, MapPin, Clock, Axe, Star, Target, Hammer, Palette, Dumbbell } from 'lucide-react'
+import { Phone, Mail, MapPin, Clock, Axe, Star, Target, Hammer, Palette, Dumbbell, Settings } from 'lucide-react'
 
 interface FooterConfig {
   id?: string
@@ -270,23 +270,32 @@ const Footer = () => {
           </div>
 
           {/* Liens légaux */}
-          {legalPages.length > 0 && (
-            <div>
-              <h3 className="text-xl font-bold text-white mb-6">Informations légales</h3>
-              <ul className="space-y-3">
-                {legalPages.map((page) => (
-                  <li key={page.id}>
-                    <Link 
-                      href={`/legal/${page.page_type}`}
-                      className="text-gray-300 hover:text-kaki-400 transition-colors"
-                    >
-                      {getLegalPageLabel(page.page_type)}
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          )}
+          <div>
+            <h3 className="text-xl font-bold text-white mb-6">Informations légales</h3>
+            <ul className="space-y-3">
+              {legalPages.length > 0 && legalPages.map((page) => (
+                <li key={page.id}>
+                  <Link 
+                    href={`/legal/${page.page_type}`}
+                    className="text-gray-300 hover:text-kaki-400 transition-colors"
+                  >
+                    {getLegalPageLabel(page.page_type)}
+                  </Link>
+                </li>
+              ))}
+              {/* Lien d'administration discret */}
+              <li>
+                <Link 
+                  href="/admin"
+                  className="flex items-center space-x-2 text-gray-500 hover:text-kaki-400 transition-colors text-sm"
+                  title="Administration"
+                >
+                  <Settings size={14} />
+                  <span>Admin</span>
+                </Link>
+              </li>
+            </ul>
+          </div>
         </div>
 
         {/* Call to action */}
