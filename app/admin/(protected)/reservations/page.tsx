@@ -40,6 +40,22 @@ interface Reservation {
   special_requests?: string
   created_at: string
   updated_at: string
+  // Propriétés de paiement
+  payment_id?: string
+  payment_status?: string
+  payment_amount?: number
+  payment_date?: string
+  refund_amount?: number
+  refund_date?: string
+  payment_error?: string
+  // Propriétés supplémentaires
+  first_name?: string
+  last_name?: string
+  email?: string
+  phone?: string
+  number_of_people?: number
+  notes?: string
+  time?: string
 }
 
 interface ReservationStats {
