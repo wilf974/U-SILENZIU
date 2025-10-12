@@ -2,6 +2,34 @@ import { NextRequest, NextResponse } from 'next/server'
 import { payplugService } from '@/lib/payplug'
 
 /**
+ * Formate un numéro de téléphone français au format international pour Payplug
+ * @param phone - Numéro de téléphone (ex: "0612345678", "0123456789")
+ * @returns Numéro formaté (ex: "+33612345678", "+33123456789")
+ */
+function formatPhoneForPayplug(phone: string): string {
+  if (!phone) return '+33123456789'
+  
+  // Si déjà au format international, retourner tel quel
+  if (phone.startsWith('+33')) return phone
+  
+  // Nettoyer le numéro (supprimer espaces, tirets, points)
+  const cleanPhone = phone.replace(/[\s\-\.]/g, '')
+  
+  // Si commence par 0, remplacer par +33
+  if (cleanPhone.startsWith('0')) {
+    return '+33' + cleanPhone.substring(1)
+  }
+  
+  // Si commence par 33, ajouter le +
+  if (cleanPhone.startsWith('33')) {
+    return '+' + cleanPhone
+  }
+  
+  // Par défaut, ajouter +33
+  return '+33' + cleanPhone
+}
+
+/**
  * API pour créer un paiement Payplug
  * POST /api/payments/create
  */
@@ -60,7 +88,7 @@ export async function POST(request: NextRequest) {
         first_name: body.customer.first_name || 'Test',
         last_name: body.customer.last_name || 'User',
         email: body.customer.email,
-        mobile_phone_number: body.customer.phone || '+33123456789',
+        mobile_phone_number: formatPhoneForPayplug(body.customer.phone),
         address1: '18 Rue du Pont Long',
         address2: 'Zone Berlanne',
         postcode: '64160',
@@ -72,7 +100,7 @@ export async function POST(request: NextRequest) {
         first_name: body.customer.first_name || 'Test',
         last_name: body.customer.last_name || 'User',
         email: body.customer.email,
-        mobile_phone_number: body.customer.phone || '+33123456789',
+        mobile_phone_number: formatPhoneForPayplug(body.customer.phone),
         address1: '18 Rue du Pont Long',
         address2: 'Zone Berlanne',
         postcode: '64160',
