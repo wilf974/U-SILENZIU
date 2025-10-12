@@ -622,7 +622,7 @@ export default function ReservationsAdminPage() {
                           <div>
                             <div>{formatDate(reservation.date)}</div>
                             <div className="text-gray-400">{formatTime(reservation.time_slot || reservation.time || null)}</div>
-                            <div className="text-gray-400">{reservation.duration || reservation.number_of_people ? `${reservation.duration || reservation.number_of_people} pers.` : 'N/A'}</div>
+                            <div className="text-gray-400">{reservation.number_of_people || reservation.participants ? `${reservation.number_of_people || reservation.participants} pers.` : 'N/A'}</div>
                           </div>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">

@@ -50,12 +50,12 @@ export async function GET(request: NextRequest) {
     // Créer une structure de disponibilité par date et créneau
     const availability: Record<string, Record<string, boolean>> = {}
     
-    // Créneaux horaires disponibles (tranches de 20 minutes de 14h à 21h)
+    // Créneaux horaires disponibles (tranches de 20 minutes de 16h à 23h selon les horaires d'ouverture)
     const timeSlots = [
-      '14:00', '14:20', '14:40', '15:00', '15:20', '15:40',
       '16:00', '16:20', '16:40', '17:00', '17:20', '17:40',
       '18:00', '18:20', '18:40', '19:00', '19:20', '19:40',
-      '20:00', '20:20', '20:40'
+      '20:00', '20:20', '20:40', '21:00', '21:20', '21:40',
+      '22:00', '22:20', '22:40'
     ]
     
     // Initialiser tous les créneaux comme disponibles
@@ -76,24 +76,32 @@ export async function GET(request: NextRequest) {
       // Normaliser la date de la réservation (peut être ISO ou YYYY-MM-DD)
       const reservationDate = new Date(reservation.date)
       const dateStr = reservationDate.toISOString().split('T')[0]
-      const timeSlot = reservation.time_slot
+      
+      // Gérer les deux formats : time_slot (format "16:00 - 16:20") et time (format "16:00")
+      let startTime = null
+      if (reservation.time_slot) {
+        // Format "16:00 - 16:20" -> extraire "16:00"
+        startTime = reservation.time_slot.split(' - ')[0]
+      } else if (reservation.time) {
+        // Format "16:00" -> utiliser directement
+        startTime = reservation.time
+      }
       
       console.log('Réservation trouvée:', { 
         originalDate: reservation.date,
         normalizedDate: dateStr, 
-        timeSlot, 
+        timeSlot: reservation.time_slot,
+        time: reservation.time,
+        extractedStartTime: startTime,
         duration: reservation.duration, 
-        participants: reservation.participants 
+        participants: reservation.participants,
+        number_of_people: reservation.number_of_people
       })
       
       console.log('Availability keys:', Object.keys(availability))
       console.log('Looking for dateStr:', dateStr)
       
-      if (availability[dateStr] && timeSlot) {
-        // Extraire l'heure de début du créneau (ex: "14:00 - 14:20" -> "14:00")
-        const startTime = timeSlot.split(' - ')[0]
-        
-        console.log('Extracted startTime:', startTime)
+      if (availability[dateStr] && startTime) {
         console.log('Availability for date before:', availability[dateStr])
         
         if (availability[dateStr][startTime] !== undefined) {
@@ -103,14 +111,13 @@ export async function GET(request: NextRequest) {
           console.log(`❌ StartTime ${startTime} not found in availability for ${dateStr}`)
         }
       } else {
-        console.log(`❌ Date ${dateStr} not found in availability or timeSlot missing`)
+        console.log(`❌ Date ${dateStr} not found in availability or startTime missing`)
       }
         
       // Marquer aussi les créneaux suivants si la durée le nécessite (seulement si le créneau principal a été trouvé)
-      if (availability[dateStr] && timeSlot) {
+      if (availability[dateStr] && startTime) {
         const duration = reservation.duration || 20
         const additionalSlots = Math.ceil(duration / 20) - 1 // Créneaux de 20 minutes
-        const startTime = timeSlot.split(' - ')[0]
         
         const currentSlotIndex = timeSlots.indexOf(startTime)
         if (currentSlotIndex !== -1) {
