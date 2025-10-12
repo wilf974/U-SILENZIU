@@ -302,10 +302,10 @@ export default function ReservationsAdminPage() {
    * Formate l'heure pour l'affichage avec gestion d'erreur
    */
   const formatTime = (timeString?: string | null) => {
-    if (!timeString) return 'N/A'
+    if (!timeString || timeString === null || timeString === undefined) return 'N/A'
     try {
-      // Vérifier que la chaîne contient au moins le format HH:MM
-      if (timeString.length >= 5) {
+      // Vérifier que la chaîne est bien une chaîne et contient au moins le format HH:MM
+      if (typeof timeString === 'string' && timeString.length >= 5) {
         return timeString.substring(0, 5) // Affiche seulement HH:MM
       }
       return timeString // Retourner tel quel si format inattendu
@@ -605,7 +605,7 @@ export default function ReservationsAdminPage() {
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-300">
                           <div>
                             <div>{formatDate(reservation.date)}</div>
-                            <div className="text-gray-400">{formatTime(reservation.time_slot || reservation.time)}</div>
+                            <div className="text-gray-400">{formatTime(reservation.time_slot || reservation.time || null)}</div>
                             <div className="text-gray-400">{reservation.duration || reservation.number_of_people ? `${reservation.duration || reservation.number_of_people} pers.` : 'N/A'}</div>
                           </div>
                         </td>
