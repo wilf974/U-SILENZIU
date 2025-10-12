@@ -43,6 +43,18 @@ interface SystemStatus {
   database: boolean
 }
 
+interface OpeningHours {
+  day: string
+  hours: string
+}
+
+interface OpeningHoursData {
+  openingHours: OpeningHours[]
+  isOpenToday: boolean
+  todayHours: string
+  todayName: string
+}
+
 interface RecentReservation {
   id: string
   reservationNumber: string
@@ -72,6 +84,7 @@ export default function AdminDashboard() {
     notifications: false,
     database: false
   })
+  const [openingHours, setOpeningHours] = useState<OpeningHoursData | null>(null)
   const [loading, setLoading] = useState(true)
   const [showPayplugConfig, setShowPayplugConfig] = useState(false)
 
@@ -144,6 +157,23 @@ export default function AdminDashboard() {
       setRecentReservations([])
     } finally {
       setLoading(false)
+    }
+    
+    // Récupérer les horaires d'ouverture
+    await fetchOpeningHours()
+  }
+
+  const fetchOpeningHours = async () => {
+    try {
+      const response = await fetch('/api/admin/opening-hours')
+      if (response.ok) {
+        const result = await response.json()
+        if (result.success) {
+          setOpeningHours(result.data)
+        }
+      }
+    } catch (error) {
+      console.error('Erreur lors de la récupération des horaires:', error)
     }
   }
 
@@ -400,6 +430,36 @@ export default function AdminDashboard() {
             </div>
           </div>
 
+          {/* Horaires d'ouverture */}
+          <div className="bg-gray-800 rounded-lg p-6 border border-gray-700">
+            <h3 className="text-lg font-semibold text-white mb-4 flex items-center">
+              <Clock className="mr-2" size={20} />
+              Horaires d'ouverture
+            </h3>
+            {openingHours ? (
+              <div className="space-y-3">
+                <div className="flex justify-between items-center">
+                  <span className="text-gray-400">Aujourd'hui ({openingHours.todayName})</span>
+                  <span className={`text-sm font-semibold ${openingHours.isOpenToday ? 'text-green-500' : 'text-red-500'}`}>
+                    {openingHours.todayHours}
+                  </span>
+                </div>
+                <div className="border-t border-gray-700 pt-3">
+                  <div className="text-xs text-gray-500 mb-2">Horaires de la semaine :</div>
+                  <div className="space-y-1 max-h-32 overflow-y-auto">
+                    {openingHours.openingHours.map((schedule, index) => (
+                      <div key={index} className="flex justify-between items-center text-xs">
+                        <span className="text-gray-400">{schedule.day}</span>
+                        <span className="text-gray-300">{schedule.hours}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            ) : (
+              <div className="text-gray-400 text-sm">Chargement des horaires...</div>
+            )}
+          </div>
 
           <div className="bg-gray-800 rounded-lg p-6 border border-gray-700">
             <h3 className="text-lg font-semibold text-white mb-4">Système</h3>
