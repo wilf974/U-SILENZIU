@@ -49,7 +49,7 @@ export default function RoomsErrorBoundary({ error, onRetry }: RoomsErrorBoundar
         {/* Informations supplémentaires */}
         <div className="mt-8 text-xs text-gray-500">
           <p>Si le problème persiste, contactez le support technique.</p>
-          <p className="mt-1">Code d'erreur: {error?.substring(0, 50)}...</p>
+          <p className="mt-1">Code d'erreur: {error ? error.substring(0, 50) + '...' : 'Erreur inconnue'}</p>
         </div>
       </div>
     </div>

@@ -480,7 +480,7 @@ export default function PagesPage() {
                         {page.title}
                       </div>
                       <div className="text-sm text-gray-400">
-                        {page.metaDescription.substring(0, 60)}...
+                        {page.metaDescription ? page.metaDescription.substring(0, 60) + '...' : 'Aucune description'}
                       </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">

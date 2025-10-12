@@ -135,7 +135,7 @@ export default function CalendarWeekly() {
       return timeSlot.split(' - ')[0];
     }
     // Sinon on prend les 5 premiers caractères (HH:MM)
-    return timeSlot.substring(0, 5);
+    return timeSlot && timeSlot.length >= 5 ? timeSlot.substring(0, 5) : timeSlot;
   };
 
   /**
