@@ -43,14 +43,22 @@ interface LegalPage {
   updated_at: Date
 }
 
+interface Room {
+  id: string
+  name: string
+  is_active: boolean
+}
+
 const Footer = () => {
   const [config, setConfig] = useState<FooterConfig | null>(null)
   const [legalPages, setLegalPages] = useState<LegalPage[]>([])
+  const [rooms, setRooms] = useState<Room[]>([])
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
     fetchFooterConfig()
     fetchLegalPages()
+    fetchRooms()
   }, [])
 
   const fetchFooterConfig = async () => {
@@ -76,6 +84,21 @@ const Footer = () => {
       }
     } catch (error) {
       console.error('Erreur lors du chargement des pages légales:', error)
+    }
+  }
+
+  const fetchRooms = async () => {
+    try {
+      const response = await fetch('/api/rooms')
+      const result = await response.json()
+      
+      if (result.success) {
+        // Filtrer seulement les salles actives
+        const activeRooms = result.data.filter((room: Room) => room.is_active)
+        setRooms(activeRooms)
+      }
+    } catch (error) {
+      console.error('Erreur lors du chargement des salles:', error)
     } finally {
       setLoading(false)
     }
@@ -105,11 +128,14 @@ const Footer = () => {
   // Utiliser la configuration chargée ou les valeurs par défaut
   const footerConfig = config || defaultConfig
 
-  const activities = [
-    { name: 'Salle Douce', icon: Hammer },
-    { name: 'Salle Carnage', icon: Axe },
-    { name: 'Salle Privatisée', icon: Star }
-  ]
+  // Fonction pour obtenir l'icône appropriée selon le nom de la salle
+  const getRoomIcon = (roomName: string) => {
+    const name = roomName.toLowerCase()
+    if (name.includes('bunker') || name.includes('cage')) return Hammer
+    if (name.includes('douce') || name.includes('soft')) return Star
+    if (name.includes('carnage') || name.includes('intense')) return Axe
+    return Hammer // Icône par défaut
+  }
 
   // Fonction pour formater les horaires
   const formatOpeningHours = () => {
@@ -158,22 +184,37 @@ const Footer = () => {
           <div>
             <h3 className="text-xl font-bold text-white mb-6">Nos Salles</h3>
             <ul className="space-y-3">
-              {activities.map((activity, index) => {
-                const IconComponent = activity.icon
-                return (
-                  <li key={index}>
-                    <button 
-                      onClick={() => {
-                        window.location.href = '/#salles'
-                      }}
-                      className="flex items-center space-x-3 text-gray-300 hover:text-kaki-400 transition-colors bg-transparent border-none cursor-pointer"
-                    >
-                      <IconComponent size={16} />
-                      <span>{activity.name}</span>
-                    </button>
-                  </li>
-                )
-              })}
+              {rooms.length > 0 ? (
+                rooms.map((room) => {
+                  const IconComponent = getRoomIcon(room.name)
+                  return (
+                    <li key={room.id}>
+                      <button 
+                        onClick={() => {
+                          window.location.href = '/#salles'
+                        }}
+                        className="flex items-center space-x-3 text-gray-300 hover:text-kaki-400 transition-colors bg-transparent border-none cursor-pointer"
+                      >
+                        <IconComponent size={16} />
+                        <span>{room.name}</span>
+                      </button>
+                    </li>
+                  )
+                })
+              ) : (
+                // Fallback si aucune salle n'est chargée
+                <li>
+                  <button 
+                    onClick={() => {
+                      window.location.href = '/#salles'
+                    }}
+                    className="flex items-center space-x-3 text-gray-300 hover:text-kaki-400 transition-colors bg-transparent border-none cursor-pointer"
+                  >
+                    <Hammer size={16} />
+                    <span>Nos Salles</span>
+                  </button>
+                </li>
+              )}
             </ul>
           </div>
 
