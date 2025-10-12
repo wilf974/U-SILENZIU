@@ -77,7 +77,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Construire l'URL de base
-    const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:8080'
+    const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || process.env.NEXT_PUBLIC_URL || 'https://rageroom.usilenziu.com'
     
     // Données du paiement pour Payplug selon la doc officielle
     const paymentData = {
