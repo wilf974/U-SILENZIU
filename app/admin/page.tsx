@@ -432,10 +432,18 @@ export default function AdminDashboard() {
 
           {/* Horaires d'ouverture */}
           <div className="bg-gray-800 rounded-lg p-6 border border-gray-700">
-            <h3 className="text-lg font-semibold text-white mb-4 flex items-center">
-              <Clock className="mr-2" size={20} />
-              Horaires d'ouverture
-            </h3>
+            <div className="flex justify-between items-center mb-4">
+              <h3 className="text-lg font-semibold text-white flex items-center">
+                <Clock className="mr-2" size={20} />
+                Horaires d'ouverture
+              </h3>
+              <button
+                onClick={() => router.push('/admin/opening-hours')}
+                className="text-kaki-400 hover:text-kaki-300 text-sm font-medium"
+              >
+                Modifier
+              </button>
+            </div>
             {openingHours ? (
               <div className="space-y-3">
                 <div className="flex justify-between items-center">

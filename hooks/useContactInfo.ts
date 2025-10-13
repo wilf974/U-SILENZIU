@@ -40,18 +40,36 @@ export const useContactInfo = () => {
         if (result.success && result.data) {
           const config = result.data
           
+          // Parser les horaires depuis la base de données
+          const parseHours = (hoursStr: string) => {
+            if (!hoursStr || hoursStr.includes('réservation') || hoursStr.includes('Fermé')) {
+              return { opens: '00:00', closes: '00:00' }
+            }
+            
+            // Format attendu: "16:00 – 23:00" ou "16:00-23:00"
+            const match = hoursStr.match(/(\d{1,2}):(\d{2})\s*[–-]\s*(\d{1,2}):(\d{2})/)
+            if (match) {
+              return {
+                opens: `${match[1].padStart(2, '0')}:${match[2]}`,
+                closes: `${match[3].padStart(2, '0')}:${match[4]}`
+              }
+            }
+            
+            return { opens: '00:00', closes: '00:00' }
+          }
+          
           // Formater les informations de contact
           const formattedInfo: ContactInfo = {
             phone: config.contact_phone || '+33 7 83 83 64 53',
             email: config.contact_email || 'info@usilenziu.com',
             address: config.contact_address || '18 Rue du Pont Long, 64160 Buros',
             openingHours: {
-              tuesday: { opens: '14:00', closes: '21:00' },
-              wednesday: { opens: '14:00', closes: '21:00' },
-              thursday: { opens: '14:00', closes: '21:00' },
-              friday: { opens: '14:00', closes: '00:00' },
-              saturday: { opens: '14:00', closes: '00:00' },
-              sunday: { opens: '00:00', closes: '00:00' }
+              tuesday: parseHours(config.opening_hours_tuesday),
+              wednesday: parseHours(config.opening_hours_wednesday),
+              thursday: parseHours(config.opening_hours_thursday),
+              friday: parseHours(config.opening_hours_friday),
+              saturday: parseHours(config.opening_hours_saturday),
+              sunday: parseHours(config.opening_hours_sunday)
             }
           }
 
@@ -106,17 +124,63 @@ export const useContactInfo = () => {
     
     const { openingHours } = contactInfo
     
-    // Formater les heures (14:00 -> 14h)
+    // Formater les heures (14:00 -> 14h, 00:00 -> 00h)
     const formatTime = (time: string) => {
       if (time === '00:00') return '00h'
       return time.replace(':00', 'h')
     }
     
-    // Grouper les jours avec les mêmes horaires
-    const tuesdayToThursday = `${formatTime(openingHours.tuesday.opens)}-${formatTime(openingHours.tuesday.closes)}`
-    const fridayToSaturday = `${formatTime(openingHours.friday.opens)}-${formatTime(openingHours.friday.closes)}`
+    // Vérifier si un jour est fermé
+    const isClosed = (day: { opens: string; closes: string }) => {
+      return day.opens === '00:00' && day.closes === '00:00'
+    }
     
-    return `Mardi-Jeudi: ${tuesdayToThursday} | Vendredi-Samedi: ${fridayToSaturday}`
+    // Grouper les jours avec les mêmes horaires
+    const groups: Array<{ days: string; hours: string }> = []
+    
+    // Mardi au Jeudi
+    if (!isClosed(openingHours.tuesday) && 
+        openingHours.tuesday.opens === openingHours.wednesday.opens &&
+        openingHours.tuesday.closes === openingHours.wednesday.closes &&
+        openingHours.tuesday.opens === openingHours.thursday.opens &&
+        openingHours.tuesday.closes === openingHours.thursday.closes) {
+      groups.push({
+        days: 'Mardi-Jeudi',
+        hours: `${formatTime(openingHours.tuesday.opens)}-${formatTime(openingHours.tuesday.closes)}`
+      })
+    }
+    
+    // Vendredi au Samedi
+    if (!isClosed(openingHours.friday) && 
+        openingHours.friday.opens === openingHours.saturday.opens &&
+        openingHours.friday.closes === openingHours.saturday.closes) {
+      groups.push({
+        days: 'Vendredi-Samedi',
+        hours: `${formatTime(openingHours.friday.opens)}-${formatTime(openingHours.friday.closes)}`
+      })
+    }
+    
+    // Dimanche (si différent)
+    if (!isClosed(openingHours.sunday)) {
+      groups.push({
+        days: 'Dimanche',
+        hours: `${formatTime(openingHours.sunday.opens)}-${formatTime(openingHours.sunday.closes)}`
+      })
+    }
+    
+    // Si aucun groupe trouvé, afficher les horaires individuels
+    if (groups.length === 0) {
+      const individualHours = []
+      if (!isClosed(openingHours.tuesday)) {
+        individualHours.push(`Mar: ${formatTime(openingHours.tuesday.opens)}-${formatTime(openingHours.tuesday.closes)}`)
+      }
+      if (!isClosed(openingHours.friday)) {
+        individualHours.push(`Ven: ${formatTime(openingHours.friday.opens)}-${formatTime(openingHours.friday.closes)}`)
+      }
+      return individualHours.join(' | ') || 'Horaires sur demande'
+    }
+    
+    return groups.map(group => `${group.days}: ${group.hours}`).join(' | ')
   }
 
   return {
