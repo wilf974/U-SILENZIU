@@ -116,6 +116,15 @@ export default function OpeningHoursAdminPage() {
   const getFormattedPreview = () => {
     const groups: Array<{ days: string; hours: string }> = []
     
+    // Lundi (si ouvert)
+    const mondayHours = config.opening_hours_monday
+    if (mondayHours && !mondayHours.includes('Fermé') && !mondayHours.includes('réservation')) {
+      groups.push({
+        days: 'Lundi',
+        hours: mondayHours.replace(/(\d{1,2}):(\d{2})/g, '$1h$2').replace(':00', 'h')
+      })
+    }
+    
     // Mardi au Jeudi
     const tuesdayHours = config.opening_hours_tuesday
     const wednesdayHours = config.opening_hours_wednesday

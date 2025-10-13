@@ -10,6 +10,7 @@ interface ContactInfo {
   email: string
   address: string
   openingHours: {
+    monday: { opens: string; closes: string }
     tuesday: { opens: string; closes: string }
     wednesday: { opens: string; closes: string }
     thursday: { opens: string; closes: string }
@@ -64,6 +65,7 @@ export const useContactInfo = () => {
             email: config.contact_email || 'info@usilenziu.com',
             address: config.contact_address || '18 Rue du Pont Long, 64160 Buros',
             openingHours: {
+              monday: parseHours(config.opening_hours_monday),
               tuesday: parseHours(config.opening_hours_tuesday),
               wednesday: parseHours(config.opening_hours_wednesday),
               thursday: parseHours(config.opening_hours_thursday),
@@ -75,20 +77,21 @@ export const useContactInfo = () => {
 
           setContactInfo(formattedInfo)
         } else {
-          // Utiliser les valeurs par défaut si l'API échoue
-          setContactInfo({
-            phone: '+33 7 83 83 64 53',
-            email: 'info@usilenziu.com',
-            address: '18 Rue du Pont Long, 64160 Buros',
-            openingHours: {
-              tuesday: { opens: '14:00', closes: '21:00' },
-              wednesday: { opens: '14:00', closes: '21:00' },
-              thursday: { opens: '14:00', closes: '21:00' },
-              friday: { opens: '14:00', closes: '00:00' },
-              saturday: { opens: '14:00', closes: '00:00' },
-              sunday: { opens: '00:00', closes: '00:00' }
-            }
-          })
+        // Utiliser les valeurs par défaut si l'API échoue
+        setContactInfo({
+          phone: '+33 7 83 83 64 53',
+          email: 'info@usilenziu.com',
+          address: '18 Rue du Pont Long, 64160 Buros',
+          openingHours: {
+            monday: { opens: '00:00', closes: '00:00' },
+            tuesday: { opens: '14:00', closes: '21:00' },
+            wednesday: { opens: '14:00', closes: '21:00' },
+            thursday: { opens: '14:00', closes: '21:00' },
+            friday: { opens: '14:00', closes: '00:00' },
+            saturday: { opens: '14:00', closes: '00:00' },
+            sunday: { opens: '00:00', closes: '00:00' }
+          }
+        })
         }
       } catch (err) {
         console.error('Erreur lors de la récupération des informations de contact:', err)
@@ -100,6 +103,7 @@ export const useContactInfo = () => {
           email: 'info@usilenziu.com',
           address: '18 Rue du Pont Long, 64160 Buros',
           openingHours: {
+            monday: { opens: '00:00', closes: '00:00' },
             tuesday: { opens: '14:00', closes: '21:00' },
             wednesday: { opens: '14:00', closes: '21:00' },
             thursday: { opens: '14:00', closes: '21:00' },
@@ -137,6 +141,14 @@ export const useContactInfo = () => {
     
     // Grouper les jours avec les mêmes horaires
     const groups: Array<{ days: string; hours: string }> = []
+    
+    // Lundi (si ouvert)
+    if (!isClosed(openingHours.monday)) {
+      groups.push({
+        days: 'Lundi',
+        hours: `${formatTime(openingHours.monday.opens)}-${formatTime(openingHours.monday.closes)}`
+      })
+    }
     
     // Mardi au Jeudi
     if (!isClosed(openingHours.tuesday) && 
