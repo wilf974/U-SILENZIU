@@ -89,15 +89,11 @@ class PayplugService {
 
   /**
    * Vérifie si Payplug est correctement configuré
-   * En mode test, on accepte seulement la clé secrète
+   * D'après la documentation Payplug, seule la clé secrète est nécessaire
    */
   isConfigured(): boolean {
-    // En mode test, on accepte seulement la clé secrète
-    if (this.config.mode === 'test') {
-      return !!this.config.secretKey
-    }
-    // En mode live, on exige toutes les clés
-    return !!(this.config.secretKey && this.config.publicKey && this.config.webhookSecret)
+    // Payplug n'utilise que la clé secrète pour l'API (test et live)
+    return !!this.config.secretKey && this.config.secretKey.length > 0
   }
 
   /**
