@@ -19,29 +19,22 @@ echo "   - Clé secrète: sk_test_4qzp5fowqEGBG93PjzZOlF"
 echo "   - Clé publique: pk_test_4qzp5fowqEGBG93PjzZOlF"
 echo ""
 
-# Demander les nouvelles clés LIVE
-echo "🔑 Veuillez entrer vos clés Payplug LIVE:"
+# Demander la clé secrète LIVE (Payplug n'utilise que les clés secrètes)
+echo "🔑 Veuillez entrer votre clé secrète Payplug LIVE:"
 echo ""
 
 read -p "Clé secrète LIVE (sk_live_...): " PAYPLUG_SECRET_KEY_LIVE
-read -p "Clé publique LIVE (pk_live_...): " PAYPLUG_PUBLIC_KEY_LIVE
-read -p "Secret webhook LIVE (whsec_live_...): " PAYPLUG_WEBHOOK_SECRET_LIVE
 
-# Validation des clés
+# Validation de la clé secrète
 if [[ ! $PAYPLUG_SECRET_KEY_LIVE =~ ^sk_live_ ]]; then
     echo "❌ Erreur: La clé secrète doit commencer par 'sk_live_'"
     exit 1
 fi
 
-if [[ ! $PAYPLUG_PUBLIC_KEY_LIVE =~ ^pk_live_ ]]; then
-    echo "❌ Erreur: La clé publique doit commencer par 'pk_live_'"
-    exit 1
-fi
-
-if [[ ! $PAYPLUG_WEBHOOK_SECRET_LIVE =~ ^whsec_live_ ]]; then
-    echo "❌ Erreur: Le secret webhook doit commencer par 'whsec_live_'"
-    exit 1
-fi
+# Payplug n'utilise pas de clés publiques pour l'API
+# On garde les anciennes valeurs pour la compatibilité
+PAYPLUG_PUBLIC_KEY_LIVE=""
+PAYPLUG_WEBHOOK_SECRET_LIVE=""
 
 echo ""
 echo "✅ Clés validées!"
@@ -72,16 +65,16 @@ echo "✅ Sauvegarde créée"
 
 # Mettre à jour env.prod
 sed -i "s/PAYPLUG_SECRET_KEY=.*/PAYPLUG_SECRET_KEY=$PAYPLUG_SECRET_KEY_LIVE/" env.prod
-sed -i "s/PAYPLUG_PUBLIC_KEY=.*/PAYPLUG_PUBLIC_KEY=$PAYPLUG_PUBLIC_KEY_LIVE/" env.prod
-sed -i "s/PAYPLUG_WEBHOOK_SECRET=.*/PAYPLUG_WEBHOOK_SECRET=$PAYPLUG_WEBHOOK_SECRET_LIVE/" env.prod
+sed -i "s/PAYPLUG_PUBLIC_KEY=.*/PAYPLUG_PUBLIC_KEY=/" env.prod
+sed -i "s/PAYPLUG_WEBHOOK_SECRET=.*/PAYPLUG_WEBHOOK_SECRET=/" env.prod
 sed -i "s/PAYPLUG_MODE=.*/PAYPLUG_MODE=live/" env.prod
 
 echo "✅ env.prod mis à jour"
 
 # Mettre à jour docker-compose.prod.yml
 sed -i "s/- PAYPLUG_SECRET_KEY=.*/- PAYPLUG_SECRET_KEY=$PAYPLUG_SECRET_KEY_LIVE/" docker-compose.prod.yml
-sed -i "s/- PAYPLUG_PUBLIC_KEY=.*/- PAYPLUG_PUBLIC_KEY=$PAYPLUG_PUBLIC_KEY_LIVE/" docker-compose.prod.yml
-sed -i "s/- PAYPLUG_WEBHOOK_SECRET=.*/- PAYPLUG_WEBHOOK_SECRET=$PAYPLUG_WEBHOOK_SECRET_LIVE/" docker-compose.prod.yml
+sed -i "s/- PAYPLUG_PUBLIC_KEY=.*/- PAYPLUG_PUBLIC_KEY=/" docker-compose.prod.yml
+sed -i "s/- PAYPLUG_WEBHOOK_SECRET=.*/- PAYPLUG_WEBHOOK_SECRET=/" docker-compose.prod.yml
 sed -i "s/- PAYPLUG_MODE=.*/- PAYPLUG_MODE=live/" docker-compose.prod.yml
 
 echo "✅ docker-compose.prod.yml mis à jour"
@@ -119,8 +112,7 @@ echo ""
 echo "📋 Résumé:"
 echo "   - Mode: LIVE (PRODUCTION)"
 echo "   - Clé secrète: $PAYPLUG_SECRET_KEY_LIVE"
-echo "   - Clé publique: $PAYPLUG_PUBLIC_KEY_LIVE"
-echo "   - Secret webhook: $PAYPLUG_WEBHOOK_SECRET_LIVE"
+echo "   - Note: Payplug n'utilise que les clés secrètes pour l'API"
 echo ""
 echo "🔗 URLs importantes:"
 echo "   - Site: https://rageroom.usilenziu.com"
