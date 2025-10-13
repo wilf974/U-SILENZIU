@@ -142,34 +142,52 @@ export const useContactInfo = () => {
     // Grouper les jours avec les mêmes horaires
     const groups: Array<{ days: string; hours: string }> = []
     
-    // Lundi (si ouvert)
-    if (!isClosed(openingHours.monday)) {
+    // Vérifier si tous les jours de la semaine (lundi-samedi) ont les mêmes horaires
+    const weekdays = [openingHours.monday, openingHours.tuesday, openingHours.wednesday, openingHours.thursday, openingHours.friday, openingHours.saturday]
+    const allWeekdaysSame = weekdays.every(day => 
+      !isClosed(day) && 
+      day.opens === weekdays[0].opens && 
+      day.closes === weekdays[0].closes
+    )
+    
+    if (allWeekdaysSame && !isClosed(openingHours.monday)) {
+      // Tous les jours de la semaine ont les mêmes horaires
       groups.push({
-        days: 'Lundi',
+        days: 'Lundi-Samedi',
         hours: `${formatTime(openingHours.monday.opens)}-${formatTime(openingHours.monday.closes)}`
       })
-    }
-    
-    // Mardi au Jeudi
-    if (!isClosed(openingHours.tuesday) && 
-        openingHours.tuesday.opens === openingHours.wednesday.opens &&
-        openingHours.tuesday.closes === openingHours.wednesday.closes &&
-        openingHours.tuesday.opens === openingHours.thursday.opens &&
-        openingHours.tuesday.closes === openingHours.thursday.closes) {
-      groups.push({
-        days: 'Mardi-Jeudi',
-        hours: `${formatTime(openingHours.tuesday.opens)}-${formatTime(openingHours.tuesday.closes)}`
-      })
-    }
-    
-    // Vendredi au Samedi
-    if (!isClosed(openingHours.friday) && 
-        openingHours.friday.opens === openingHours.saturday.opens &&
-        openingHours.friday.closes === openingHours.saturday.closes) {
-      groups.push({
-        days: 'Vendredi-Samedi',
-        hours: `${formatTime(openingHours.friday.opens)}-${formatTime(openingHours.friday.closes)}`
-      })
+    } else {
+      // Horaires différents, grouper intelligemment
+      
+      // Lundi (si ouvert et différent)
+      if (!isClosed(openingHours.monday)) {
+        groups.push({
+          days: 'Lundi',
+          hours: `${formatTime(openingHours.monday.opens)}-${formatTime(openingHours.monday.closes)}`
+        })
+      }
+      
+      // Mardi au Jeudi
+      if (!isClosed(openingHours.tuesday) && 
+          openingHours.tuesday.opens === openingHours.wednesday.opens &&
+          openingHours.tuesday.closes === openingHours.wednesday.closes &&
+          openingHours.tuesday.opens === openingHours.thursday.opens &&
+          openingHours.tuesday.closes === openingHours.thursday.closes) {
+        groups.push({
+          days: 'Mardi-Jeudi',
+          hours: `${formatTime(openingHours.tuesday.opens)}-${formatTime(openingHours.tuesday.closes)}`
+        })
+      }
+      
+      // Vendredi au Samedi
+      if (!isClosed(openingHours.friday) && 
+          openingHours.friday.opens === openingHours.saturday.opens &&
+          openingHours.friday.closes === openingHours.saturday.closes) {
+        groups.push({
+          days: 'Vendredi-Samedi',
+          hours: `${formatTime(openingHours.friday.opens)}-${formatTime(openingHours.friday.closes)}`
+        })
+      }
     }
     
     // Dimanche (si différent)

@@ -116,40 +116,67 @@ export default function OpeningHoursAdminPage() {
   const getFormattedPreview = () => {
     const groups: Array<{ days: string; hours: string }> = []
     
-    // Lundi (si ouvert)
-    const mondayHours = config.opening_hours_monday
-    if (mondayHours && !mondayHours.includes('Fermé') && !mondayHours.includes('réservation')) {
+    // Vérifier si tous les jours de la semaine (lundi-samedi) ont les mêmes horaires
+    const weekdays = [
+      config.opening_hours_monday,
+      config.opening_hours_tuesday,
+      config.opening_hours_wednesday,
+      config.opening_hours_thursday,
+      config.opening_hours_friday,
+      config.opening_hours_saturday
+    ]
+    
+    const allWeekdaysSame = weekdays.every(hours => 
+      hours && 
+      !hours.includes('Fermé') && 
+      !hours.includes('réservation') && 
+      hours === weekdays[0]
+    )
+    
+    if (allWeekdaysSame && config.opening_hours_monday) {
+      // Tous les jours de la semaine ont les mêmes horaires
       groups.push({
-        days: 'Lundi',
-        hours: mondayHours.replace(/(\d{1,2}):(\d{2})/g, '$1h$2').replace(':00', 'h')
+        days: 'Lundi-Samedi',
+        hours: config.opening_hours_monday.replace(/(\d{1,2}):(\d{2})/g, '$1h$2').replace(':00', 'h')
       })
-    }
-    
-    // Mardi au Jeudi
-    const tuesdayHours = config.opening_hours_tuesday
-    const wednesdayHours = config.opening_hours_wednesday
-    const thursdayHours = config.opening_hours_thursday
-    
-    if (tuesdayHours && wednesdayHours && thursdayHours &&
-        tuesdayHours === wednesdayHours && wednesdayHours === thursdayHours &&
-        !tuesdayHours.includes('Fermé') && !tuesdayHours.includes('réservation')) {
-      groups.push({
-        days: 'Mardi-Jeudi',
-        hours: tuesdayHours.replace(/(\d{1,2}):(\d{2})/g, '$1h$2').replace(':00', 'h')
-      })
-    }
-    
-    // Vendredi au Samedi
-    const fridayHours = config.opening_hours_friday
-    const saturdayHours = config.opening_hours_saturday
-    
-    if (fridayHours && saturdayHours &&
-        fridayHours === saturdayHours &&
-        !fridayHours.includes('Fermé') && !fridayHours.includes('réservation')) {
-      groups.push({
-        days: 'Vendredi-Samedi',
-        hours: fridayHours.replace(/(\d{1,2}):(\d{2})/g, '$1h$2').replace(':00', 'h')
-      })
+    } else {
+      // Horaires différents, grouper intelligemment
+      
+      // Lundi (si ouvert et différent)
+      const mondayHours = config.opening_hours_monday
+      if (mondayHours && !mondayHours.includes('Fermé') && !mondayHours.includes('réservation')) {
+        groups.push({
+          days: 'Lundi',
+          hours: mondayHours.replace(/(\d{1,2}):(\d{2})/g, '$1h$2').replace(':00', 'h')
+        })
+      }
+      
+      // Mardi au Jeudi
+      const tuesdayHours = config.opening_hours_tuesday
+      const wednesdayHours = config.opening_hours_wednesday
+      const thursdayHours = config.opening_hours_thursday
+      
+      if (tuesdayHours && wednesdayHours && thursdayHours &&
+          tuesdayHours === wednesdayHours && wednesdayHours === thursdayHours &&
+          !tuesdayHours.includes('Fermé') && !tuesdayHours.includes('réservation')) {
+        groups.push({
+          days: 'Mardi-Jeudi',
+          hours: tuesdayHours.replace(/(\d{1,2}):(\d{2})/g, '$1h$2').replace(':00', 'h')
+        })
+      }
+      
+      // Vendredi au Samedi
+      const fridayHours = config.opening_hours_friday
+      const saturdayHours = config.opening_hours_saturday
+      
+      if (fridayHours && saturdayHours &&
+          fridayHours === saturdayHours &&
+          !fridayHours.includes('Fermé') && !fridayHours.includes('réservation')) {
+        groups.push({
+          days: 'Vendredi-Samedi',
+          hours: fridayHours.replace(/(\d{1,2}):(\d{2})/g, '$1h$2').replace(':00', 'h')
+        })
+      }
     }
     
     // Dimanche (si différent)
