@@ -152,18 +152,10 @@ const Contact = () => {
       <div className="section-container">
         <div className="text-center mb-16">
           <h2 className="text-4xl lg:text-5xl font-bold text-white mb-6">
-            {section?.title ? (
-              section.title.includes('Contacter') ? (
-                <span dangerouslySetInnerHTML={{
-                  __html: section.title.replace('Contacter', '<span class="text-gradient-kaki">Contacter</span>')
-                }} />
-              ) : section.title
-            ) : (
-              <>Nous <span className="text-gradient-kaki">Contacter</span></>
-            )}
+            Nous <span className="text-gradient-kaki">Contacter</span>
           </h2>
           <p className="text-xl text-gray-300 max-w-3xl mx-auto">
-            {section?.subtitle || 'Prêt à réserver votre session de défoulement ? Notre équipe est là pour vous accompagner.'}
+            Prêt à réserver votre session de défoulement ? Notre équipe est là pour vous accompagner.
           </p>
         </div>
 
