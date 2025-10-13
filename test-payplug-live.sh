@@ -35,10 +35,8 @@ if [[ ! $SECRET_KEY =~ ^sk_live_ ]]; then
     exit 1
 fi
 
-if [[ ! $PUBLIC_KEY =~ ^pk_live_ ]]; then
-    echo "❌ Erreur: La clé publique ne commence pas par 'pk_live_'"
-    exit 1
-fi
+# Payplug n'utilise pas de clés publiques pour l'API
+echo "✅ Clé secrète LIVE validée"
 
 echo "✅ Configuration LIVE détectée"
 echo ""
@@ -129,6 +127,7 @@ echo "🎉 Tests Payplug LIVE terminés!"
 echo ""
 echo "📋 Résumé des tests:"
 echo "   ✅ Configuration LIVE détectée"
+echo "   ✅ Clé secrète LIVE validée"
 echo "   ✅ API de configuration accessible"
 echo "   ✅ Mode LIVE confirmé via l'API"
 echo "   ✅ Création de paiement réussie"
