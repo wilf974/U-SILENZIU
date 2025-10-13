@@ -111,7 +111,7 @@ const Footer = () => {
     site_slogan: 'Énergie positive garantie !',
     contact_phone: '+33 7 83 83 64 53',
     contact_email: 'info@usilenziu.com',
-    contact_address: '18 Rue du Pont Long, 64160 Buros, Zone Berlanne',
+    contact_address: 'ZI Baleone Farone, 20167 AFA, France',
     opening_hours_monday: 'Fermé',
     opening_hours_tuesday: '14:00 – 21:00',
     opening_hours_wednesday: '14:00 – 21:00',

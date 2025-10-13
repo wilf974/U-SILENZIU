@@ -63,7 +63,7 @@ export const useContactInfo = () => {
           const formattedInfo: ContactInfo = {
             phone: config.contact_phone || '+33 7 83 83 64 53',
             email: config.contact_email || 'info@usilenziu.com',
-            address: config.contact_address || '18 Rue du Pont Long, 64160 Buros',
+            address: config.contact_address || 'ZI Baleone Farone, 20167 AFA, France',
             openingHours: {
               monday: parseHours(config.opening_hours_monday),
               tuesday: parseHours(config.opening_hours_tuesday),
@@ -81,7 +81,7 @@ export const useContactInfo = () => {
         setContactInfo({
           phone: '+33 7 83 83 64 53',
           email: 'info@usilenziu.com',
-          address: '18 Rue du Pont Long, 64160 Buros',
+          address: 'ZI Baleone Farone, 20167 AFA, France',
           openingHours: {
             monday: { opens: '00:00', closes: '00:00' },
             tuesday: { opens: '14:00', closes: '21:00' },
@@ -101,7 +101,7 @@ export const useContactInfo = () => {
         setContactInfo({
           phone: '+33 7 83 83 64 53',
           email: 'info@usilenziu.com',
-          address: '18 Rue du Pont Long, 64160 Buros',
+          address: 'ZI Baleone Farone, 20167 AFA, France',
           openingHours: {
             monday: { opens: '00:00', closes: '00:00' },
             tuesday: { opens: '14:00', closes: '21:00' },

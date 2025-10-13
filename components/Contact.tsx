@@ -45,8 +45,8 @@ const Contact = () => {
     {
       icon: 'MapPin',
       title: 'Adresse',
-      details: contactInfo?.address || '18 Rue du Pont Long, 64160 Buros',
-      link: `https://maps.google.com/?q=${encodeURIComponent(contactInfo?.address || '18 Rue du Pont Long, 64160 Buros')}`
+      details: contactInfo?.address || 'ZI Baleone Farone, 20167 AFA, France',
+      link: `https://maps.google.com/?q=${encodeURIComponent(contactInfo?.address || 'ZI Baleone Farone, 20167 AFA, France')}`
     }
   ]
 

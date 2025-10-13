@@ -81,10 +81,10 @@ export async function POST(request: NextRequest) {
     
     // Adresse par défaut (entreprise) si le client n'en fournit pas
     const defaultAddress = {
-      address1: '18 Rue du Pont Long',
-      address2: 'Zone Berlanne',
-      postcode: '64160',
-      city: 'Buros',
+      address1: 'ZI Baleone Farone',
+      address2: '',
+      postcode: '20167',
+      city: 'AFA',
       country: 'FR'
     }
 
