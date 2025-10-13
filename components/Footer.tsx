@@ -112,6 +112,7 @@ const Footer = () => {
     contact_phone: '+33 7 83 83 64 53',
     contact_email: 'info@usilenziu.com',
     contact_address: '18 Rue du Pont Long, 64160 Buros, Zone Berlanne',
+    opening_hours_monday: 'Fermé',
     opening_hours_tuesday: '14:00 – 21:00',
     opening_hours_wednesday: '14:00 – 21:00',
     opening_hours_thursday: '14:00 – 21:00',
@@ -139,12 +140,81 @@ const Footer = () => {
 
   // Fonction pour formater les horaires
   const formatOpeningHours = () => {
-    const hours = [
-      { day: 'Mardi au Jeudi', hours: footerConfig.opening_hours_tuesday },
-      { day: 'Vendredi au Samedi', hours: footerConfig.opening_hours_friday },
-      { day: 'Dimanche', hours: footerConfig.opening_hours_sunday }
+    const groups: Array<{ day: string; hours: string }> = []
+    
+    // Vérifier si tous les jours de la semaine (lundi-samedi) ont les mêmes horaires
+    const weekdays = [
+      footerConfig.opening_hours_monday,
+      footerConfig.opening_hours_tuesday,
+      footerConfig.opening_hours_wednesday,
+      footerConfig.opening_hours_thursday,
+      footerConfig.opening_hours_friday,
+      footerConfig.opening_hours_saturday
     ]
-    return hours.filter(h => h.hours)
+    
+    const allWeekdaysSame = weekdays.every(hours => 
+      hours && 
+      !hours.includes('Fermé') && 
+      !hours.includes('réservation') && 
+      hours === weekdays[0]
+    )
+    
+    if (allWeekdaysSame && footerConfig.opening_hours_monday) {
+      // Tous les jours de la semaine ont les mêmes horaires
+      groups.push({
+        day: 'Lundi au Samedi',
+        hours: footerConfig.opening_hours_monday
+      })
+    } else {
+      // Horaires différents, grouper intelligemment
+      
+      // Lundi (si ouvert et différent)
+      if (footerConfig.opening_hours_monday && 
+          !footerConfig.opening_hours_monday.includes('Fermé') && 
+          !footerConfig.opening_hours_monday.includes('réservation')) {
+        groups.push({
+          day: 'Lundi',
+          hours: footerConfig.opening_hours_monday
+        })
+      }
+      
+      // Mardi au Jeudi
+      if (footerConfig.opening_hours_tuesday && 
+          footerConfig.opening_hours_wednesday && 
+          footerConfig.opening_hours_thursday &&
+          footerConfig.opening_hours_tuesday === footerConfig.opening_hours_wednesday &&
+          footerConfig.opening_hours_wednesday === footerConfig.opening_hours_thursday &&
+          !footerConfig.opening_hours_tuesday.includes('Fermé') && 
+          !footerConfig.opening_hours_tuesday.includes('réservation')) {
+        groups.push({
+          day: 'Mardi au Jeudi',
+          hours: footerConfig.opening_hours_tuesday
+        })
+      }
+      
+      // Vendredi au Samedi
+      if (footerConfig.opening_hours_friday && 
+          footerConfig.opening_hours_saturday &&
+          footerConfig.opening_hours_friday === footerConfig.opening_hours_saturday &&
+          !footerConfig.opening_hours_friday.includes('Fermé') && 
+          !footerConfig.opening_hours_friday.includes('réservation')) {
+        groups.push({
+          day: 'Vendredi au Samedi',
+          hours: footerConfig.opening_hours_friday
+        })
+      }
+    }
+    
+    // Dimanche (si différent)
+    if (footerConfig.opening_hours_sunday && 
+        !footerConfig.opening_hours_sunday.includes('Fermé')) {
+      groups.push({
+        day: 'Dimanche',
+        hours: footerConfig.opening_hours_sunday
+      })
+    }
+    
+    return groups
   }
 
   // Fonction pour mapper les types de pages légales vers des labels français
