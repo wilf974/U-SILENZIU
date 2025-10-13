@@ -79,6 +79,24 @@ export async function POST(request: NextRequest) {
     // Construire l'URL de base
     const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || process.env.NEXT_PUBLIC_URL || 'https://rageroom.usilenziu.com'
     
+    // Adresse par défaut (entreprise) si le client n'en fournit pas
+    const defaultAddress = {
+      address1: '18 Rue du Pont Long',
+      address2: 'Zone Berlanne',
+      postcode: '64160',
+      city: 'Buros',
+      country: 'FR'
+    }
+
+    // Utiliser l'adresse du client s'il la fournit, sinon l'adresse de l'entreprise
+    const customerAddress = body.customer.address ? {
+      address1: body.customer.address.address1 || defaultAddress.address1,
+      address2: body.customer.address.address2 || defaultAddress.address2,
+      postcode: body.customer.address.postcode || defaultAddress.postcode,
+      city: body.customer.address.city || defaultAddress.city,
+      country: body.customer.address.country || defaultAddress.country
+    } : defaultAddress
+
     // Données du paiement pour Payplug selon la doc officielle
     const paymentData = {
       amount: Math.round(body.amount * 100), // Convertir en centimes
@@ -89,11 +107,7 @@ export async function POST(request: NextRequest) {
         last_name: body.customer.last_name || 'User',
         email: body.customer.email,
         mobile_phone_number: formatPhoneForPayplug(body.customer.phone),
-        address1: '18 Rue du Pont Long',
-        address2: 'Zone Berlanne',
-        postcode: '64160',
-        city: 'Buros',
-        country: 'FR'
+        ...customerAddress
       },
       shipping: {
         title: 'mr',
@@ -101,11 +115,7 @@ export async function POST(request: NextRequest) {
         last_name: body.customer.last_name || 'User',
         email: body.customer.email,
         mobile_phone_number: formatPhoneForPayplug(body.customer.phone),
-        address1: '18 Rue du Pont Long',
-        address2: 'Zone Berlanne',
-        postcode: '64160',
-        city: 'Buros',
-        country: 'FR'
+        ...customerAddress
       },
       // Pas de webhook - vérification manuelle uniquement
       notification_url: `${baseUrl}/api/webhooks/payplug`,

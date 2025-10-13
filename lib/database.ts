@@ -31,6 +31,7 @@ export interface Reservation {
   last_name: string;
   email: string;
   phone: string;
+  address?: string; // Adresse au format JSON
   room_name: string;
   date: string;
   time: string;
@@ -690,8 +691,8 @@ export async function createReservation(reservationData: any): Promise<any> {
     });
     
     const result = await client.query(
-      `INSERT INTO reservations (reservation_number, first_name, last_name, email, phone, room_name, date, time, duration, number_of_people, status, amount, notes)
-       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)
+      `INSERT INTO reservations (reservation_number, first_name, last_name, email, phone, address, room_name, date, time, duration, number_of_people, status, amount, notes)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14)
        RETURNING *`,
       [
         reservationNumber,
@@ -699,6 +700,7 @@ export async function createReservation(reservationData: any): Promise<any> {
         reservationData.last_name,
         reservationData.email,
         reservationData.phone,
+        reservationData.address || null,
         reservationData.room_name,
         reservationData.date,
         reservationData.time,

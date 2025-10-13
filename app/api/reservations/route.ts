@@ -150,6 +150,7 @@ export async function POST(request: NextRequest) {
       last_name: body.lastName,
       email: body.email,
       phone: body.phone,
+      address: body.address ? JSON.stringify(body.address) : null, // Stocker l'adresse en JSON
       room_name: body.roomName,
       date: body.date,
       time: body.timeSlot.split(' - ')[0], // Extraire l'heure de début

@@ -62,6 +62,9 @@ const ReservationForm = () => {
   const [lastName, setLastName] = useState<string>('')
   const [email, setEmail] = useState<string>('')
   const [phone, setPhone] = useState<string>('')
+  const [address, setAddress] = useState<string>('')
+  const [postcode, setPostcode] = useState<string>('')
+  const [city, setCity] = useState<string>('')
   const [reservationNumber, setReservationNumber] = useState<string>('')
   const [showPayment, setShowPayment] = useState<boolean>(false)
   
@@ -472,6 +475,12 @@ const ReservationForm = () => {
           lastName,
           email,
           phone,
+          address: address ? {
+            address1: address,
+            postcode: postcode,
+            city: city,
+            country: 'FR'
+          } : undefined,
           date: dateStr, // Format YYYY-MM-DD en date locale
           timeSlot: `${moment(selectedTimeSlot.start).format('HH:mm')} - ${moment(selectedTimeSlot.end).format('HH:mm')}`,
           duration,
@@ -942,6 +951,52 @@ const ReservationForm = () => {
                     placeholder="06 12 34 56 78"
                     required
                   />
+                </div>
+
+                {/* Adresse optionnelle */}
+                <div className="border-t border-kaki-800/30 pt-6">
+                  <h3 className="text-white font-medium mb-4 flex items-center">
+                    <MapPin className="text-kaki-500 mr-2" size={16} />
+                    Adresse de facturation (optionnelle)
+                  </h3>
+                  <p className="text-gray-400 text-sm mb-4">
+                    Si vous ne renseignez pas votre adresse, celle de l'entreprise sera utilisée pour la facturation.
+                  </p>
+                  
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div className="md:col-span-2">
+                      <label className="block text-white font-medium mb-2">Adresse</label>
+                      <input
+                        type="text"
+                        value={address}
+                        onChange={(e) => setAddress(e.target.value)}
+                        className="w-full px-4 py-3 bg-dark-bg border border-kaki-800/50 rounded-lg text-white focus:border-kaki-500 focus:outline-none transition-colors"
+                        placeholder="123 Rue de la Paix"
+                      />
+                    </div>
+                    
+                    <div>
+                      <label className="block text-white font-medium mb-2">Code postal</label>
+                      <input
+                        type="text"
+                        value={postcode}
+                        onChange={(e) => setPostcode(e.target.value)}
+                        className="w-full px-4 py-3 bg-dark-bg border border-kaki-800/50 rounded-lg text-white focus:border-kaki-500 focus:outline-none transition-colors"
+                        placeholder="75001"
+                      />
+                    </div>
+                  </div>
+                  
+                  <div className="mt-4">
+                    <label className="block text-white font-medium mb-2">Ville</label>
+                    <input
+                      type="text"
+                      value={city}
+                      onChange={(e) => setCity(e.target.value)}
+                      className="w-full px-4 py-3 bg-dark-bg border border-kaki-800/50 rounded-lg text-white focus:border-kaki-500 focus:outline-none transition-colors"
+                      placeholder="Paris"
+                    />
+                  </div>
                 </div>
 
                 {/* Boutons de navigation */}
