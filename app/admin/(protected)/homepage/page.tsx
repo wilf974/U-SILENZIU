@@ -2287,7 +2287,7 @@ const ensureCommentText = (value: unknown, fallback = ''): string => {
   return fallback
 }
 
-const normalizeCommentStep = (step: any, index: number) => {
+const normalizeCommentStep = (step: unknown, index: number) => {
   const defaultStep = DEFAULT_COMMENT_STEPS[index] || DEFAULT_COMMENT_STEPS[0]
   const rawIcon = ensureCommentText(step?.icon).trim().toLowerCase()
   const icon = COMMENT_ICON_OPTIONS.includes(rawIcon) ? rawIcon : COMMENT_ICON_OPTIONS[0]
