@@ -3,16 +3,24 @@ import { readFile } from 'fs/promises'
 import { join } from 'path'
 import { existsSync } from 'fs'
 
+/**
+ * Route API pour servir les fichiers uploadés (images de salles, etc.)
+ * Utilise la variable d'environnement UPLOAD_DIR ou le chemin par défaut
+ */
 export async function GET(
   request: NextRequest,
   { params }: { params: Promise<{ filename: string[] }> }
 ) {
   try {
     const { filename } = await params
-    const filePath = join(process.cwd(), 'public', 'uploads', ...filename)
+    
+    // Utiliser UPLOAD_DIR si défini, sinon utiliser le chemin par défaut
+    const uploadsBaseDir = process.env.UPLOAD_DIR || join(process.cwd(), 'public', 'uploads')
+    const filePath = join(uploadsBaseDir, ...filename)
 
     // Vérifier que le fichier existe
     if (!existsSync(filePath)) {
+      console.error(`Image non trouvée: ${filePath}`)
       return new NextResponse('Image non trouvée', { status: 404 })
     }
 

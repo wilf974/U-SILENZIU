@@ -6,6 +6,51 @@ import { Plus, Edit, Trash2, Eye, EyeOff, Save, X, Loader2, Upload, Image } from
 import type { Room } from '@/lib/database';
 import RoomImage from '@/components/RoomImage';
 
+const normalizeStringArray = (value: unknown): string[] => {
+  if (Array.isArray(value)) {
+    return value
+      .map(item => (typeof item === 'string' ? item : String(item ?? '')).trim())
+      .filter(Boolean);
+  }
+
+  if (typeof value === 'string') {
+    const trimmed = value.trim();
+    if (!trimmed) return [];
+
+    const looksLikeJsonArray =
+      (trimmed.startsWith('[') && trimmed.endsWith(']')) ||
+      (trimmed.startsWith('{') && trimmed.endsWith('}'));
+
+    if (looksLikeJsonArray) {
+      try {
+        const canonical = trimmed.startsWith('{')
+          ? `[${trimmed.slice(1, -1)}]`
+          : trimmed;
+        const parsed = JSON.parse(canonical);
+        if (Array.isArray(parsed)) {
+          return parsed
+            .map(item => (typeof item === 'string' ? item : String(item ?? '')).trim())
+            .filter(Boolean);
+        }
+      } catch {
+        // Ignore parsing failures and fallback to comma split
+      }
+    }
+
+    return trimmed
+      .split(',')
+      .map(item => item.trim())
+      .filter(Boolean);
+  }
+
+  if (value == null) {
+    return [];
+  }
+
+  const stringified = String(value).trim();
+  return stringified ? [stringified] : [];
+};
+
 export default function AdminRoomsPage() {
   const { isAuthenticated, loading: authLoading, requireAuth } = useAuth();
   const [rooms, setRooms] = useState<Room[]>([]);

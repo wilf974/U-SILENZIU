@@ -104,6 +104,8 @@ services:
     volumes:
       - ./nginx/conf.d:/etc/nginx/conf.d
       - /opt/ssl/rageroom.usilenziu.com:/etc/letsencrypt/live/rageroom.usilenziu.com:ro
+      # Volume partagé pour servir directement les uploads
+      - ./public/uploads:/app/public/uploads:ro
     depends_on:
       - u-silenziu
     restart: unless-stopped
