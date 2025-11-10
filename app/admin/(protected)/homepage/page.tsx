@@ -2289,10 +2289,14 @@ const ensureCommentText = (value: unknown, fallback = ''): string => {
 
 const normalizeCommentStep = (step: unknown, index: number) => {
   const defaultStep = DEFAULT_COMMENT_STEPS[index] || DEFAULT_COMMENT_STEPS[0]
-  const rawIcon = ensureCommentText(step?.icon).trim().toLowerCase()
+  
+  // Vérifier que step est un objet
+  const stepObj = step && typeof step === 'object' ? step as Record<string, unknown> : {}
+  
+  const rawIcon = ensureCommentText(stepObj?.icon).trim().toLowerCase()
   const icon = COMMENT_ICON_OPTIONS.includes(rawIcon) ? rawIcon : COMMENT_ICON_OPTIONS[0]
 
-  const durationValue = step?.duration
+  const durationValue = stepObj?.duration
   let duration = defaultStep.duration
   if (typeof durationValue === 'number' && Number.isFinite(durationValue)) {
     duration = `${durationValue} min`
@@ -2303,8 +2307,8 @@ const normalizeCommentStep = (step: unknown, index: number) => {
 
   return {
     icon,
-    title: ensureCommentText(step?.title, defaultStep.title),
-    description: ensureCommentText(step?.description, defaultStep.description),
+    title: ensureCommentText(stepObj?.title, defaultStep.title),
+    description: ensureCommentText(stepObj?.description, defaultStep.description),
     duration
   }
 }
