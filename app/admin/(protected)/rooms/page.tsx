@@ -123,6 +123,13 @@ export default function AdminRoomsPage() {
   const handleImageUpload = async (file: File) => {
     try {
       setUploadingImage(true);
+      console.log('[RoomUpload] Début upload:', {
+        fileName: file.name,
+        fileSize: file.size,
+        fileType: file.type,
+        isSafari: /Safari/.test(navigator.userAgent) && !/Chrome/.test(navigator.userAgent)
+      });
+
       const formData = new FormData();
       formData.append('image', file);
 
@@ -131,16 +138,31 @@ export default function AdminRoomsPage() {
         body: formData
       });
 
+      console.log('[RoomUpload] Réponse serveur:', {
+        status: response.status,
+        statusText: response.statusText
+      });
+
       const result = await response.json();
+      console.log('[RoomUpload] Résultat:', result);
 
       if (result.success) {
+        console.log('[RoomUpload] Upload réussi');
         setFormData(prev => ({ ...prev, image_url: result.data.image_url }));
         setImagePreview(result.data.image_url);
+        setError(''); // Effacer les erreurs précédentes
       } else {
-        setError(result.error);
+        const errorMsg = result.error || 'Erreur inconnue lors de l\'upload';
+        console.error('[RoomUpload] Erreur serveur:', errorMsg);
+        setError(errorMsg);
       }
     } catch (err) {
-      setError('Erreur lors de l\'upload de l\'image');
+      const errorMsg = err instanceof Error ? err.message : 'Erreur lors de l\'upload de l\'image';
+      console.error('[RoomUpload] Erreur client:', {
+        error: errorMsg,
+        stack: err instanceof Error ? err.stack : undefined
+      });
+      setError(errorMsg);
     } finally {
       setUploadingImage(false);
     }

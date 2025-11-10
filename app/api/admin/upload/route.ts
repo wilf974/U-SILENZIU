@@ -9,17 +9,39 @@ export async function POST(request: NextRequest) {
     const formData = await request.formData();
     const file = formData.get('image') as File;
 
+    console.log('[Upload] Fichier reçu:', {
+      name: file?.name,
+      size: file?.size,
+      type: file?.type,
+      userAgent: request.headers.get('user-agent')
+    });
+
     if (!file) {
+      console.error('[Upload] Erreur: Aucun fichier fourni');
       return NextResponse.json(
         { success: false, error: 'Aucune image fournie' },
         { status: 400 }
       );
     }
 
-    // Vérifier le type de fichier
-    if (!file.type.startsWith('image/')) {
+    // Vérifier le type de fichier - mais être plus flexible pour Safari/iOS
+    // Safari peut envoyer un type MIME vide ou application/octet-stream pour les photos
+    const isValidImageType =
+      file.type.startsWith('image/') ||
+      file.type === 'application/octet-stream' ||
+      file.type === '' ||
+      file.name?.match(/\.(jpg|jpeg|png|gif|webp|heic|heif)$/i);
+
+    console.log('[Upload] Validation type:', {
+      fileType: file.type,
+      fileName: file.name,
+      isValid: isValidImageType
+    });
+
+    if (!isValidImageType) {
+      console.error('[Upload] Erreur: Type de fichier invalide', file.type);
       return NextResponse.json(
-        { success: false, error: 'Le fichier doit être une image' },
+        { success: false, error: 'Le fichier doit être une image (JPG, PNG, GIF, WebP, HEIC)' },
         { status: 400 }
       );
     }
@@ -27,6 +49,7 @@ export async function POST(request: NextRequest) {
     // Vérifier la taille (max 5MB)
     const maxSize = 5 * 1024 * 1024; // 5MB
     if (file.size > maxSize) {
+      console.error('[Upload] Erreur: Fichier trop volumineux', file.size);
       return NextResponse.json(
         { success: false, error: 'L\'image ne doit pas dépasser 5MB' },
         { status: 400 }
@@ -36,6 +59,12 @@ export async function POST(request: NextRequest) {
     // Enregistrer le fichier sur le disque et retourner une URL courte
     const uploadsBaseDir = process.env.UPLOAD_DIR || path.join(process.cwd(), 'public', 'uploads');
     const roomsDir = path.join(uploadsBaseDir, 'rooms');
+
+    console.log('[Upload] Chemins:', {
+      uploadsBaseDir,
+      roomsDir
+    });
+
     await fs.mkdir(roomsDir, { recursive: true });
 
     const originalName = file.name || 'image';
@@ -46,9 +75,18 @@ export async function POST(request: NextRequest) {
     const safeName = `${Date.now()}-${Math.random().toString(36).slice(2,8)}${ext}`;
     const targetPath = path.join(roomsDir, safeName);
 
+    console.log('[Upload] Sauvegarde:', {
+      originalName,
+      safeName,
+      ext,
+      targetPath
+    });
+
     const bytes = await file.arrayBuffer();
     const buffer = Buffer.from(bytes);
     await fs.writeFile(targetPath, buffer);
+
+    console.log('[Upload] Fichier sauvegardé avec succès');
 
     // Construire l'URL publique (servie par Next statiquement depuis /public)
     const publicUrl = `/uploads/rooms/${safeName}`;
@@ -65,9 +103,15 @@ export async function POST(request: NextRequest) {
     });
 
   } catch (error) {
-    console.error('Erreur lors de l\'upload de l\'image:', error);
+    console.error('[Upload] Erreur lors de l\'upload:', {
+      error: error instanceof Error ? error.message : String(error),
+      stack: error instanceof Error ? error.stack : undefined
+    });
     return NextResponse.json(
-      { success: false, error: 'Erreur lors de l\'upload de l\'image' },
+      {
+        success: false,
+        error: error instanceof Error ? error.message : 'Erreur lors de l\'upload de l\'image'
+      },
       { status: 500 }
     );
   }
