@@ -2338,7 +2338,7 @@ const CommentCaMarcheEditor = ({ section, formData, setFormData }: SectionEditor
   }, [section.id, section.content])
 
   useEffect(() => {
-    const sanitizedSteps = steps.map((step, index) => normalizeCommentStep(step, index))
+    const sanitizedSteps = steps.map((step: unknown, index: number) => normalizeCommentStep(step, index))
     const serialized = JSON.stringify({ steps: sanitizedSteps }, null, 2)
     setFormData({ ...formData, content: serialized })
   }, [steps])
@@ -2407,7 +2407,7 @@ const CommentCaMarcheEditor = ({ section, formData, setFormData }: SectionEditor
       </div>
 
       <div className="space-y-4">
-        {steps.map((step, index) => (
+        {steps.map((step: unknown, index: number) => (
           <div key={index} className="bg-gray-800 p-4 rounded-lg border border-gray-700 space-y-4">
             <div className="flex items-center justify-between">
               <h4 className="text-white font-medium">Étape {index + 1}</h4>
