@@ -123,6 +123,8 @@ export default function AdminRoomsPage() {
   const handleImageUpload = async (file: File) => {
     try {
       setUploadingImage(true);
+      setError(''); // Effacer les erreurs précédentes
+
       console.log('[RoomUpload] Début upload:', {
         fileName: file.name,
         fileSize: file.size,
@@ -130,36 +132,64 @@ export default function AdminRoomsPage() {
         isSafari: /Safari/.test(navigator.userAgent) && !/Chrome/.test(navigator.userAgent)
       });
 
+      // Vérifier la taille avant d'uploader (max 5MB)
+      if (file.size > 5 * 1024 * 1024) {
+        throw new Error(`Fichier trop volumineux: ${(file.size / 1024 / 1024).toFixed(2)}MB (max 5MB)`);
+      }
+
       const formData = new FormData();
       formData.append('image', file);
 
-      const response = await fetch('/api/admin/upload', {
-        method: 'POST',
-        body: formData
-      });
+      console.log('[RoomUpload] FormData créée, envoi de la requête...');
 
-      console.log('[RoomUpload] Réponse serveur:', {
-        status: response.status,
-        statusText: response.statusText
-      });
+      // Ajouter un timeout et une gestion d'erreur améliorée
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 60000); // 60 secondes timeout
 
-      const result = await response.json();
-      console.log('[RoomUpload] Résultat:', result);
+      try {
+        const response = await fetch('/api/admin/upload', {
+          method: 'POST',
+          body: formData,
+          signal: controller.signal
+        });
 
-      if (result.success) {
-        console.log('[RoomUpload] Upload réussi');
-        setFormData(prev => ({ ...prev, image_url: result.data.image_url }));
-        setImagePreview(result.data.image_url);
-        setError(''); // Effacer les erreurs précédentes
-      } else {
-        const errorMsg = result.error || 'Erreur inconnue lors de l\'upload';
-        console.error('[RoomUpload] Erreur serveur:', errorMsg);
-        setError(errorMsg);
+        clearTimeout(timeoutId);
+
+        console.log('[RoomUpload] Réponse serveur:', {
+          status: response.status,
+          statusText: response.statusText,
+          headers: {
+            contentType: response.headers.get('content-type')
+          }
+        });
+
+        if (!response.ok) {
+          throw new Error(`Erreur serveur: ${response.status} ${response.statusText}`);
+        }
+
+        const result = await response.json();
+        console.log('[RoomUpload] Résultat:', result);
+
+        if (result.success) {
+          console.log('[RoomUpload] Upload réussi');
+          setFormData(prev => ({ ...prev, image_url: result.data.image_url }));
+          setImagePreview(result.data.image_url);
+        } else {
+          throw new Error(result.error || 'Erreur inconnue lors de l\'upload');
+        }
+      } catch (fetchError) {
+        clearTimeout(timeoutId);
+
+        if (fetchError instanceof Error && fetchError.name === 'AbortError') {
+          throw new Error('Timeout: L\'upload a dépassé le délai imparti (60s). Vérifiez votre connexion réseau.');
+        }
+        throw fetchError;
       }
     } catch (err) {
       const errorMsg = err instanceof Error ? err.message : 'Erreur lors de l\'upload de l\'image';
-      console.error('[RoomUpload] Erreur client:', {
-        error: errorMsg,
+      console.error('[RoomUpload] Erreur:', {
+        message: errorMsg,
+        type: err instanceof Error ? err.constructor.name : typeof err,
         stack: err instanceof Error ? err.stack : undefined
       });
       setError(errorMsg);

@@ -6,6 +6,7 @@ export const runtime = 'nodejs';
 
 export async function POST(request: NextRequest) {
   try {
+    console.log('[Upload] Début du traitement');
     const formData = await request.formData();
     const file = formData.get('image') as File;
 
@@ -13,13 +14,23 @@ export async function POST(request: NextRequest) {
       name: file?.name,
       size: file?.size,
       type: file?.type,
-      userAgent: request.headers.get('user-agent')
+      userAgent: request.headers.get('user-agent'),
+      contentType: request.headers.get('content-type')
     });
 
     if (!file) {
       console.error('[Upload] Erreur: Aucun fichier fourni');
       return NextResponse.json(
         { success: false, error: 'Aucune image fournie' },
+        { status: 400 }
+      );
+    }
+
+    // Vérifier que le fichier n'est pas vide
+    if (file.size === 0) {
+      console.error('[Upload] Erreur: Fichier vide');
+      return NextResponse.json(
+        { success: false, error: 'Le fichier est vide. Vérifiez que vous avez sélectionné une image valide.' },
         { status: 400 }
       );
     }
