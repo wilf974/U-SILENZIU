@@ -2230,6 +2230,254 @@ const FAQEditor = ({ section, formData, setFormData }: SectionEditorProps) => {
   )
 }
 
+const DEFAULT_COMMENT_STEPS = [
+  {
+    icon: 'check',
+    title: 'Accueil des participants',
+    description: 'Nos équipes vous accueillent et vérifient vos réservations',
+    duration: '5 min'
+  },
+  {
+    icon: 'shield',
+    title: "Zone d'équipement",
+    description: "Équipement complet de sécurité de la tête aux pieds",
+    duration: '10 min'
+  },
+  {
+    icon: 'alert-triangle',
+    title: 'Consignes de sécurité',
+    description: 'Briefing sécurité et petit échauffement avant la session',
+    duration: '5 min'
+  },
+  {
+    icon: 'music',
+    title: 'Session de défoulement',
+    description: 'La musique commence et la salle est à vous !',
+    duration: '20-30 min'
+  },
+  {
+    icon: 'refresh-cw',
+    title: "Retrait de l'équipement",
+    description: 'Déséquipement et retour au calme',
+    duration: '10 min'
+  }
+]
+
+const COMMENT_ICON_OPTIONS = [
+  'check',
+  'shield',
+  'alert-triangle',
+  'music',
+  'refresh-cw',
+  'clock',
+  'target',
+  'zap',
+  'smile',
+  'heart',
+  'star'
+]
+
+const ensureCommentText = (value: unknown, fallback = ''): string => {
+  if (typeof value === 'string') {
+    return value
+  }
+  if (typeof value === 'number' && Number.isFinite(value)) {
+    return String(value)
+  }
+  return fallback
+}
+
+const normalizeCommentStep = (step: any, index: number) => {
+  const defaultStep = DEFAULT_COMMENT_STEPS[index] || DEFAULT_COMMENT_STEPS[0]
+  const rawIcon = ensureCommentText(step?.icon).trim().toLowerCase()
+  const icon = COMMENT_ICON_OPTIONS.includes(rawIcon) ? rawIcon : COMMENT_ICON_OPTIONS[0]
+
+  const durationValue = step?.duration
+  let duration = defaultStep.duration
+  if (typeof durationValue === 'number' && Number.isFinite(durationValue)) {
+    duration = `${durationValue} min`
+  } else if (typeof durationValue === 'string') {
+    const trimmed = durationValue.trim()
+    duration = trimmed.length > 0 ? trimmed : defaultStep.duration
+  }
+
+  return {
+    icon,
+    title: ensureCommentText(step?.title, defaultStep.title),
+    description: ensureCommentText(step?.description, defaultStep.description),
+    duration
+  }
+}
+
+const loadCommentSteps = (content?: string) => {
+  if (!content) {
+    return DEFAULT_COMMENT_STEPS.map(step => ({ ...step }))
+  }
+
+  try {
+    const parsed = JSON.parse(content)
+    if (Array.isArray(parsed?.steps) && parsed.steps.length > 0) {
+      return parsed.steps.map((step: any, index: number) => normalizeCommentStep(step, index))
+    }
+  } catch (error) {
+    console.warn('Impossible de parser le contenu comment-ca-marche:', error)
+  }
+
+  return DEFAULT_COMMENT_STEPS.map(step => ({ ...step }))
+}
+
+const CommentCaMarcheEditor = ({ section, formData, setFormData }: SectionEditorProps) => {
+  const [steps, setSteps] = useState(() => loadCommentSteps(section.content))
+
+  useEffect(() => {
+    setSteps(loadCommentSteps(section.content))
+  }, [section.id, section.content])
+
+  useEffect(() => {
+    const sanitizedSteps = steps.map((step, index) => normalizeCommentStep(step, index))
+    const serialized = JSON.stringify({ steps: sanitizedSteps }, null, 2)
+    setFormData({ ...formData, content: serialized })
+  }, [steps])
+
+  const updateStep = (index: number, field: 'title' | 'description' | 'icon' | 'duration', value: string) => {
+    setSteps(prev => {
+      const next = [...prev]
+      next[index] = { ...next[index], [field]: value }
+      return next
+    })
+  }
+
+  const addStep = () => {
+    setSteps(prev => [
+      ...prev,
+      {
+        icon: COMMENT_ICON_OPTIONS[0],
+        title: 'Nouvelle étape',
+        description: "Description de l'étape",
+        duration: '5 min'
+      }
+    ])
+  }
+
+  const removeStep = (index: number) => {
+    setSteps(prev => (prev.length > 1 ? prev.filter((_, i) => i !== index) : prev))
+  }
+
+  return (
+    <div className="space-y-6">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div>
+          <label className="block text-sm font-medium text-gray-300 mb-2">
+            Titre principal
+          </label>
+          <input
+            type="text"
+            value={formData.title}
+            onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+            className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-md text-white focus:outline-none focus:ring-2 focus:ring-kaki-500"
+            placeholder="Comment fonctionne une séance ?"
+          />
+        </div>
+        <div>
+          <label className="block text-sm font-medium text-gray-300 mb-2">
+            Sous-titre
+          </label>
+          <textarea
+            value={formData.subtitle}
+            onChange={(e) => setFormData({ ...formData, subtitle: e.target.value })}
+            className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-md text-white focus:outline-none focus:ring-2 focus:ring-kaki-500"
+            rows={3}
+            placeholder="Découvrez le déroulement type d'une session..."
+          />
+        </div>
+      </div>
+
+      <div className="flex justify-between items-center mb-4">
+        <h3 className="text-lg font-medium text-white">Étapes de la séance</h3>
+        <button
+          onClick={addStep}
+          className="px-4 py-2 bg-kaki-600 hover:bg-kaki-700 text-white rounded-md transition-colors"
+        >
+          Ajouter une étape
+        </button>
+      </div>
+
+      <div className="space-y-4">
+        {steps.map((step, index) => (
+          <div key={index} className="bg-gray-800 p-4 rounded-lg border border-gray-700 space-y-4">
+            <div className="flex items-center justify-between">
+              <h4 className="text-white font-medium">Étape {index + 1}</h4>
+              {steps.length > 1 && (
+                <button
+                  onClick={() => removeStep(index)}
+                  className="text-red-400 hover:text-red-300 transition-colors"
+                >
+                  Supprimer
+                </button>
+              )}
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-300 mb-1">
+                  Icône
+                </label>
+                <select
+                  value={step.icon}
+                  onChange={(e) => updateStep(index, 'icon', e.target.value)}
+                  className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-md text-white focus:outline-none focus:ring-2 focus:ring-kaki-500"
+                >
+                  {COMMENT_ICON_OPTIONS.map(icon => (
+                    <option key={icon} value={icon}>{icon}</option>
+                  ))}
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-300 mb-1">
+                  Durée
+                </label>
+                <input
+                  type="text"
+                  value={step.duration}
+                  onChange={(e) => updateStep(index, 'duration', e.target.value)}
+                  className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-md text-white focus:outline-none focus:ring-2 focus:ring-kaki-500"
+                  placeholder="5 min"
+                />
+              </div>
+
+              <div className="md:col-span-2 lg:col-span-2">
+                <label className="block text-sm font-medium text-gray-300 mb-1">
+                  Titre
+                </label>
+                <input
+                  type="text"
+                  value={step.title}
+                  onChange={(e) => updateStep(index, 'title', e.target.value)}
+                  className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-md text-white focus:outline-none focus:ring-2 focus:ring-kaki-500"
+                />
+              </div>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-300 mb-1">
+                Description
+              </label>
+              <textarea
+                value={step.description}
+                onChange={(e) => updateStep(index, 'description', e.target.value)}
+                className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-md text-white focus:outline-none focus:ring-2 focus:ring-kaki-500"
+                rows={2}
+              />
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  )
+}
+
+
 // Éditeur spécifique pour la section Process
 const ProcessEditor = ({ section, formData, setFormData }: SectionEditorProps) => {
   const [steps, setSteps] = useState(() => {
@@ -2940,11 +3188,25 @@ export default function HomepageAdminPage() {
   }
 
   const openEditor = (section: HomepageSection) => {
+    const rawContent = section.content
+    let normalizedContent = ''
+
+    if (typeof rawContent === 'string') {
+      normalizedContent = rawContent.trim()
+    } else if (rawContent && typeof rawContent === 'object') {
+      try {
+        normalizedContent = JSON.stringify(rawContent, null, 2)
+      } catch (error) {
+        console.warn('Impossible de sérialiser le contenu de la section', section.section_key, error)
+        normalizedContent = ''
+      }
+    }
+
     setEditingSection(section)
     setFormData({
       title: section.title || '',
       subtitle: section.subtitle || '',
-      content: section.content || '',
+      content: normalizedContent,
       image_url: section.image_url || '',
       video_url: section.video_url || '',
       background_color: section.background_color || '',
@@ -3163,6 +3425,8 @@ export default function HomepageAdminPage() {
         return <HeroEditor section={editingSection} formData={formData} setFormData={setFormData} />
       case 'concept':
         return <ConceptEditor section={editingSection} formData={formData} setFormData={setFormData} />
+      case 'comment-ca-marche':
+        return <CommentCaMarcheEditor section={editingSection} formData={formData} setFormData={setFormData} />
       case 'process':
         return <ProcessEditor section={editingSection} formData={formData} setFormData={setFormData} />
       case 'faq':
