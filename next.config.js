@@ -29,7 +29,23 @@ const nextConfig = {
           },
         ],
       },
+      // Augmenter les limites pour les uploads d'images
+      {
+        source: '/api/admin/upload',
+        headers: [
+          {
+            key: 'Content-Length-Max',
+            value: '10485760', // 10MB
+          },
+        ],
+      },
     ]
+  },
+  // Augmenter les limites de taille des requêtes
+  api: {
+    bodyParser: {
+      sizeLimit: '10mb',
+    },
   },
 }
 
