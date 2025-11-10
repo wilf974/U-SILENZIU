@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { Plus, Edit, Trash2, Eye, EyeOff, Save, X, Loader2, Upload, Image } from 'lucide-react';
 import type { Room } from '@/lib/database';
@@ -147,11 +147,19 @@ export default function AdminRoomsPage() {
   };
 
   // Gérer la sélection de fichier
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const handleUploadClick = () => {
+    fileInputRef.current?.click();
+  };
+
   const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
       handleImageUpload(file);
     }
+    // Reset l'input pour permettre de re-sélectionner le même fichier
+    event.target.value = '';
   };
 
   // Gérer les changements de formulaire
@@ -429,6 +437,7 @@ export default function AdminRoomsPage() {
                     {/* Zone d'upload */}
                     <div className="border-2 border-dashed border-gray-600 rounded-lg p-4 text-center hover:border-kaki-500 transition-colors">
                       <input
+                        ref={fileInputRef}
                         type="file"
                         accept="image/*"
                         onChange={handleFileSelect}
@@ -436,9 +445,11 @@ export default function AdminRoomsPage() {
                         id="image-upload"
                         disabled={uploadingImage}
                       />
-                      <label
-                        htmlFor="image-upload"
-                        className="cursor-pointer flex flex-col items-center space-y-2"
+                      <button
+                        type="button"
+                        onClick={handleUploadClick}
+                        disabled={uploadingImage}
+                        className="w-full flex flex-col items-center space-y-2 hover:opacity-80 transition-opacity disabled:opacity-50"
                       >
                         {uploadingImage ? (
                           <Loader2 className="w-8 h-8 animate-spin text-kaki-400" />
@@ -451,7 +462,7 @@ export default function AdminRoomsPage() {
                         <span className="text-xs text-gray-500">
                           JPG, PNG, GIF (max 5MB)
                         </span>
-                      </label>
+                      </button>
                     </div>
                   </div>
                 </div>
