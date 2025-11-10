@@ -2410,7 +2410,9 @@ const CommentCaMarcheEditor = ({ section, formData, setFormData }: SectionEditor
       </div>
 
       <div className="space-y-4">
-        {steps.map((step: unknown, index: number) => (
+        {steps.map((step: unknown, index: number) => {
+          const stepData = step as { icon: string; title: string; description: string; duration: string }
+          return (
           <div key={index} className="bg-gray-800 p-4 rounded-lg border border-gray-700 space-y-4">
             <div className="flex items-center justify-between">
               <h4 className="text-white font-medium">Étape {index + 1}</h4>
@@ -2430,7 +2432,7 @@ const CommentCaMarcheEditor = ({ section, formData, setFormData }: SectionEditor
                   Icône
                 </label>
                 <select
-                  value={step.icon}
+                  value={stepData.icon}
                   onChange={(e) => updateStep(index, 'icon', e.target.value)}
                   className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-md text-white focus:outline-none focus:ring-2 focus:ring-kaki-500"
                 >
@@ -2446,7 +2448,7 @@ const CommentCaMarcheEditor = ({ section, formData, setFormData }: SectionEditor
                 </label>
                 <input
                   type="text"
-                  value={step.duration}
+                  value={stepData.duration}
                   onChange={(e) => updateStep(index, 'duration', e.target.value)}
                   className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-md text-white focus:outline-none focus:ring-2 focus:ring-kaki-500"
                   placeholder="5 min"
@@ -2459,7 +2461,7 @@ const CommentCaMarcheEditor = ({ section, formData, setFormData }: SectionEditor
                 </label>
                 <input
                   type="text"
-                  value={step.title}
+                  value={stepData.title}
                   onChange={(e) => updateStep(index, 'title', e.target.value)}
                   className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-md text-white focus:outline-none focus:ring-2 focus:ring-kaki-500"
                 />
@@ -2471,14 +2473,15 @@ const CommentCaMarcheEditor = ({ section, formData, setFormData }: SectionEditor
                 Description
               </label>
               <textarea
-                value={step.description}
+                value={stepData.description}
                 onChange={(e) => updateStep(index, 'description', e.target.value)}
                 className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-md text-white focus:outline-none focus:ring-2 focus:ring-kaki-500"
                 rows={2}
               />
             </div>
           </div>
-        ))}
+          )
+        })}
       </div>
     </div>
   )
