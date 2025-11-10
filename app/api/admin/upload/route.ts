@@ -3,6 +3,7 @@ import fs from 'fs/promises';
 import path from 'path';
 
 export const runtime = 'nodejs';
+export const maxDuration = 60; // Augmenter le timeout à 60 secondes
 
 export async function POST(request: NextRequest) {
   try {
@@ -73,17 +74,27 @@ export async function POST(request: NextRequest) {
 
     console.log('[Upload] Chemins:', {
       uploadsBaseDir,
-      roomsDir
+      roomsDir,
+      cwd: process.cwd()
     });
 
-    await fs.mkdir(roomsDir, { recursive: true });
+    try {
+      await fs.mkdir(roomsDir, { recursive: true });
+      console.log('[Upload] Dossier créé ou existe déjà');
+    } catch (mkdirError) {
+      console.error('[Upload] Erreur création dossier:', {
+        error: mkdirError instanceof Error ? mkdirError.message : String(mkdirError),
+        dir: roomsDir
+      });
+      throw new Error(`Impossible de créer le dossier d'upload: ${mkdirError instanceof Error ? mkdirError.message : 'Erreur inconnue'}`);
+    }
 
     const originalName = file.name || 'image';
     const extFromName = path.extname(originalName);
     const extFromType = file.type?.split('/')[1] ? `.${file.type.split('/')[1]}` : '';
     const ext = (extFromName || extFromType || '.jpg').toLowerCase();
 
-    const safeName = `${Date.now()}-${Math.random().toString(36).slice(2,8)}${ext}`;
+    const safeName = `${Date.now()}-${Math.random().toString(36).slice(2, 8)}${ext}`;
     const targetPath = path.join(roomsDir, safeName);
 
     console.log('[Upload] Sauvegarde:', {
@@ -93,11 +104,18 @@ export async function POST(request: NextRequest) {
       targetPath
     });
 
-    const bytes = await file.arrayBuffer();
-    const buffer = Buffer.from(bytes);
-    await fs.writeFile(targetPath, buffer);
-
-    console.log('[Upload] Fichier sauvegardé avec succès');
+    try {
+      const bytes = await file.arrayBuffer();
+      const buffer = Buffer.from(bytes);
+      await fs.writeFile(targetPath, buffer);
+      console.log('[Upload] Fichier sauvegardé avec succès');
+    } catch (writeError) {
+      console.error('[Upload] Erreur écriture fichier:', {
+        error: writeError instanceof Error ? writeError.message : String(writeError),
+        path: targetPath
+      });
+      throw new Error(`Impossible de sauvegarder le fichier: ${writeError instanceof Error ? writeError.message : 'Erreur inconnue'}`);
+    }
 
     // Construire l'URL publique (servie par Next statiquement depuis /public)
     const publicUrl = `/uploads/rooms/${safeName}`;
