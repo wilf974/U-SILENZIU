@@ -2344,16 +2344,16 @@ const CommentCaMarcheEditor = ({ section, formData, setFormData }: SectionEditor
   }, [steps])
 
   const updateStep = (index: number, field: 'title' | 'description' | 'icon' | 'duration', value: string) => {
-    setSteps(prev => {
-      const next = [...prev]
+    setSteps((prev: unknown) => {
+      const next = [...(prev as any[])]
       next[index] = { ...next[index], [field]: value }
       return next
     })
   }
 
   const addStep = () => {
-    setSteps(prev => [
-      ...prev,
+    setSteps((prev: unknown) => [
+      ...(prev as any[]),
       {
         icon: COMMENT_ICON_OPTIONS[0],
         title: 'Nouvelle étape',
@@ -2364,7 +2364,10 @@ const CommentCaMarcheEditor = ({ section, formData, setFormData }: SectionEditor
   }
 
   const removeStep = (index: number) => {
-    setSteps(prev => (prev.length > 1 ? prev.filter((_, i) => i !== index) : prev))
+    setSteps((prev: unknown) => {
+      const prevArray = prev as any[]
+      return prevArray.length > 1 ? prevArray.filter((_, i) => i !== index) : prevArray
+    })
   }
 
   return (
