@@ -137,53 +137,66 @@ export default function AdminRoomsPage() {
         throw new Error(`Fichier trop volumineux: ${(file.size / 1024 / 1024).toFixed(2)}MB (max 5MB)`);
       }
 
-      const formData = new FormData();
-      formData.append('image', file);
+      // Fonction pour faire un upload avec retry
+      const uploadWithRetry = async (retryCount = 0): Promise<Response> => {
+        const maxRetries = 3;
 
-      console.log('[RoomUpload] FormData créée, envoi de la requête...');
+        try {
+          const formData = new FormData();
+          formData.append('image', file);
 
-      // Ajouter un timeout et une gestion d'erreur améliorée
-      const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 60000); // 60 secondes timeout
+          console.log('[RoomUpload] FormData créée, envoi de la requête (tentative ' + (retryCount + 1) + ')...');
 
-      try {
-        const response = await fetch('/api/admin/upload', {
-          method: 'POST',
-          body: formData,
-          signal: controller.signal
-        });
+          // Ajouter un timeout et une gestion d'erreur améliorée
+          const controller = new AbortController();
+          const timeoutId = setTimeout(() => controller.abort(), 60000); // 60 secondes timeout
 
-        clearTimeout(timeoutId);
+          const response = await fetch('/api/admin/upload', {
+            method: 'POST',
+            body: formData,
+            signal: controller.signal
+          });
 
-        console.log('[RoomUpload] Réponse serveur:', {
-          status: response.status,
-          statusText: response.statusText,
-          headers: {
-            contentType: response.headers.get('content-type')
+          clearTimeout(timeoutId);
+          return response;
+        } catch (error) {
+          if (retryCount < maxRetries - 1) {
+            const waitTime = Math.pow(2, retryCount) * 1000; // 1s, 2s, 4s
+            console.log(`[RoomUpload] Erreur, retry dans ${waitTime}ms...`);
+            await new Promise(resolve => setTimeout(resolve, waitTime));
+            return uploadWithRetry(retryCount + 1);
           }
-        });
-
-        if (!response.ok) {
-          throw new Error(`Erreur serveur: ${response.status} ${response.statusText}`);
+          throw error;
         }
+      };
 
-        const result = await response.json();
-        console.log('[RoomUpload] Résultat:', result);
+      const response = await uploadWithRetry();
 
-        if (result.success) {
-          console.log('[RoomUpload] Upload réussi');
-          setFormData(prev => ({ ...prev, image_url: result.data.image_url }));
-          setImagePreview(result.data.image_url);
-        } else {
-          throw new Error(result.error || 'Erreur inconnue lors de l\'upload');
+      console.log('[RoomUpload] Réponse serveur:', {
+        status: response.status,
+        statusText: response.statusText,
+        headers: {
+          contentType: response.headers.get('content-type')
         }
-      } catch (fetchError) {
-        clearTimeout(timeoutId);
+      });
 
-        if (fetchError instanceof Error && fetchError.name === 'AbortError') {
-          throw new Error('Timeout: L\'upload a dépassé le délai imparti (60s). Vérifiez votre connexion réseau.');
-        }
-        throw fetchError;
+      // Attendre et essayer de parser la réponse
+      let result;
+      try {
+        result = await response.json();
+      } catch (parseError) {
+        console.error('[RoomUpload] Erreur parsing JSON:', parseError);
+        throw new Error(`Erreur serveur: ${response.status} ${response.statusText}`);
+      }
+
+      if (response.ok && result.success) {
+        console.log('[RoomUpload] Upload réussi');
+        setFormData(prev => ({ ...prev, image_url: result.data.image_url }));
+        setImagePreview(result.data.image_url);
+      } else {
+        const errorMsg = result.error || `Erreur serveur: ${response.status}`;
+        console.error('[RoomUpload] Erreur serveur:', errorMsg);
+        throw new Error(errorMsg);
       }
     } catch (err) {
       const errorMsg = err instanceof Error ? err.message : 'Erreur lors de l\'upload de l\'image';
