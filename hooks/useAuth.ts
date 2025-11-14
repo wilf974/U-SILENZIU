@@ -48,6 +48,7 @@ export function useAuth() {
 
   const login = async (credentials: {username: string, password: string}): Promise<{success: boolean, error?: string}> => {
     try {
+      console.log('[Auth] Début login pour:', credentials.username)
       const response = await fetch('/api/admin/auth/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -55,16 +56,24 @@ export function useAuth() {
       });
 
       const data = await response.json()
+      console.log('[Auth] Réponse login:', data.success)
+
       if (data.success) {
+        console.log('[Auth] Appel de checkAuthStatus()...')
         await checkAuthStatus()
-        // Attendre que React ait fini de mettre à jour l'état avant de retourner
-        // Cela évite une race condition où router.push() appelle le layout protégé
-        // avant que isAuthenticated soit mis à jour
-        await new Promise(resolve => setTimeout(resolve, 100))
+        console.log('[Auth] checkAuthStatus() terminé, état actuel:', { isAuthenticated, user })
+
+        // Attendre plus longtemps que React ait fini de mettre à jour l'état
+        // et que les composants aient re-rendu
+        console.log('[Auth] Attente de 500ms avant navigation...')
+        await new Promise(resolve => setTimeout(resolve, 500))
+
+        console.log('[Auth] Navigation vers /admin...')
         return { success: true }
       }
       return { success: false, error: data.error }
     } catch (error) {
+      console.error('[Auth] Erreur login:', error)
       return { success: false, error: 'Erreur de connexion au serveur' }
     }
   }
