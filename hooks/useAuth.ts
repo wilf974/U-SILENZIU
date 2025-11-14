@@ -57,6 +57,10 @@ export function useAuth() {
       const data = await response.json()
       if (data.success) {
         await checkAuthStatus()
+        // Attendre que React ait fini de mettre à jour l'état avant de retourner
+        // Cela évite une race condition où router.push() appelle le layout protégé
+        // avant que isAuthenticated soit mis à jour
+        await new Promise(resolve => setTimeout(resolve, 100))
         return { success: true }
       }
       return { success: false, error: data.error }
