@@ -196,6 +196,7 @@ export interface HomepageConfig {
   opening_hours: string;
   seo_keywords: string;
   seo_description: string;
+  video_url?: string;
   site_url?: string;
   admin_email?: string;
   maintenance_mode?: boolean;
