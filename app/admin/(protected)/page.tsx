@@ -23,7 +23,8 @@ import {
   AlertCircle,
   LogOut,
   Home,
-  Bell
+  Bell,
+  Film
 } from 'lucide-react'
 
 interface DashboardStats {
@@ -211,6 +212,14 @@ export default function AdminDashboard() {
       icon: Eye,
       href: '/admin/entry-page',
       color: 'bg-purple-600 hover:bg-purple-700',
+      requiredRole: 'admin' as const
+    },
+    {
+      title: 'Vidéo Hero',
+      description: 'Modifier la vidéo de fond de la page d\'accueil',
+      icon: Film,
+      href: '/admin/hero-video',
+      color: 'bg-cyan-600 hover:bg-cyan-700',
       requiredRole: 'admin' as const
     },
     {
