@@ -25,7 +25,7 @@ export function useAuth() {
 
     setLoading(true)
     try {
-      const response = await fetch('/api/admin/auth/status')
+      const response = await fetch('/api/admin/auth/status', { credentials: 'include' })
       if (response.ok) {
         const data = await response.json()
         if (data.isAuthenticated) {
@@ -80,6 +80,7 @@ export function useAuth() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(credentials),
+        credentials: 'include',
       });
 
       const data = await response.json()
@@ -115,7 +116,7 @@ export function useAuth() {
 
   const logout = async () => {
     try {
-      await fetch('/api/admin/auth/logout', { method: 'POST' })
+      await fetch('/api/admin/auth/logout', { method: 'POST', credentials: 'include' })
     } finally {
       setIsAuthenticated(false)
       setUser(null)
