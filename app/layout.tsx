@@ -1,9 +1,9 @@
 import type { Metadata } from 'next'
-import { Inter } from 'next/font/google'
 import './globals.css'
 import { Providers } from './providers'
 
-const inter = Inter({ subsets: ['latin'] })
+// Using system fonts to avoid Google Fonts network dependency
+const inter = { variable: '--font-inter' }
 
 export const metadata: Metadata = {
   title: 'U Silenziu - Zone de défoulement à Buros',
@@ -54,7 +54,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="fr" data-scroll-behavior="smooth">
-      <body className={`${inter.className} bg-dark-bg text-white antialiased`}>
+      <body className={`bg-dark-bg text-white antialiased`} style={{ fontFamily: 'system-ui, -apple-system, sans-serif' }}>
         <Providers>
           {children}
         </Providers>

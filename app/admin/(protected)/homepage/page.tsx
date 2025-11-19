@@ -1379,27 +1379,6 @@ const HeroEditor = ({ section, formData, setFormData }: SectionEditorProps) => {
             onSuccess={(url) => {
               setFormData({ ...formData, video_url: url })
             }}
-            onUploadComplete={async () => {
-              // Auto-save la section après l'upload
-              if (!section) return
-              
-              try {
-                const response = await fetch(`/api/admin/homepage-sections/${section.id}`, {
-                  method: 'PUT',
-                  headers: {
-                    'Content-Type': 'application/json',
-                  },
-                  body: JSON.stringify({ ...formData, video_url: '/video/hero-video.mp4' })
-                })
-
-                const result = await response.json()
-                if (result.success) {
-                  console.log('✅ Section Hero sauvegardée automatiquement après l'upload')
-                }
-              } catch (error) {
-                console.error('❌ Erreur lors de la sauvegarde automatique:', error)
-              }
-            }}
           />
         </div>
       </div>
@@ -2371,13 +2350,13 @@ const CommentCaMarcheEditor = ({ section, formData, setFormData }: SectionEditor
   }, [section.id, section.content])
 
   useEffect(() => {
-    const sanitizedSteps = steps.map((step, index) => normalizeCommentStep(step, index))
+    const sanitizedSteps = steps.map((step: any, index: number) => normalizeCommentStep(step, index))
     const serialized = JSON.stringify({ steps: sanitizedSteps }, null, 2)
     setFormData({ ...formData, content: serialized })
   }, [steps])
 
   const updateStep = (index: number, field: 'title' | 'description' | 'icon' | 'duration', value: string) => {
-    setSteps(prev => {
+    setSteps((prev: any) => {
       const next = [...prev]
       next[index] = { ...next[index], [field]: value }
       return next
@@ -2385,7 +2364,7 @@ const CommentCaMarcheEditor = ({ section, formData, setFormData }: SectionEditor
   }
 
   const addStep = () => {
-    setSteps(prev => [
+    setSteps((prev: any) => [
       ...prev,
       {
         icon: COMMENT_ICON_OPTIONS[0],
@@ -2397,7 +2376,7 @@ const CommentCaMarcheEditor = ({ section, formData, setFormData }: SectionEditor
   }
 
   const removeStep = (index: number) => {
-    setSteps(prev => (prev.length > 1 ? prev.filter((_, i) => i !== index) : prev))
+    setSteps((prev: any) => (prev.length > 1 ? prev.filter((_: any, i: number) => i !== index) : prev))
   }
 
   return (
@@ -2440,7 +2419,7 @@ const CommentCaMarcheEditor = ({ section, formData, setFormData }: SectionEditor
       </div>
 
       <div className="space-y-4">
-        {steps.map((step, index) => (
+        {steps.map((step: any, index: number) => (
           <div key={index} className="bg-gray-800 p-4 rounded-lg border border-gray-700 space-y-4">
             <div className="flex items-center justify-between">
               <h4 className="text-white font-medium">Étape {index + 1}</h4>
