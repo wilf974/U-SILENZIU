@@ -35,21 +35,17 @@ export async function POST(request: NextRequest) {
     const client = await pool.connect()
 
     try {
-      // Mettre à jour ou créer la configuration homepage avec la vidéo hero
-      const result = await client.query(
-        `UPDATE homepage_config
-         SET video_url = $1, updated_at = NOW()
-         WHERE id = 1
-         RETURNING id, video_url, updated_at`,
-        [videoUrl]
+      // Récupérer la première configuration
+      const getResult = await client.query(
+        `SELECT id FROM homepage_config LIMIT 1`
       )
 
-      if (result.rows.length === 0) {
+      if (getResult.rows.length === 0) {
         // Si aucune ligne n'existe, en créer une
         const insertResult = await client.query(
-          `INSERT INTO homepage_config (id, video_url, created_at, updated_at)
-           VALUES (1, $1, NOW(), NOW())
-           RETURNING id, video_url, updated_at`,
+          `INSERT INTO homepage_config (video_url, created_at, updated_at)
+           VALUES ($1, NOW(), NOW())
+           RETURNING video_url, updated_at`,
           [videoUrl]
         )
 
@@ -61,11 +57,20 @@ export async function POST(request: NextRequest) {
         })
       }
 
+      // Mettre à jour la première configuration
+      const updateResult = await client.query(
+        `UPDATE homepage_config
+         SET video_url = $1, updated_at = NOW()
+         WHERE id = (SELECT id FROM homepage_config LIMIT 1)
+         RETURNING video_url, updated_at`,
+        [videoUrl]
+      )
+
       return NextResponse.json({
         success: true,
         message: 'Vidéo hero mise à jour avec succès',
-        videoUrl: result.rows[0].video_url,
-        updatedAt: result.rows[0].updated_at
+        videoUrl: updateResult.rows[0].video_url,
+        updatedAt: updateResult.rows[0].updated_at
       })
 
     } finally {
