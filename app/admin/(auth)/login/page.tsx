@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import { Lock, Eye, EyeOff, Shield, Crown } from 'lucide-react'
 import { useAuth } from '@/hooks/useAuth'
@@ -13,16 +13,46 @@ export default function AdminLogin() {
   const [loading, setLoading] = useState(false)
   const router = useRouter()
   const { login } = useAuth()
+  const timeoutRef = useRef<NodeJS.Timeout>()
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault()
     setLoading(true)
     setError('')
-    const result = await login({ username, password })
-    if (result.success) {
-      router.push('/admin')
-    } else {
-      setError(result.error || 'Identifiants incorrects')
+
+    // Nettoyer le timeout précédent s'il existe
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current)
+    }
+
+    try {
+      console.log('[Login] Début de la connexion...')
+      const result = await login({ username, password })
+      console.log('[Login] Résultat login:', result.success)
+
+      if (result.success) {
+        console.log('[Login] Authentification réussie, navigation vers /admin...')
+
+        // Ajouter un timeout de sécurité en cas de navigation bloquée
+        timeoutRef.current = setTimeout(() => {
+          console.error('[Login] Timeout - navigation n\'a pas eu lieu après 10s')
+          setError('Délai de connexion dépassé. Veuillez vérifier votre connexion et réessayer.')
+          setLoading(false)
+        }, 10000)
+
+        // Attendre un peu pour que le DOM se mette à jour
+        await new Promise(resolve => setTimeout(resolve, 100))
+
+        // Faire la navigation
+        router.push('/admin')
+      } else {
+        console.error('[Login] Erreur authentification:', result.error)
+        setError(result.error || 'Identifiants incorrects')
+        setLoading(false)
+      }
+    } catch (err) {
+      console.error('[Login] Erreur lors de la connexion:', err)
+      setError('Erreur lors de la connexion au serveur')
       setLoading(false)
     }
   }
@@ -47,8 +77,9 @@ export default function AdminLogin() {
               placeholder="Nom d'utilisateur"
               value={username}
               onChange={(e) => setUsername(e.target.value)}
+              disabled={loading}
               required
-              className="w-full px-4 py-3 text-lg text-white bg-gray-700 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-kaki-500"
+              className="w-full px-4 py-3 text-lg text-white bg-gray-700 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-kaki-500 disabled:opacity-50"
             />
           </div>
 
@@ -58,13 +89,15 @@ export default function AdminLogin() {
               placeholder="Mot de passe"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
+              disabled={loading}
               required
-              className="w-full px-4 py-3 text-lg text-white bg-gray-700 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-kaki-500"
+              className="w-full px-4 py-3 text-lg text-white bg-gray-700 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-kaki-500 disabled:opacity-50"
             />
             <button
               type="button"
               onClick={() => setShowPassword(!showPassword)}
-              className="absolute inset-y-0 right-0 px-4 text-gray-400 hover:text-white"
+              disabled={loading}
+              className="absolute inset-y-0 right-0 px-4 text-gray-400 hover:text-white disabled:opacity-50"
             >
               {showPassword ? <EyeOff /> : <Eye />}
             </button>
