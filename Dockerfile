@@ -41,6 +41,10 @@ RUN adduser --system --uid 1001 nextjs
 # Créer le dossier data avec les bonnes permissions
 RUN mkdir -p /app/data && chown -R nextjs:nodejs /app/data
 
+# Créer les dossiers de vidéos et uploads avec les bonnes permissions
+RUN mkdir -p /app/public/video && chown -R nextjs:nodejs /app/public/video
+RUN mkdir -p /app/public/uploads && chown -R nextjs:nodejs /app/public/uploads
+
 # Vérifier que le build standalone existe
 RUN ls -la /app/.next/standalone || echo "Build standalone non trouvé"
 
