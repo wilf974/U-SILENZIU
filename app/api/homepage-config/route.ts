@@ -22,8 +22,7 @@ export async function GET() {
       opening_hours: config.opening_hours,
       seo_keywords: config.seo_keywords,
       seo_description: config.seo_description,
-      video_url: config.video_url || '/video/hero-video.mp4',
-      site_url: config.site_url
+      video_url: config.video_url || '/video/hero-video.mp4'
     };
     
     return NextResponse.json({
