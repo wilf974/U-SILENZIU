@@ -41,27 +41,15 @@ export default function HeroVideoPage() {
             onSuccess={(url) => {
               setLastUpload(url)
             }}
-            onUploadComplete={async () => {
-              // Optionnel : rechargez après upload
-              setLastUpload('done')
-              setTimeout(() => {
-                window.location.href = '/'
-              }, 2000)
-            }}
           />
 
-          {lastUpload && lastUpload !== 'done' && (
-            <div className="mt-6 p-4 bg-gray-700 rounded-lg">
-              <p className="text-sm text-gray-300">
-                URL de la vidéo: <code className="text-kaki-500">{lastUpload}</code>
-              </p>
-            </div>
-          )}
-
-          {lastUpload === 'done' && (
+          {lastUpload && (
             <div className="mt-6 p-4 bg-green-900 rounded-lg">
               <p className="text-sm text-green-200">
-                ✅ Vidéo sauvegardée ! Redirection vers la page d'accueil...
+                ✅ Vidéo uploadée avec succès!
+              </p>
+              <p className="text-sm text-gray-300 mt-2">
+                URL: <code className="text-kaki-500">{lastUpload}</code>
               </p>
             </div>
           )}
