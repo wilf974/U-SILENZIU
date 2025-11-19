@@ -42,6 +42,7 @@ import {
 } from '@dnd-kit/sortable'
 import DraggableSection from '@/components/DraggableSection'
 import HeaderConfigEditor from '@/components/HeaderConfigEditor'
+import HeroVideoUploader from '@/components/HeroVideoUploader'
 
 interface HomepageSection {
   id: string
@@ -1344,29 +1345,40 @@ const HeroEditor = ({ section, formData, setFormData }: SectionEditorProps) => {
       </div>
 
       {/* Médias */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div>
-          <label className="block text-sm font-medium text-gray-300 mb-2">
-            URL de l'image de fond
-          </label>
-          <input
-            type="text"
-            value={formData.image_url}
-            onChange={(e) => setFormData({ ...formData, image_url: e.target.value })}
-            className="w-full px-3 py-2 border border-gray-600 rounded-md shadow-sm bg-gray-700 text-white focus:outline-none focus:ring-2 focus:ring-kaki-500 focus:border-kaki-500"
-            placeholder="/images/hero-poster.jpg"
-          />
+      <div className="space-y-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label className="block text-sm font-medium text-gray-300 mb-2">
+              URL de l'image de fond
+            </label>
+            <input
+              type="text"
+              value={formData.image_url}
+              onChange={(e) => setFormData({ ...formData, image_url: e.target.value })}
+              className="w-full px-3 py-2 border border-gray-600 rounded-md shadow-sm bg-gray-700 text-white focus:outline-none focus:ring-2 focus:ring-kaki-500 focus:border-kaki-500"
+              placeholder="/images/hero-poster.jpg"
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-300 mb-2">
+              URL de la vidéo de fond
+            </label>
+            <input
+              type="text"
+              value={formData.video_url}
+              onChange={(e) => setFormData({ ...formData, video_url: e.target.value })}
+              className="w-full px-3 py-2 border border-gray-600 rounded-md shadow-sm bg-gray-700 text-white focus:outline-none focus:ring-2 focus:ring-kaki-500 focus:border-kaki-500"
+              placeholder="/video/hero-video.mp4"
+            />
+          </div>
         </div>
-        <div>
-          <label className="block text-sm font-medium text-gray-300 mb-2">
-            URL de la vidéo de fond
-          </label>
-          <input
-            type="text"
-            value={formData.video_url}
-            onChange={(e) => setFormData({ ...formData, video_url: e.target.value })}
-            className="w-full px-3 py-2 border border-gray-600 rounded-md shadow-sm bg-gray-700 text-white focus:outline-none focus:ring-2 focus:ring-kaki-500 focus:border-kaki-500"
-            placeholder="/video/hero-video.mp4"
+
+        {/* Upload de vidéo hero */}
+        <div className="bg-gray-700 p-4 rounded-md border border-gray-600">
+          <HeroVideoUploader
+            onSuccess={(url) => {
+              setFormData({ ...formData, video_url: url })
+            }}
           />
         </div>
       </div>
