@@ -2370,7 +2370,7 @@ export async function updateMultipleHomepageConfigs(configs: Partial<HomepageCon
     
     for (const [key, value] of Object.entries(configs)) {
       if (value !== undefined) {
-        const stringValue = typeof value === 'boolean' ? value.toString() : String(value);
+        const stringValue = typeof value === 'boolean' ? (value as boolean).toString() : String(value as any);
         await client.query(
           'UPDATE homepage_config SET config_value = $1, updated_at = CURRENT_TIMESTAMP WHERE config_key = $2 AND is_active = true',
           [stringValue, key]
