@@ -23,6 +23,7 @@ services:
       - ./create-homepage-sections-table.sql:/docker-entrypoint-initdb.d/12-create-homepage-sections.sql
       - ./create-global-sections-table.sql:/docker-entrypoint-initdb.d/13-create-global-sections.sql
       - ./create-homepage-config-table.sql:/docker-entrypoint-initdb.d/14-create-homepage-config.sql
+      - ./add-video-url-column.sql:/docker-entrypoint-initdb.d/15-add-video-url-column.sql
       - ./create-admin-users-table.sql:/docker-entrypoint-initdb.d/20-create-admin-users.sql
     restart: unless-stopped
     healthcheck:
