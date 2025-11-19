@@ -6,14 +6,14 @@ import Link from 'next/link'
 import { useAuth } from '@/hooks/useAuth'
 import { Crown, Shield } from 'lucide-react'
 import PayplugConfig from '@/components/admin/PayplugConfig'
-import { 
-  Calendar, 
-  Users, 
-  DollarSign, 
-  TrendingUp, 
-  Settings, 
-  Mail, 
-  FileText, 
+import {
+  Calendar,
+  Users,
+  DollarSign,
+  TrendingUp,
+  Settings,
+  Mail,
+  FileText,
   Edit,
   Trash2,
   Eye,
@@ -24,7 +24,8 @@ import {
   LogOut,
   Home,
   Bell,
-  CreditCard
+  CreditCard,
+  Film
 } from 'lucide-react'
 
 interface DashboardStats {
@@ -229,6 +230,15 @@ export default function AdminDashboard() {
       icon: Home,
       href: '/admin/homepage',
       color: 'bg-kaki-600 hover:bg-kaki-700',
+      requiredRole: 'admin' as const,
+      action: undefined
+    },
+    {
+      title: 'Video Hero',
+      description: 'Modifier la video de fond de la page d\'accueil',
+      icon: Film,
+      href: '/admin/hero-video',
+      color: 'bg-cyan-600 hover:bg-cyan-700',
       requiredRole: 'admin' as const,
       action: undefined
     },
