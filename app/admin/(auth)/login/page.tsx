@@ -11,19 +11,12 @@ export default function AdminLogin() {
   const [showPassword, setShowPassword] = useState(false)
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
-  const router = useRouter()
   const { login } = useAuth()
-  const timeoutRef = useRef<NodeJS.Timeout>()
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault()
     setLoading(true)
     setError('')
-
-    // Nettoyer le timeout précédent s'il existe
-    if (timeoutRef.current) {
-      clearTimeout(timeoutRef.current)
-    }
 
     try {
       console.log('[Login] Début de la connexion...')
@@ -33,28 +26,13 @@ export default function AdminLogin() {
       if (result.success) {
         console.log('[Login] Authentification réussie, navigation vers /admin...')
 
-        // Ajouter un timeout de sécurité en cas de navigation bloquée
-        timeoutRef.current = setTimeout(() => {
-          console.error('[Login] Timeout - navigation n\'a pas eu lieu après 30s')
-          setError('Délai de connexion dépassé. Veuillez vérifier votre connexion et réessayer.')
-          setLoading(false)
-        }, 30000)
+        // Utiliser window.location au lieu de router.push() pour forcer une vraie requête HTTP
+        // Cela assure que les cookies HTTP-only sont envoyés correctement au serveur
+        console.log('[Login] Navigation vers /admin avec window.location...')
+        window.location.href = '/admin'
 
-        // Attendre un peu pour que le DOM se mette à jour
-        await new Promise(resolve => setTimeout(resolve, 100))
-
-        // Faire la navigation
-        console.log('[Login] Appel de router.push(/admin)...')
-        const pushPromise = router.push('/admin')
-        console.log('[Login] router.push() retourné immédiatement, pushPromise:', pushPromise)
-
-        // Attendre que la navigation se termine
-        try {
-          await pushPromise
-          console.log('[Login] router.push() s\'est terminé avec succès')
-        } catch (error) {
-          console.error('[Login] Erreur lors de router.push():', error)
-        }
+        // window.location provoque une redirection complète, cette ligne ne s'exécutera pas
+        return
       } else {
         console.error('[Login] Erreur authentification:', result.error)
         setError(result.error || 'Identifiants incorrects')
