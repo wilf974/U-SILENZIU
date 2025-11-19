@@ -90,6 +90,7 @@ services:
     volumes:
       # Volume pour les uploads et logs
       - ./public/uploads:/app/public/uploads
+      - ./public/video:/app/public/video
       - ./logs:/app/logs
     networks:
       - u-silenziu-prod-network
@@ -104,8 +105,9 @@ services:
     volumes:
       - ./nginx/conf.d:/etc/nginx/conf.d
       - /opt/ssl/rageroom.usilenziu.com:/etc/letsencrypt/live/rageroom.usilenziu.com:ro
-      # Volume partagé pour servir directement les uploads
+      # Volume partagé pour servir directement les uploads et vidéos
       - ./public/uploads:/app/public/uploads:ro
+      - ./public/video:/app/public/video:ro
     depends_on:
       - u-silenziu
     restart: unless-stopped

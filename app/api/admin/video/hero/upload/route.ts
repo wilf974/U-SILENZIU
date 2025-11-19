@@ -61,8 +61,8 @@ export async function POST(request: NextRequest) {
     }
 
     // Obtenir le chemin du répertoire et du fichier
-    // En production, on écrit dans /tmp (volume Docker)
-    const videoDir = process.env.VIDEO_UPLOAD_DIR || '/tmp/hero-video'
+    // En production, on écrit dans /app/public/video (volume Docker partagé)
+    const videoDir = process.env.VIDEO_UPLOAD_DIR || '/app/public/video'
     const heroVideoPath = join(videoDir, 'hero-video.mp4')
     const backupPath = join(videoDir, `hero-video.backup-${Date.now()}.mp4`)
 
