@@ -35,10 +35,10 @@ export default function AdminLogin() {
 
         // Ajouter un timeout de sécurité en cas de navigation bloquée
         timeoutRef.current = setTimeout(() => {
-          console.error('[Login] Timeout - navigation n\'a pas eu lieu après 10s')
+          console.error('[Login] Timeout - navigation n\'a pas eu lieu après 30s')
           setError('Délai de connexion dépassé. Veuillez vérifier votre connexion et réessayer.')
           setLoading(false)
-        }, 10000)
+        }, 30000)
 
         // Attendre un peu pour que le DOM se mette à jour
         await new Promise(resolve => setTimeout(resolve, 100))
