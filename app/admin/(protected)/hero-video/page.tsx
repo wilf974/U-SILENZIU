@@ -46,7 +46,7 @@ export default function HeroVideoAdmin() {
       formData.append('file', file)
       formData.append('type', 'video')
 
-      const response = await fetch('/api/media/upload', {
+      const response = await fetch('/api/admin/hero-video/upload', {
         method: 'POST',
         body: formData,
       })
