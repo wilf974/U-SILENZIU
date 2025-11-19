@@ -6,9 +6,10 @@ import { Upload, CheckCircle, AlertCircle, Loader } from 'lucide-react'
 interface HeroVideoUploaderProps {
   onSuccess?: (url: string) => void
   onError?: (error: string) => void
+  onUploadComplete?: () => Promise<void>
 }
 
-export default function HeroVideoUploader({ onSuccess, onError }: HeroVideoUploaderProps) {
+export default function HeroVideoUploader({ onSuccess, onError, onUploadComplete }: HeroVideoUploaderProps) {
   const [uploading, setUploading] = useState(false)
   const [message, setMessage] = useState('')
   const [messageType, setMessageType] = useState<'success' | 'error' | ''>('')
@@ -64,6 +65,15 @@ export default function HeroVideoUploader({ onSuccess, onError }: HeroVideoUploa
       setMessage(`Vidéo uploadée avec succès${data.data?.backup_created ? ' (backup créé)' : ''}`)
       setMessageType('success')
       onSuccess?.(data.data.public_url)
+
+      // Auto-save la section si une fonction est fournie
+      if (onUploadComplete) {
+        try {
+          await onUploadComplete()
+        } catch (saveError) {
+          console.error('Erreur lors de la sauvegarde automatique:', saveError)
+        }
+      }
     } catch (error) {
       const errorMsg = error instanceof Error ? error.message : 'Erreur lors de l\'upload'
       setMessage(errorMsg)
