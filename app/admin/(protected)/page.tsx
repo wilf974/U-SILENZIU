@@ -215,8 +215,8 @@ export default function AdminDashboard() {
       requiredRole: 'admin' as const
     },
     {
-      title: 'Vidéo Hero',
-      description: 'Modifier la vidéo de fond de la page d\'accueil',
+      title: 'Video Hero',
+      description: 'Modifier la video de fond de la page d\'accueil',
       icon: Film,
       href: '/admin/hero-video',
       color: 'bg-cyan-600 hover:bg-cyan-700',
