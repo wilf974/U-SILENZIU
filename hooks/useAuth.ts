@@ -16,7 +16,7 @@ export function useAuth() {
   const [loading, setLoading] = useState(true)
   const router = useRouter()
 
-  const checkAuthStatus = useCallback(async () => {
+  const checkAuthStatus = useCallback(async (): Promise<boolean> => {
     setLoading(true)
     try {
       const response = await fetch('/api/admin/auth/status')
@@ -25,18 +25,22 @@ export function useAuth() {
         if (data.isAuthenticated) {
           setUser(data.user)
           setIsAuthenticated(true)
+          return true
         } else {
           setIsAuthenticated(false)
           setUser(null)
+          return false
         }
       } else {
         setIsAuthenticated(false)
         setUser(null)
+        return false
       }
     } catch (error) {
       console.error('Erreur lors de la vérification du statut d\'authentification:', error)
       setIsAuthenticated(false)
       setUser(null)
+      return false
     } finally {
       setLoading(false)
     }
@@ -60,15 +64,23 @@ export function useAuth() {
 
       if (data.success) {
         console.log('[Auth] Appel de checkAuthStatus()...')
-        await checkAuthStatus()
-        console.log('[Auth] checkAuthStatus() terminé, état actuel:', { isAuthenticated, user })
+        const isAuthValid = await checkAuthStatus()
+        console.log('[Auth] checkAuthStatus() retourné:', isAuthValid)
 
-        // Attendre plus longtemps que React ait fini de mettre à jour l'état
-        // et que les composants aient re-rendu
-        console.log('[Auth] Attente de 500ms avant navigation...')
-        await new Promise(resolve => setTimeout(resolve, 500))
+        if (!isAuthValid) {
+          console.error('[Auth] Premier check échoué, attente et retry...')
+          // Attendre que le cookie soit propagé et retry
+          await new Promise(resolve => setTimeout(resolve, 1000))
+          const isAuthValidRetry = await checkAuthStatus()
+          console.log('[Auth] Retry checkAuthStatus():', isAuthValidRetry)
 
-        console.log('[Auth] Navigation vers /admin...')
+          if (!isAuthValidRetry) {
+            console.error('[Auth] Authentification échouée après retry')
+            return { success: false, error: 'Authentification échouée - veuillez réessayer' }
+          }
+        }
+
+        console.log('[Auth] Authentification réussie, prêt pour navigation')
         return { success: true }
       }
       return { success: false, error: data.error }
