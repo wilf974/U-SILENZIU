@@ -197,9 +197,6 @@ export interface HomepageConfig {
   seo_keywords: string;
   seo_description: string;
   video_url?: string;
-  site_url?: string;
-  admin_email?: string;
-  maintenance_mode?: boolean;
 }
 
 // Fonction utilitaire pour obtenir un client de la pool
@@ -2314,7 +2311,7 @@ export async function getHomepageConfig(): Promise<HomepageConfig> {
         site_title, site_description, site_name,
         contact_email, contact_phone, address,
         opening_hours, seo_keywords, seo_description,
-        video_url, site_url, admin_email, maintenance_mode
+        video_url
        FROM homepage_config
        WHERE is_active = true
        LIMIT 1`
