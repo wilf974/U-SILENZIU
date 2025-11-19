@@ -2310,30 +2310,33 @@ export async function getHomepageConfig(): Promise<HomepageConfig> {
   const client = await getClient();
   try {
     const result = await client.query(
-      'SELECT config_key, config_value, config_type FROM homepage_config WHERE is_active = true'
+      `SELECT
+        site_title, site_description, site_name,
+        contact_email, contact_phone, address,
+        opening_hours, seo_keywords, seo_description,
+        video_url, site_url, admin_email, maintenance_mode
+       FROM homepage_config
+       WHERE is_active = true
+       LIMIT 1`
     );
-    
-    const config: any = {};
-    result.rows.forEach(row => {
-      let value: any = row.config_value;
-      
-      // Conversion selon le type
-      if (row.config_type === 'boolean') {
-        value = value === 'true';
-      } else if (row.config_type === 'number') {
-        value = parseFloat(value);
-      } else if (row.config_type === 'json') {
-        try {
-          value = JSON.parse(value);
-        } catch (e) {
-          value = row.config_value;
-        }
-      }
-      
-      config[row.config_key] = value;
-    });
-    
-    return config as HomepageConfig;
+
+    if (result.rows.length === 0) {
+      // Retourner une configuration par défaut
+      return {
+        site_title: 'U SILENZIU',
+        site_description: 'Votre zone de défoulement à Buros',
+        site_name: 'U SILENZIU',
+        contact_email: 'contact@usilenziu.com',
+        contact_phone: '05 59 12 34 56',
+        address: '123 Rue de la Libération, 64400 Buros',
+        opening_hours: 'Mardi au Jeudi: 14:00 - 21:00',
+        seo_keywords: 'défoulement, stress, rage room',
+        seo_description: 'U Silenziu - Zone de défoulement',
+        video_url: '/video/hero-video.mp4'
+      };
+    }
+
+    return result.rows[0] as HomepageConfig;
   } finally {
     client.release();
   }
