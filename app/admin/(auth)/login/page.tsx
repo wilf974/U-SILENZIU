@@ -44,7 +44,17 @@ export default function AdminLogin() {
         await new Promise(resolve => setTimeout(resolve, 100))
 
         // Faire la navigation
-        router.push('/admin')
+        console.log('[Login] Appel de router.push(/admin)...')
+        const pushPromise = router.push('/admin')
+        console.log('[Login] router.push() retourné immédiatement, pushPromise:', pushPromise)
+
+        // Attendre que la navigation se termine
+        try {
+          await pushPromise
+          console.log('[Login] router.push() s\'est terminé avec succès')
+        } catch (error) {
+          console.error('[Login] Erreur lors de router.push():', error)
+        }
       } else {
         console.error('[Login] Erreur authentification:', result.error)
         setError(result.error || 'Identifiants incorrects')

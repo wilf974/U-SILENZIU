@@ -54,8 +54,10 @@ interface RecentReservation {
 }
 
 export default function AdminDashboard() {
+  console.log('[Dashboard] AdminDashboard component rendering')
   const router = useRouter()
   const { isAuthenticated, user, loading: authLoading, requireAuth, logout, isSuperAdmin } = useAuth()
+  console.log('[Dashboard] Auth state:', { isAuthenticated, userUsername: user?.username, authLoading })
   const [stats, setStats] = useState<DashboardStats>({
     totalReservations: 0,
     todayReservations: 0,
@@ -74,8 +76,10 @@ export default function AdminDashboard() {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
+    console.log('[Dashboard] useEffect triggered, isAuthenticated:', isAuthenticated)
     requireAuth()
     if (isAuthenticated) {
+      console.log('[Dashboard] User authenticated, fetching dashboard data')
       fetchDashboardData()
     }
   }, [isAuthenticated, requireAuth])
