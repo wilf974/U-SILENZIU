@@ -262,10 +262,7 @@ export default function AdminDashboard() {
 
   // Filtrer les actions selon le rôle de l'utilisateur
   const quickActions = [
-    ...baseActions.filter(action => {
-      if (action.requiredRole === 'super-admin') return isSuperAdmin()
-      return true // 'admin' actions visible for all authenticated users
-    }),
+    ...baseActions,
     ...(isSuperAdmin() ? superAdminActions : [])
   ]
 
