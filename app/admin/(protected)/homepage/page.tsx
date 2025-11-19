@@ -1373,15 +1373,35 @@ const HeroEditor = ({ section, formData, setFormData }: SectionEditorProps) => {
           </div>
         </div>
 
-        {/* Upload de vidéo hero */}
+                {/* Upload de vidéo hero */}
         <div className="bg-gray-700 p-4 rounded-md border border-gray-600">
           <HeroVideoUploader
             onSuccess={(url) => {
               setFormData({ ...formData, video_url: url })
             }}
+            onUploadComplete={async () => {
+              // Auto-save la section après l'upload
+              if (!section) return
+              
+              try {
+                const response = await fetch(`/api/admin/homepage-sections/${section.id}`, {
+                  method: 'PUT',
+                  headers: {
+                    'Content-Type': 'application/json',
+                  },
+                  body: JSON.stringify({ ...formData, video_url: '/video/hero-video.mp4' })
+                })
+
+                const result = await response.json()
+                if (result.success) {
+                  console.log('✅ Section Hero sauvegardée automatiquement après l'upload')
+                }
+              } catch (error) {
+                console.error('❌ Erreur lors de la sauvegarde automatique:', error)
+              }
+            }}
           />
         </div>
-      </div>
     </div>
   )
 }
