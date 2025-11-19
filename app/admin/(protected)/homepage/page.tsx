@@ -42,6 +42,7 @@ import {
 } from '@dnd-kit/sortable'
 import DraggableSection from '@/components/DraggableSection'
 import HeaderConfigEditor from '@/components/HeaderConfigEditor'
+import VideoSelector from '@/components/VideoSelector'
 
 interface HomepageSection {
   id: string
@@ -1358,15 +1359,11 @@ const HeroEditor = ({ section, formData, setFormData }: SectionEditorProps) => {
           />
         </div>
         <div>
-          <label className="block text-sm font-medium text-gray-300 mb-2">
-            URL de la vidéo de fond
-          </label>
-          <input
-            type="text"
-            value={formData.video_url}
-            onChange={(e) => setFormData({ ...formData, video_url: e.target.value })}
-            className="w-full px-3 py-2 border border-gray-600 rounded-md shadow-sm bg-gray-700 text-white focus:outline-none focus:ring-2 focus:ring-kaki-500 focus:border-kaki-500"
-            placeholder="/video/hero-video.mp4"
+          <VideoSelector
+            value={formData.video_url || ''}
+            onChange={(value) => setFormData({ ...formData, video_url: value })}
+            label="Vidéo de fond du héro"
+            placeholder="Sélectionner une vidéo hero..."
           />
         </div>
       </div>
