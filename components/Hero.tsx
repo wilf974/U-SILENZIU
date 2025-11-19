@@ -4,11 +4,34 @@ import { ArrowRight, Zap, Shield, Clock } from 'lucide-react'
 import Link from 'next/link'
 import Image from 'next/image'
 import { useHomepageSections } from '@/lib/hooks/useHomepageSections'
+import { useState, useEffect } from 'react'
 
 const Hero = () => {
   const { getSectionByKey, getSectionContent, loading } = useHomepageSections()
   const heroSection = getSectionByKey('hero')
   const heroContent = getSectionContent('hero')
+  const [videoUrl, setVideoUrl] = useState<string>('/video/hero-video.mp4')
+
+  // Charger la vidéo hero depuis la configuration
+  useEffect(() => {
+    const fetchVideoUrl = async () => {
+      try {
+        const response = await fetch('/api/homepage-config', {
+          cache: 'no-store'
+        })
+        if (response.ok) {
+          const data = await response.json()
+          if (data.data?.video_url) {
+            setVideoUrl(data.data.video_url)
+          }
+        }
+      } catch (err) {
+        console.error('Erreur lors du chargement de la vidéo hero:', err)
+        // Utiliser la vidéo par défaut en cas d'erreur
+      }
+    }
+    fetchVideoUrl()
+  }, [])
 
   // Ne pas afficher si chargement ou si la section est inactive/absente
   // if (loading) return null
@@ -45,7 +68,7 @@ const Hero = () => {
     <section id="hero" className="relative min-h-screen flex items-center overflow-hidden">
       {/* Background Video - Optimisé pour mobile avec poster */}
       <video
-        src="/video/hero-video.mp4"
+        src={videoUrl}
         autoPlay
         loop
         muted
