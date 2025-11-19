@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 
 export type AdminRole = 'admin' | 'super-admin'
@@ -15,39 +15,62 @@ export function useAuth() {
   const [user, setUser] = useState<AdminUser | null>(null)
   const [loading, setLoading] = useState(true)
   const router = useRouter()
+  const mountedRef = useRef(true) // Tracker si le composant est monté
 
   const checkAuthStatus = useCallback(async (): Promise<boolean> => {
+    if (!mountedRef.current) {
+      console.log('[Auth] Component unmounted, ignoring checkAuthStatus')
+      return false
+    }
+
     setLoading(true)
     try {
       const response = await fetch('/api/admin/auth/status')
       if (response.ok) {
         const data = await response.json()
         if (data.isAuthenticated) {
-          setUser(data.user)
-          setIsAuthenticated(true)
+          if (mountedRef.current) {
+            setUser(data.user)
+            setIsAuthenticated(true)
+          }
           return true
         } else {
-          setIsAuthenticated(false)
-          setUser(null)
+          if (mountedRef.current) {
+            setIsAuthenticated(false)
+            setUser(null)
+          }
           return false
         }
       } else {
-        setIsAuthenticated(false)
-        setUser(null)
+        if (mountedRef.current) {
+          setIsAuthenticated(false)
+          setUser(null)
+        }
         return false
       }
     } catch (error) {
       console.error('Erreur lors de la vérification du statut d\'authentification:', error)
-      setIsAuthenticated(false)
-      setUser(null)
+      if (mountedRef.current) {
+        setIsAuthenticated(false)
+        setUser(null)
+      }
       return false
     } finally {
-      setLoading(false)
+      if (mountedRef.current) {
+        setLoading(false)
+      }
     }
   }, [])
 
   useEffect(() => {
+    // Réinitialiser le flag au montage
+    mountedRef.current = true
     checkAuthStatus()
+
+    // Nettoyer au démontage
+    return () => {
+      mountedRef.current = false
+    }
   }, [checkAuthStatus])
 
   const login = async (credentials: {username: string, password: string}): Promise<{success: boolean, error?: string}> => {
