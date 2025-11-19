@@ -56,10 +56,20 @@ export default function HeroVideoUploader({ onSuccess, onError, onUploadComplete
         credentials: 'include'
       })
 
-      const data = await response.json()
+      // Vérifier si la réponse est du JSON
+      const contentType = response.headers.get('content-type')
+      let data
+
+      if (contentType && contentType.includes('application/json')) {
+        data = await response.json()
+      } else {
+        // Si ce n'est pas du JSON, c'est une erreur du serveur
+        const text = await response.text()
+        throw new Error(`Erreur serveur (${response.status}): ${text.substring(0, 100)}`)
+      }
 
       if (!response.ok) {
-        throw new Error(data.error || 'Erreur lors de l\'upload')
+        throw new Error(data.error || `Erreur lors de l'upload (${response.status})`)
       }
 
       setMessage(`Vidéo uploadée avec succès${data.data?.backup_created ? ' (backup créé)' : ''}`)
