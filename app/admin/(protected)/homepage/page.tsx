@@ -1373,7 +1373,7 @@ const HeroEditor = ({ section, formData, setFormData }: SectionEditorProps) => {
           </div>
         </div>
 
-                {/* Upload de vidéo hero */}
+        {/* Upload de vidéo hero */}
         <div className="bg-gray-700 p-4 rounded-md border border-gray-600">
           <HeroVideoUploader
             onSuccess={(url) => {
@@ -1402,6 +1402,7 @@ const HeroEditor = ({ section, formData, setFormData }: SectionEditorProps) => {
             }}
           />
         </div>
+      </div>
     </div>
   )
 }
