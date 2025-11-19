@@ -90,6 +90,7 @@ export async function POST(request: NextRequest) {
       username: user.username,
       role: user.role,
     })
+    console.log('[Login API] Token créé pour:', user.username)
 
     const response = NextResponse.json({
       success: true,
@@ -104,15 +105,17 @@ export async function POST(request: NextRequest) {
       token,
     })
 
+    console.log('[Login API] Définition du cookie...')
     response.cookies.set({
       name: ADMIN_TOKEN_COOKIE,
       value: token,
       httpOnly: true,
-      secure: process.env.NODE_ENV === 'production', // Sécurisé en production (HTTPS)
+      secure: process.env.NODE_ENV === 'production',
       sameSite: 'lax',
       maxAge: COOKIE_MAX_AGE_SECONDS,
       path: '/',
     })
+    console.log('[Login API] Cookie défini, retour de la réponse')
 
     return response
   } catch (error) {
