@@ -105,7 +105,7 @@ export async function GET(request: NextRequest) {
 
     try {
       const result = await client.query(
-        `SELECT video_url FROM homepage_config WHERE id = 1`
+        `SELECT video_url FROM homepage_config LIMIT 1`
       )
 
       const videoUrl = result.rows.length > 0 ? result.rows[0].video_url : '/video/hero-video.mp4'
