@@ -1,17 +1,39 @@
 'use client'
 
-import { useState, useRef } from 'react'
-import { ArrowLeft, Upload, Play, AlertCircle, CheckCircle } from 'lucide-react'
+import { useState, useRef, useEffect } from 'react'
+import { ArrowLeft, Upload, Play, AlertCircle, CheckCircle, Save } from 'lucide-react'
 import Link from 'next/link'
 
 export default function HeroVideoAdmin() {
   const [videoUrl, setVideoUrl] = useState<string>('/video/hero-video.mp4')
+  const [savedVideoUrl, setSavedVideoUrl] = useState<string>('/video/hero-video.mp4')
   const [loading, setLoading] = useState(false)
+  const [saving, setSaving] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [success, setSuccess] = useState<string | null>(null)
   const [uploadProgress, setUploadProgress] = useState(0)
   const fileInputRef = useRef<HTMLInputElement>(null)
   const videoPreviewRef = useRef<HTMLVideoElement>(null)
+
+  // Charger la vidéo sauvegardée au démarrage
+  useEffect(() => {
+    fetchSavedVideoUrl()
+  }, [])
+
+  const fetchSavedVideoUrl = async () => {
+    try {
+      const response = await fetch('/api/admin/hero-video/save', {
+        credentials: 'include'
+      })
+      if (response.ok) {
+        const data = await response.json()
+        setSavedVideoUrl(data.videoUrl)
+        setVideoUrl(data.videoUrl)
+      }
+    } catch (err) {
+      console.error('Erreur lors du chargement:', err)
+    }
+  }
 
   const handleVideoSelect = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0]
@@ -81,6 +103,37 @@ export default function HeroVideoAdmin() {
 
   const triggerFileInput = () => {
     fileInputRef.current?.click()
+  }
+
+  const handleSaveVideo = async () => {
+    setSaving(true)
+    setError(null)
+    setSuccess(null)
+
+    try {
+      const response = await fetch('/api/admin/hero-video/save', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ videoUrl }),
+        credentials: 'include'
+      })
+
+      if (response.ok) {
+        const data = await response.json()
+        setSavedVideoUrl(videoUrl)
+        setSuccess('Vidéo hero appliquée au site avec succès! 🎬')
+      } else {
+        const errorData = await response.json()
+        setError(errorData.error || 'Erreur lors de la sauvegarde')
+      }
+    } catch (err) {
+      console.error('Erreur:', err)
+      setError('Erreur lors de la sauvegarde du fichier')
+    } finally {
+      setSaving(false)
+    }
   }
 
   return (
@@ -202,6 +255,35 @@ export default function HeroVideoAdmin() {
                 <p><strong>URL actuelle:</strong></p>
                 <p className="font-mono text-xs text-gray-500 mt-1 break-all">{videoUrl}</p>
               </div>
+
+              {/* Status */}
+              <div className="mt-4 p-4 rounded-lg" style={{
+                backgroundColor: videoUrl === savedVideoUrl ? 'rgba(34, 197, 94, 0.1)' : 'rgba(251, 146, 60, 0.1)',
+                borderColor: videoUrl === savedVideoUrl ? 'rgba(34, 197, 94, 0.3)' : 'rgba(251, 146, 60, 0.3)',
+                borderWidth: '1px'
+              }}>
+                <p className="text-sm" style={{ color: videoUrl === savedVideoUrl ? '#86efac' : '#fed7aa' }}>
+                  {videoUrl === savedVideoUrl ? (
+                    <>✓ Cette vidéo est appliquée au site</>
+                  ) : (
+                    <>⚠ Cette vidéo n'est pas encore appliquée au site</>
+                  )}
+                </p>
+              </div>
+
+              {/* Save Button */}
+              <button
+                onClick={handleSaveVideo}
+                disabled={saving || videoUrl === savedVideoUrl}
+                className={`w-full mt-4 py-3 rounded-lg font-medium transition-colors flex items-center justify-center gap-2 ${
+                  videoUrl === savedVideoUrl
+                    ? 'bg-gray-700 text-gray-400 cursor-not-allowed'
+                    : 'bg-kaki-600 hover:bg-kaki-700 text-white'
+                }`}
+              >
+                <Save size={20} />
+                {saving ? 'Application en cours...' : 'Appliquer cette vidéo au site'}
+              </button>
             </div>
 
             {/* Technical Info */}
