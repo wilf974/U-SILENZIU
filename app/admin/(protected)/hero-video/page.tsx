@@ -71,9 +71,16 @@ export default function HeroVideoAdmin() {
       const response = await fetch('/api/admin/hero-video/upload', {
         method: 'POST',
         body: formData,
+        credentials: 'include'
       })
 
+      const contentType = response.headers.get('content-type')
+      const isJson = contentType && contentType.includes('application/json')
+
       if (response.ok) {
+        if (!isJson) {
+          throw new Error('La réponse n\'est pas du JSON valide')
+        }
         const result = await response.json()
         setVideoUrl(result.url)
         setSuccess('Vidéo hero mise à jour avec succès!')
@@ -89,8 +96,20 @@ export default function HeroVideoAdmin() {
           fileInputRef.current.value = ''
         }
       } else {
-        const errorData = await response.json()
-        setError(errorData.error || 'Erreur lors de l\'upload')
+        let errorMessage = `Erreur HTTP ${response.status}`
+        if (isJson) {
+          try {
+            const errorData = await response.json()
+            errorMessage = errorData.error || errorMessage
+          } catch (parseErr) {
+            console.error('Impossible de parser la réponse d\'erreur:', parseErr)
+          }
+        } else {
+          const text = await response.text()
+          console.error('Réponse d\'erreur:', text)
+          errorMessage = `Erreur serveur: ${text.substring(0, 100)}`
+        }
+        setError(errorMessage)
       }
     } catch (err) {
       console.error('Erreur lors de l\'upload:', err)
