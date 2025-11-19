@@ -5,14 +5,14 @@ import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { useAuth } from '@/hooks/useAuth'
 import { Crown, Shield } from 'lucide-react'
-import { 
-  Calendar, 
-  Users, 
-  DollarSign, 
-  TrendingUp, 
-  Settings, 
-  Mail, 
-  FileText, 
+import {
+  Calendar,
+  Users,
+  DollarSign,
+  TrendingUp,
+  Settings,
+  Mail,
+  FileText,
   Plus,
   Edit,
   Trash2,
@@ -23,7 +23,8 @@ import {
   AlertCircle,
   LogOut,
   Home,
-  Bell
+  Bell,
+  Film
 } from 'lucide-react'
 
 interface DashboardStats {
@@ -203,6 +204,14 @@ export default function AdminDashboard() {
       icon: Home,
       href: '/admin/homepage',
       color: 'bg-kaki-600 hover:bg-kaki-700',
+      requiredRole: 'admin' as const
+    },
+    {
+      title: 'Upload Vidéo Hero',
+      description: 'Uploader la vidéo de fond pour la section hero',
+      icon: Film,
+      href: '/admin/hero-video',
+      color: 'bg-cyan-600 hover:bg-cyan-700',
       requiredRole: 'admin' as const
     },
     {
