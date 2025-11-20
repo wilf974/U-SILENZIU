@@ -2,7 +2,7 @@ User-agent: *
 Allow: /
 
 # Sitemap
-Sitemap: https://usilenziu.com/sitemap.xml
+Sitemap: https://rageroom.usilenziu.com/sitemap.xml
 
 # Politique de confidentialité et mentions légales
 Allow: /politique-confidentialite
