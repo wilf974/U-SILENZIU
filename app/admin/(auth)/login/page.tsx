@@ -1,7 +1,6 @@
 'use client'
 
 import { useState } from 'react'
-import { useRouter } from 'next/navigation'
 import { Lock, Eye, EyeOff, Shield, Crown } from 'lucide-react'
 import { useAuth } from '@/hooks/useAuth'
 
@@ -11,7 +10,6 @@ export default function AdminLogin() {
   const [showPassword, setShowPassword] = useState(false)
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
-  const router = useRouter()
   const { login } = useAuth()
 
   const handleLogin = async (e: React.FormEvent) => {
@@ -20,7 +18,9 @@ export default function AdminLogin() {
     setError('')
     const result = await login({ username, password })
     if (result.success) {
-      router.push('/admin')
+      // Utiliser window.location au lieu de router.push() pour forcer une vraie requête HTTP
+      // Cela assure que les cookies HTTP-only sont envoyés correctement au serveur
+      window.location.href = '/admin'
     } else {
       setError(result.error || 'Identifiants incorrects')
       setLoading(false)
