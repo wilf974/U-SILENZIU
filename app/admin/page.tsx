@@ -90,11 +90,14 @@ export default function AdminDashboard() {
   const [showPayplugConfig, setShowPayplugConfig] = useState(false)
 
   useEffect(() => {
-    requireAuth()
-    if (isAuthenticated) {
-      fetchDashboardData()
+    // Attendre que la vérification d'authentification soit terminée avant de rediriger
+    if (!authLoading) {
+      requireAuth()
+      if (isAuthenticated) {
+        fetchDashboardData()
+      }
     }
-  }, [isAuthenticated, requireAuth])
+  }, [isAuthenticated, authLoading, requireAuth])
 
   const fetchDashboardData = async () => {
     try {
