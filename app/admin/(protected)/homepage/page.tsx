@@ -963,7 +963,7 @@ const FooterEditor = () => {
                 value={config.contact_address || ''}
                 onChange={(e) => setConfig({ ...config, contact_address: e.target.value })}
                 className="w-full px-3 py-2 border border-gray-600 rounded-md shadow-sm bg-gray-700 text-white focus:outline-none focus:ring-2 focus:ring-kaki-500 focus:border-kaki-500"
-                placeholder="ZI Baleone Farone, 20167 Ajaccio
+                placeholder="ZI Baleone Farone, 20167 Ajaccio"
               />
             </div>
           </div>
@@ -1407,8 +1407,8 @@ const ContactEditor = ({ section, formData, setFormData }: SectionEditorProps) =
         {
           icon: 'MapPin',
           title: 'Adresse',
-          details: '18 Rue du Pont Long\n64160 Ajaccio\nZone Berlanne',
-          link: 'https://maps.google.com/?q=18+Rue+du+Pont+Long+64160+Ajaccio'
+          details: 'ZI Baleone Farone\n20167 Ajaccio\nFrance',
+          link: 'https://maps.google.com/?q=ZI+Baleone+Farone+20167+Ajaccio'
         }
       ]
     } catch {
@@ -1428,8 +1428,8 @@ const ContactEditor = ({ section, formData, setFormData }: SectionEditorProps) =
         {
           icon: 'MapPin',
           title: 'Adresse',
-          details: '18 Rue du Pont Long\n64160 Ajaccio\nZone Berlanne',
-          link: 'https://maps.google.com/?q=18+Rue+du+Pont+Long+64160+Ajaccio'
+          details: 'ZI Baleone Farone\n20167 Ajaccio\nFrance',
+          link: 'https://maps.google.com/?q=ZI+Baleone+Farone+20167+Ajaccio'
         }
       ]
     }
