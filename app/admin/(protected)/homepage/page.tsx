@@ -714,7 +714,7 @@ const HomepageConfigEditor = () => {
                 value={config.seo_keywords}
                 onChange={(e) => setConfig({...config, seo_keywords: e.target.value})}
                 className="w-full px-3 py-2 bg-gray-800 border border-gray-600 rounded-lg text-white focus:border-kaki-500 focus:outline-none"
-                placeholder="défoulement, Buros, lancer haches..."
+                placeholder="défoulement, Ajaccio, lancer haches..."
               />
             ) : (
               <p className="text-gray-300">{config.seo_keywords}</p>
@@ -759,11 +759,11 @@ const HomepageConfigEditor = () => {
 const FooterEditor = () => {
   const [config, setConfig] = useState<FooterConfig>({
     site_name: 'U SILENZIU',
-    site_description: 'Votre zone de défoulement à Buros. Libérez votre stress et vos tensions dans un environnement sécurisé et fun.',
+    site_description: 'Votre zone de défoulement à Ajaccio. Libérez votre stress et vos tensions dans un environnement sécurisé et fun.',
     site_slogan: 'Énergie positive garantie !',
     contact_phone: '+33 7 83 83 64 53',
     contact_email: 'info@usilenziu.com',
-    contact_address: '18 Rue du Pont Long, 64160 Buros, Zone Berlanne',
+    contact_address: 'ZI Baleone Farone, 20167 Ajaccio, Zone Berlanne',
     opening_hours_tuesday: '14:00 – 21:00',
     opening_hours_wednesday: '14:00 – 21:00',
     opening_hours_thursday: '14:00 – 21:00',
@@ -963,7 +963,7 @@ const FooterEditor = () => {
                 value={config.contact_address || ''}
                 onChange={(e) => setConfig({ ...config, contact_address: e.target.value })}
                 className="w-full px-3 py-2 border border-gray-600 rounded-md shadow-sm bg-gray-700 text-white focus:outline-none focus:ring-2 focus:ring-kaki-500 focus:border-kaki-500"
-                placeholder="18 Rue du Pont Long, 64160 Buros"
+                placeholder="ZI Baleone Farone, 20167 Ajaccio
               />
             </div>
           </div>
@@ -1407,8 +1407,8 @@ const ContactEditor = ({ section, formData, setFormData }: SectionEditorProps) =
         {
           icon: 'MapPin',
           title: 'Adresse',
-          details: '18 Rue du Pont Long\n64160 Buros\nZone Berlanne',
-          link: 'https://maps.google.com/?q=18+Rue+du+Pont+Long+64160+Buros'
+          details: '18 Rue du Pont Long\n64160 Ajaccio\nZone Berlanne',
+          link: 'https://maps.google.com/?q=18+Rue+du+Pont+Long+64160+Ajaccio'
         }
       ]
     } catch {
@@ -1428,8 +1428,8 @@ const ContactEditor = ({ section, formData, setFormData }: SectionEditorProps) =
         {
           icon: 'MapPin',
           title: 'Adresse',
-          details: '18 Rue du Pont Long\n64160 Buros\nZone Berlanne',
-          link: 'https://maps.google.com/?q=18+Rue+du+Pont+Long+64160+Buros'
+          details: '18 Rue du Pont Long\n64160 Ajaccio\nZone Berlanne',
+          link: 'https://maps.google.com/?q=18+Rue+du+Pont+Long+64160+Ajaccio'
         }
       ]
     }

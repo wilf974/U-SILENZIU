@@ -18,8 +18,8 @@ export async function generateMetadata({ params }: { params: { slug: string } })
 
     return {
       title: page.seo_title || page.title,
-      description: page.meta_description || `Découvrez ${page.title} sur U Silenziu, votre zone de défoulement à Buros.`,
-      keywords: page.keywords?.join(', ') || 'défoulement, Buros, zone de défoulement, U Silenziu',
+      description: page.meta_description || `Découvrez ${page.title} sur U Silenziu, votre zone de défoulement à Ajaccio.`,
+      keywords: page.keywords?.join(', ') || 'défoulement, Ajaccio, zone de défoulement, U Silenziu',
       openGraph: {
         title: page.seo_title || page.title,
         description: page.meta_description || `Découvrez ${page.title} sur U Silenziu.`,
@@ -35,7 +35,7 @@ export async function generateMetadata({ params }: { params: { slug: string } })
     console.error('Erreur lors de la génération des métadonnées:', error)
     return {
       title: 'U Silenziu - Zone de Défoulement',
-      description: 'Votre zone de défoulement sécurisée à Buros.'
+      description: 'Votre zone de défoulement sécurisée à Ajaccio.'
     }
   }
 }

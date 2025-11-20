@@ -37,14 +37,14 @@ export async function GET() {
           ) RETURNING *
         `, [
           'U SILENZIU',
-          'Votre zone de défoulement à Buros. Libérez votre stress et vos tensions dans un environnement sécurisé et fun.',
+          'Votre zone de défoulement à Ajaccio. Libérez votre stress et vos tensions dans un environnement sécurisé et fun.',
           'U SILENZIU',
           'contact@usilenziu.com',
           '05 59 12 34 56',
-          '123 Rue de la Libération, 64400 Buros',
+          '123 Rue de la Libération, 64400 Ajaccio',
           'Mardi au Jeudi: 14:00 - 21:00\nVendredi au Samedi: 14:00 - 00:00\nDimanche: Sur réservation uniquement',
-          'défoulement, stress, rage room, Buros, relaxation',
-          'U Silenziu - Zone de défoulement à Buros. Libérez votre stress dans nos salles sécurisées.',
+          'défoulement, stress, rage room, Ajaccio, relaxation',
+          'U Silenziu - Zone de défoulement à Ajaccio. Libérez votre stress dans nos salles sécurisées.',
           true
         ])
 

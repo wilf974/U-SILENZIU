@@ -65,7 +65,7 @@ export async function POST(request: NextRequest) {
           <hr style="border: 1px solid #ddd; margin: 20px 0;">
           <p style="color: #666; font-size: 12px;">
             U Silenziu - Zone de défoulement<br>
-            Buros, France
+            Ajaccio, France
           </p>
         </div>
       `

@@ -6,9 +6,9 @@ import { Providers } from './providers'
 const inter = { variable: '--font-inter' }
 
 export const metadata: Metadata = {
-  title: 'U Silenziu - Zone de défoulement à Buros',
-  description: 'Découvrez U Silenziu, votre zone de défoulement à Buros. Cassez, détruisez et libérez votre stress dans nos salles sécurisées. Lancer de haches, shurikens, fléchettes et activités de défoulement.',
-  keywords: ['zone de défoulement', 'Buros', 'défoulement', 'stress', 'lancer de haches', 'shurikens', 'fléchettes', 'color zone', 'bras de fer'],
+  title: 'U Silenziu - Zone de défoulement à Ajaccio',
+  description: 'Découvrez U Silenziu, votre zone de défoulement à Ajaccio. Cassez, détruisez et libérez votre stress dans nos salles sécurisées. Lancer de haches, shurikens, fléchettes et activités de défoulement.',
+  keywords: ['zone de défoulement', 'Ajaccio', 'défoulement', 'stress', 'lancer de haches', 'shurikens', 'fléchettes', 'color zone', 'bras de fer'],
   authors: [{ name: 'U Silenziu' }],
   creator: 'U Silenziu',
   publisher: 'U Silenziu',
@@ -22,8 +22,8 @@ export const metadata: Metadata = {
     canonical: '/',
   },
   openGraph: {
-    title: 'U Silenziu - Zone de défoulement à Buros',
-    description: 'Découvrez U Silenziu, votre zone de défoulement à Buros. Cassez, détruisez et libérez votre stress dans nos salles sécurisées.',
+    title: 'U Silenziu - Zone de défoulement à Ajaccio',
+    description: 'Découvrez U Silenziu, votre zone de défoulement à Ajaccio. Cassez, détruisez et libérez votre stress dans nos salles sécurisées.',
     url: 'https://usilenziu.com',
     siteName: 'U Silenziu',
     locale: 'fr_FR',
@@ -31,8 +31,8 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'U Silenziu - Zone de défoulement à Buros',
-    description: 'Découvrez U Silenziu, votre zone de défoulement à Buros. Cassez, détruisez et libérez votre stress dans nos salles sécurisées.',
+    title: 'U Silenziu - Zone de défoulement à Ajaccio',
+    description: 'Découvrez U Silenziu, votre zone de défoulement à Ajaccio. Cassez, détruisez et libérez votre stress dans nos salles sécurisées.',
   },
   robots: {
     index: true,
