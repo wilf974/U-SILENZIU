@@ -19,7 +19,9 @@ export function useAuth() {
   const checkAuthStatus = useCallback(async () => {
     setLoading(true)
     try {
-      const response = await fetch('/api/admin/auth/status')
+      const response = await fetch('/api/admin/auth/status', {
+        credentials: 'include'
+      })
       if (response.ok) {
         const data = await response.json()
         if (data.isAuthenticated) {
