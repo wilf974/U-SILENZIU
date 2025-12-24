@@ -7,9 +7,9 @@ import { generatePageMetadata } from '@/lib/metadata'
 
 export const metadata: Metadata = generatePageMetadata(
   'Accueil',
-  'Découvrez U Silenziu, votre zone de défoulement à Buros. Cassez, détruisez et libérez votre stress dans nos salles sécurisées. Lancer de haches, shurikens, fléchettes et activités de défoulement.',
+  'Découvrez U Silenziu, votre zone de défoulement à Ajaccio. Cassez, détruisez et libérez votre stress dans nos salles sécurisées. Lancer de haches, shurikens, fléchettes et activités de défoulement.',
   '/',
-  ['zone de défoulement', 'Buros', 'défoulement', 'stress', 'lancer de haches', 'shurikens', 'fléchettes', 'color zone', 'bras de fer']
+  ['zone de défoulement', 'Ajaccio', 'défoulement', 'stress', 'lancer de haches', 'shurikens', 'fléchettes', 'color zone', 'bras de fer']
 )
 
 export default function Home() {

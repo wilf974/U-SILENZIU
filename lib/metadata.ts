@@ -2,7 +2,7 @@ import { Metadata } from 'next'
 
 export const siteConfig = {
   name: 'U Silenziu',
-  description: 'Zone de défoulement à Buros - Cassez, détruisez et libérez votre stress',
+  description: 'Zone de défoulement à Ajaccio - Cassez, détruisez et libérez votre stress',
   url: 'https://usilenziu.com',
   ogImage: 'https://usilenziu.com/og-image.jpg',
   links: {
@@ -14,10 +14,10 @@ export const siteConfig = {
     email: 'contact@usilenziu.com',
   },
   address: {
-    street: 'Adresse à compléter',
-    city: 'Buros',
-    region: 'Nouvelle-Aquitaine',
-    postalCode: '64160',
+    street: 'ZI Baleone Farone',
+    city: 'Ajaccio',
+    region: 'Corse',
+    postalCode: '20167',
     country: 'FR',
   },
   coordinates: {
@@ -36,7 +36,7 @@ export const siteConfig = {
 export const defaultMetadata: Metadata = {
   metadataBase: new URL(siteConfig.url),
   title: {
-    default: `${siteConfig.name} - Zone de Défoulement à Buros`,
+    default: `${siteConfig.name} - Zone de Défoulement à Ajaccio`,
     template: `%s | ${siteConfig.name}`,
   },
   description: siteConfig.description,
@@ -48,7 +48,7 @@ export const defaultMetadata: Metadata = {
     'thérapie',
     'loisir',
     'activité',
-    'Buros',
+    'Ajaccio',
     'haches',
     'shurikens',
     'fléchettes',
@@ -70,20 +70,20 @@ export const defaultMetadata: Metadata = {
     locale: 'fr_FR',
     url: siteConfig.url,
     siteName: siteConfig.name,
-    title: `${siteConfig.name} - Zone de Défoulement à Buros`,
+    title: `${siteConfig.name} - Zone de Défoulement à Ajaccio`,
     description: siteConfig.description,
     images: [
       {
         url: siteConfig.ogImage,
         width: 1200,
         height: 630,
-        alt: `${siteConfig.name} - Zone de défoulement à Buros`,
+        alt: `${siteConfig.name} - Zone de défoulement à Ajaccio`,
       },
     ],
   },
   twitter: {
     card: 'summary_large_image',
-    title: `${siteConfig.name} - Zone de Défoulement à Buros`,
+    title: `${siteConfig.name} - Zone de Défoulement à Ajaccio`,
     description: siteConfig.description,
     images: [siteConfig.ogImage],
     creator: '@usilenziu',

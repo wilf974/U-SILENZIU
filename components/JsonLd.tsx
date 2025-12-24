@@ -11,13 +11,13 @@ export default function JsonLd() {
         "name": "U Silenziu",
         "url": "https://usilenziu.com",
         "logo": "https://usilenziu.com/logo.png",
-        "description": "Zone de défoulement à Buros - Cassez, détruisez et libérez votre stress dans nos salles sécurisées",
+        "description": "Zone de défoulement à Ajaccio - Cassez, détruisez et libérez votre stress dans nos salles sécurisées",
         "address": {
           "@type": "PostalAddress",
-          "streetAddress": "Adresse à compléter",
-          "addressLocality": "Buros",
-          "addressRegion": "Nouvelle-Aquitaine",
-          "postalCode": "64160",
+          "streetAddress": "ZI Baleone Farone",
+          "addressLocality": "Ajaccio",
+          "addressRegion": "Corse",
+          "postalCode": "20167",
           "addressCountry": "FR"
         },
         "contactPoint": [
@@ -52,15 +52,15 @@ export default function JsonLd() {
         "@type": "SportsActivityLocation",
         "@id": "https://usilenziu.com/#business",
         "name": "U Silenziu",
-        "description": "Zone de défoulement à Buros - Cassez, détruisez et libérez votre stress dans nos salles sécurisées",
+        "description": "Zone de défoulement à Ajaccio - Cassez, détruisez et libérez votre stress dans nos salles sécurisées",
         "url": "https://usilenziu.com",
         "telephone": "+33-5-XX-XX-XX-XX",
         "address": {
           "@type": "PostalAddress",
-          "streetAddress": "Adresse à compléter",
-          "addressLocality": "Buros",
-          "addressRegion": "Nouvelle-Aquitaine",
-          "postalCode": "64160",
+          "streetAddress": "ZI Baleone Farone",
+          "addressLocality": "Ajaccio",
+          "addressRegion": "Corse",
+          "postalCode": "20167",
           "addressCountry": "FR"
         },
         "geo": {

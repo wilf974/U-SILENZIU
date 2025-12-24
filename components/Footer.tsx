@@ -107,7 +107,7 @@ const Footer = () => {
   // Données par défaut si la configuration n'est pas chargée
   const defaultConfig: FooterConfig = {
     site_name: 'U SILENZIU',
-    site_description: 'Votre zone de défoulement à Buros. Libérez votre stress et vos tensions dans un environnement sécurisé et fun.',
+    site_description: 'Votre zone de défoulement à Ajaccio. Libérez votre stress et vos tensions dans un environnement sécurisé et fun.',
     site_slogan: 'Énergie positive garantie !',
     contact_phone: '+33 7 83 83 64 53',
     contact_email: 'info@usilenziu.com',
